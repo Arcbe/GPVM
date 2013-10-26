@@ -17,6 +17,5 @@ public class SandboxGame {
    */
   public static void main(String[] args) {
     Settings.loadStringBundle("text");
-    
   }
 }
