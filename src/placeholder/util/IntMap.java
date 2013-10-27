@@ -28,8 +28,8 @@ public class IntMap <T> extends ArrayList<IntMap.MapEntry<T>> {
    * 
    * @return An array of indices
    */
-  public int[] keySet() {
-    int[] result = new int[size()];
+  public long[] keySet() {
+    long[] result = new long[size()];
     
     for(int i = 0; i < result.length; i++)
       result[i] = get(i).index;
@@ -43,7 +43,7 @@ public class IntMap <T> extends ArrayList<IntMap.MapEntry<T>> {
    * @param key The index to check
    * @return Whether the index is present.
    */
-  public boolean containsKey(int key) {
+  public boolean containsKey(long key) {
     MapEntry<T> tar = new MapEntry<>(key, null);
     return Collections.binarySearch(this, tar) >= 0;
   }
@@ -55,7 +55,7 @@ public class IntMap <T> extends ArrayList<IntMap.MapEntry<T>> {
    * @param entry The element that will be added to the list
    * @param index The index of the new element.
    */
-  public void insert(int index, T entry) {
+  public void insert(long index, T entry) {
     MapEntry<T> newentry = new MapEntry<>(index, entry);
     
     //find a spot for the new entry.
@@ -76,7 +76,7 @@ public class IntMap <T> extends ArrayList<IntMap.MapEntry<T>> {
    * @param index The index of the element to retrieve
    * @return The element from the list, or null.
    */
-  public T getEntry(int index) {
+  public T getEntry(long index) {
     //find the entry in the list.
     MapEntry<T> target = new MapEntry<>(index, null);
     int ind = Collections.binarySearch(this, target);
@@ -93,17 +93,19 @@ public class IntMap <T> extends ArrayList<IntMap.MapEntry<T>> {
    * @param <T> 
    */
   protected static final class MapEntry <T> implements Comparable<MapEntry<T>>{
-    public int index;
+    public long index;
     public T entry;
 
-    public MapEntry(int index, T entry) {
+    public MapEntry(long index, T entry) {
       this.index = index;
       this.entry = entry;
     }
 
     @Override
     public int compareTo(MapEntry<T> t) {
-      return index - t.index;
+      if(index == t.index) return 0;
+      else if(index > t.index) return 1;
+      else return -1;
     }
     
     @Override
@@ -116,7 +118,7 @@ public class IntMap <T> extends ArrayList<IntMap.MapEntry<T>> {
     @Override
     public int hashCode() {
       int hash = 5;
-      hash = 97 * hash + this.index;
+      hash = (int) (97 * hash + this.index);
       return hash;
     }
   }
