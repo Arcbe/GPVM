@@ -1,8 +1,6 @@
 package placeholder.map;
 
 import com.sun.istack.internal.logging.Logger;
-import java.util.HashMap;
-import java.util.Set;
 import placeholder.util.IntMap;
 import placeholder.util.Settings;
 import placeholder.util.error.UnknownDataType;
@@ -33,7 +31,7 @@ public final class TileData {
      * @param type The enum that the class is associated with.
      * @return The associated class.
      */
-    public static final Class<?> getClass(DataType type) {
+    public static Class<?> getClass(DataType type) {
       switch(type) {
         case Integer: return Integer.class;
         case Float: return Float.class;
@@ -52,7 +50,7 @@ public final class TileData {
      * @param obj The Object to determine the type of.
      * @return The type of the given object.
      */
-    public static final DataType getType(Object obj) {
+    public static DataType getType(Object obj) {
       return DataType.valueOf(obj.getClass().getSimpleName());
     }
   }
