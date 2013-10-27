@@ -3,6 +3,7 @@ package placeholder.map;
 import com.sun.istack.internal.logging.Logger;
 import java.util.HashMap;
 import java.util.Set;
+import placeholder.util.IntMap;
 import placeholder.util.Settings;
 import placeholder.util.error.UnknownDataType;
 
@@ -60,7 +61,7 @@ public final class TileData {
    * Constructs an empty TileData.
    */
   public TileData() {
-    values = new HashMap<>();
+    values = new IntMap<>();
   }
 
   /**
@@ -68,7 +69,7 @@ public final class TileData {
    *
    * @return A list of all field names.
    */
-  public Set<String> getValueNames() {
+  public int[] getValueNames() {
     return values.keySet();
   }
   
@@ -78,7 +79,7 @@ public final class TileData {
    * @param key The key to check
    * @return Whether the given key exists
    */
-  public boolean isPresent(String key) {
+  public boolean isPresent(int key) {
     return values.containsKey(key);
   }
 
@@ -88,10 +89,10 @@ public final class TileData {
    * @param key The field to get the DataType from.
    * @return The data type of the given field.
    */
-  public DataType getType(String key) {
-    assert values.containsKey(key);
+  public DataType getType(int key) {
+    assert isPresent(key);
     
-    return DataType.getType(values.get(key));
+    return DataType.getType(values.getEntry(key));
   }
 
   /**
@@ -101,10 +102,10 @@ public final class TileData {
    * @param key The name of an float field
    * @return The value of the given field
    */
-  public float getFloatValue(String key) {
-    assert values.containsKey(key);
+  public float getFloatValue(int key) {
+    assert isPresent(key);
     
-    Object value = values.get(key);
+    Object value = values.getEntry(key);
     assert value instanceof Float;
     return (Float) value;
   }
@@ -113,13 +114,13 @@ public final class TileData {
    * Returns the value of an integer field in the TileData.  The key
    * must correspond to a valid integer field.
    *
-   * @param key The name of an integer field
+   * @param key The id of an integer field
    * @return The value of the given field
    */
-  public int getInteger(String key) {
-    assert values.containsKey(key);
+  public int getInteger(int key) {
+    assert isPresent(key);
     
-    Object value = values.get(key);
+    Object value = values.getEntry(key);
     assert value instanceof Integer;
     return (Integer)value;
   }
@@ -128,13 +129,13 @@ public final class TileData {
    * Returns the value of a String field in the TileData.  The key
    * must correspond to a valid String field.
    *
-   * @param key The name of an String field
+   * @param key The id of an String field
    * @return The value of the given field
    */
-  public String getString(String key) {
-    assert values.containsKey(key);
+  public String getString(int key) {
+    assert isPresent(key);
     
-    Object value = values.get(key);
+    Object value = values.getEntry(key);
     assert value instanceof String;
     return (String)value;
   }
@@ -143,43 +144,43 @@ public final class TileData {
    * Sets a value for a string field.  This method cannot be used to create
    * a new field.
    * 
-   * @param key The name of the field
+   * @param key The id of the field
    * @param value The value to assign the field.
    */
-  public void setString(String key, String value) {
-    assert values.containsKey(key);
-    assert values.get(key) instanceof String;
+  public void setString(int key, String value) {
+    assert isPresent(key);
+    assert values.getEntry(key) instanceof String;
     
-    values.put(key, value);
+    values.insert(key, value);
   }
   
   /**
    * Sets a value for a float field.  This method cannot be used to create
    * a new field.
    * 
-   * @param key The name of the field
+   * @param key The id of the field
    * @param value The value to assign the field.
    */
-  public void setFloat(String key, float value) {
-    assert values.containsKey(key);
-    assert values.get(key) instanceof Float;
+  public void setFloat(int key, float value) {
+    assert isPresent(key);
+    assert values.getEntry(key) instanceof Float;
     
-    values.put(key, value);
+    values.insert(key, value);
   }
   
   /**
    * Sets a value for a integer field.  This method cannot be used to create
    * a new field.
    * 
-   * @param key The name of the field
+   * @param key The id of the field
    * @param value The value to assign the field.
    */
-  public void setInteger(String key, int value) {
-    assert values.containsKey(key);
-    assert values.get(key) instanceof Integer;
+  public void setInteger(int key, int value) {
+    assert isPresent(key);
+    assert values.getEntry(key) instanceof Integer;
     
-    values.put(key, value);
+    values.insert(key, value);
   }
   
-  private HashMap<String, Object> values;
+  private IntMap<Object> values;
 }

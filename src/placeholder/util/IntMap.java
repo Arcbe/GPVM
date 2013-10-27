@@ -24,6 +24,31 @@ public class IntMap <T> extends ArrayList<IntMap.MapEntry<T>> {
   }
   
   /**
+   * Returns an array of all the indices in this map.
+   * 
+   * @return An array of indices
+   */
+  public int[] keySet() {
+    int[] result = new int[size()];
+    
+    for(int i = 0; i < result.length; i++)
+      result[i] = get(i).index;
+    
+    return result;
+  }
+  
+  /**
+   * Checks whether an index is present in this map.
+   * 
+   * @param key The index to check
+   * @return Whether the index is present.
+   */
+  public boolean containsKey(int key) {
+    MapEntry<T> tar = new MapEntry<>(key, null);
+    return Collections.binarySearch(this, tar) >= 0;
+  }
+  
+  /**
    * Inserts a new element with the given index, or updates the entry at a given
    * index if there is already one present.
    * 
