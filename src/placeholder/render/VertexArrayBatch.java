@@ -1,28 +1,26 @@
 package placeholder.render;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import placeholder.util.geometry.Matrix;
 
 /**
- *
+ * Uses a vertex array
  * @author russell
  */
-public final class RenderBatch {
+public final class VertexArrayBatch implements RenderingBatch {
 
-  public RenderBatch(RawBatch bat) {
+  @Override
+  public void compile(RawBatch bat) {
     assert bat.vertices.length > 0;
-    ByteBuffer vert = bat.vertices[0].getData();
-    stride = vert.limit();
-    elecnt = bat.vertices.length;
+    byte[] vert = bat.vertices[0].getData();
+    stride = vert.length;
     rendermode = bat.rendermode;
     vertcnt = bat.vertices.length;
     
     //create and populate the buffer with the vertex data
-    data = BufferUtils.createByteBuffer(vert.limit() * elecnt);
+    data = BufferUtils.createByteBuffer(vert.length * bat.vertices.length);
     for(int i = 0; i < bat.vertices.length; i++)
       data.put(bat.vertices[i].getData());
     data.flip();
@@ -30,10 +28,17 @@ public final class RenderBatch {
     //create the attribute definition.
     attrs = new ArrayList<>();
     for(Vertex.AttributeFormat form : bat.vertices[0].getFormat())
-      attrs.add(new AttributeDef(form, vert.limit()));
+      attrs.add(new AttributeDef(form, vert.length));
   }
   
-  public void draw(Matrix transform) {
+  @Override
+  public void draw() {
+//    GL11.glPushClientAttrib(
+//            GL11.GL_COLOR_ARRAY | 
+//            GL11.GL_VERTEX_ARRAY |
+//            GL11.GL_NORMAL_ARRAY |
+//            GL11.GL_COLOR_ARRAY);
+    
     //make sure that none of the arrays are enable accidentally
     GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
     GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -42,6 +47,7 @@ public final class RenderBatch {
     //enable the vertex array
     GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
     
+    //load the data into the vertex arrays
     for(AttributeDef def : attrs) {
       switch(def.array) {
         case GL11.GL_VERTEX_ARRAY:
@@ -64,26 +70,32 @@ public final class RenderBatch {
     }
     
     GL11.glDrawArrays(rendermode, 0, vertcnt);
+    
+//    GL11.glPopClientAttrib();
   }
   
+  //the size in bytes of the vertices
   private int stride;
   private int rendermode;
-  private int elecnt;
   private int vertcnt;
   private ArrayList<AttributeDef> attrs;
   private ByteBuffer data;
   
   private static class AttributeDef {
+    //the number of elements in the attribute e.g. 3 for 3D coordinates
+    public int size;
+    //the attribute value e.g. GL_VERTEX_ARRAY or GL_COLOR_ARRAY
+    public int array;
+    //the offset in bytes for the attribute from the start of each vertex
+    public int offset;
+    //the data type of the attribute e.g. GL_FLOAT or GL_BYTE
+    public int type;
+    
     public AttributeDef(Vertex.AttributeFormat format, int vertsize) {
       type = format.type;
       offset = format.offset;
       size = format.size;
       array = format.attribute;
     }
-    
-    public int size;
-    public int array;
-    public int offset;
-    public int type;
   }
 }

@@ -9,9 +9,11 @@ import java.nio.ByteOrder;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import placeholder.render.Vertex;
+import placeholder.util.FloatUtils;
+import placeholder.util.IntUtils;
 
 /**
- *
+ * Represents a position in world space with a defined color.
  * @author russell
  */
 public class ColorVertex implements Vertex{
@@ -29,17 +31,18 @@ public class ColorVertex implements Vertex{
   }
   
   @Override
-  public ByteBuffer getData() {
-    ByteBuffer data = BufferUtils.createByteBuffer(Float.SIZE * 3 / 8 + Integer.SIZE / 8);
-    data.order(ByteOrder.nativeOrder());
+  public byte[] getData() {
+    byte[] result = new byte[Float.SIZE * 3 / 8 + Integer.SIZE / 8];
     
-    data.putFloat(x);
-    data.putFloat(y);
-    data.putFloat(z);
-    data.putInt(color);
-    data.flip();
+    //encode position
+    FloatUtils.floatToBytes(x, result, 0, ByteOrder.nativeOrder());
+    FloatUtils.floatToBytes(y, result, 4, ByteOrder.nativeOrder());
+    FloatUtils.floatToBytes(z, result, 8, ByteOrder.nativeOrder());
     
-    return data;
+    //encode color
+    IntUtils.intToBytes(color, result, 12, ByteOrder.nativeOrder());
+    
+    return result;
   }
 
   @Override
@@ -48,7 +51,7 @@ public class ColorVertex implements Vertex{
   }
   
   private static AttributeFormat[] form = new AttributeFormat[] {
-    new AttributeFormat(GL11.GL_FLOAT, GL11.GL_VERTEX_ARRAY, Float.SIZE * 3 / 8, 0, 3),
-    new AttributeFormat(GL11.GL_UNSIGNED_BYTE, GL11.GL_COLOR_ARRAY, Integer.SIZE / 8, Float.SIZE * 3 / 8, 4)
+    new AttributeFormat(GL11.GL_FLOAT, GL11.GL_VERTEX_ARRAY, 0, 3),
+    new AttributeFormat(GL11.GL_UNSIGNED_BYTE, GL11.GL_COLOR_ARRAY, Float.SIZE * 3 / 8, 4)
   };
 }

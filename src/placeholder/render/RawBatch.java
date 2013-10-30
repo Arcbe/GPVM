@@ -9,6 +9,7 @@ package placeholder.render;
  * @author russell
  */
 public class RawBatch {
+  //TODO: add indices
   public Vertex[] vertices;
   public int rendermode;
 }

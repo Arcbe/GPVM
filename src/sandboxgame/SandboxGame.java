@@ -18,8 +18,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import placeholder.map.Region;
 import placeholder.render.RawBatch;
-import placeholder.render.RenderBatch;
+import placeholder.render.VertexArrayBatch;
 import placeholder.render.vertices.ColorVertex;
+import placeholder.testing.UtilTest;
 import placeholder.util.Settings;
 
 /**
@@ -27,11 +28,17 @@ import placeholder.util.Settings;
  * @author russell
  */
 public class SandboxGame {
+  
+  public static void doTesting() {
+    UtilTest.test();
+  }
 
   /**
    * @param args the command line arguments
    */
   public static void main(String[] args) throws LWJGLException {
+    doTesting();
+    
     Settings.loadStringBundle("text");
     
     //create the drawing batch
@@ -82,7 +89,8 @@ public class SandboxGame {
     
     bat.vertices = new ColorVertex[vertices.size()];
     vertices.toArray(bat.vertices);
-    RenderBatch renderer = new RenderBatch(bat);
+    VertexArrayBatch renderer = new VertexArrayBatch();
+    renderer.compile(bat);
     
     Display.setDisplayMode(new DisplayMode(800, 600));
     Display.create();
@@ -100,6 +108,7 @@ public class SandboxGame {
       if(Keyboard.isKeyDown(Keyboard.KEY_E)) z += delta;
       if(Keyboard.isKeyDown(Keyboard.KEY_D)) z -= delta;
       
+      GL11.glClearColor(1, 0, 1, 1);
       GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
       
       GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -109,7 +118,7 @@ public class SandboxGame {
       GL11.glLoadIdentity();
       GLU.gluLookAt(x, y, z, 8, 8, 8, 0, 0, 1);
       
-      renderer.draw(null);
+      renderer.draw();
       
       Display.update();
     }
