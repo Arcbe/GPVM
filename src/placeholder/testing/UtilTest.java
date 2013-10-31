@@ -38,6 +38,7 @@ public class UtilTest {
               arr[2] + "," +
               arr[3] + "," +
               arr[4] + "}");
+      return false;
     }
     
     float result = FloatUtils.bytesToFloat(arr, 1, ByteOrder.BIG_ENDIAN);

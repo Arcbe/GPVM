@@ -18,10 +18,14 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import placeholder.map.Region;
 import placeholder.render.RawBatch;
+import placeholder.render.TileInfo;
 import placeholder.render.VertexArrayBatch;
+import placeholder.render.renderers.ColorInfo;
+import placeholder.render.renderers.ColorRenderer;
 import placeholder.render.vertices.ColorVertex;
 import placeholder.testing.UtilTest;
 import placeholder.util.Settings;
+import placeholder.util.geometry.Coordinate;
 
 /**
  *
@@ -92,6 +96,18 @@ public class SandboxGame {
     VertexArrayBatch renderer = new VertexArrayBatch();
     renderer.compile(bat);
     
+    //create some tiles
+    TileInfo info = new TileInfo();
+    info.relativepos = new Coordinate(1, 1, 1);
+    info.info = new ColorInfo();
+    ((ColorInfo)info.info).color = Color.LIGHT_GRAY.getRGB();
+    
+    ArrayList<TileInfo> tiles = new ArrayList<TileInfo>();
+    tiles.add(info);
+    ColorRenderer cr = new ColorRenderer();
+    VertexArrayBatch rend2 = new VertexArrayBatch();
+    rend2.compile(cr.batchTiles(tiles)[0]);
+    
     Display.setDisplayMode(new DisplayMode(800, 600));
     Display.create();
     
@@ -119,6 +135,7 @@ public class SandboxGame {
       GLU.gluLookAt(x, y, z, 8, 8, 8, 0, 0, 1);
       
       renderer.draw();
+      rend2.draw();
       
       Display.update();
     }
