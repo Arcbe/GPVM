@@ -16,16 +16,17 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
-import placeholder.map.Region;
-import placeholder.render.RawBatch;
-import placeholder.render.TileInfo;
-import placeholder.render.VertexArrayBatch;
-import placeholder.render.renderers.ColorInfo;
-import placeholder.render.renderers.ColorRenderer;
-import placeholder.render.vertices.ColorVertex;
-import placeholder.testing.UtilTest;
-import placeholder.util.Settings;
-import placeholder.util.geometry.Coordinate;
+import gpvm.map.Region;
+import gpvm.render.RawBatch;
+import gpvm.render.RenderingSystem;
+import gpvm.render.TileInfo;
+import gpvm.render.VertexArrayBatch;
+import gpvm.render.renderers.ColorInfo;
+import gpvm.render.renderers.ColorRenderer;
+import gpvm.render.vertices.ColorVertex;
+import gpvm.testing.UtilTest;
+import gpvm.util.Settings;
+import gpvm.util.geometry.Coordinate;
 
 /**
  *
@@ -41,6 +42,13 @@ public class SandboxGame {
    * @param args the command line arguments
    */
   public static void main(String[] args) throws LWJGLException {
+    DisplayMode mode = new DisplayMode(800, 600);
+    
+    RenderingSystem.createSystem(mode);
+    RenderingSystem.getInstance().waitForClose();
+  }
+    
+  public static void stuff() {
     doTesting();
     
     Settings.loadStringBundle("text");
@@ -108,8 +116,8 @@ public class SandboxGame {
     VertexArrayBatch rend2 = new VertexArrayBatch();
     rend2.compile(cr.batchTiles(tiles)[0]);
     
-    Display.setDisplayMode(new DisplayMode(800, 600));
-    Display.create();
+    //Display.setDisplayMode(new DisplayMode(800, 600));
+    //Display.create();
     
     
     float x = 0;
