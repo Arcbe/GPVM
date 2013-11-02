@@ -4,6 +4,7 @@
  */
 package gpvm.render;
 
+import gpvm.map.GameMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
@@ -99,11 +100,17 @@ public class RenderingSystem {
     rendrunner = null;
     renderingthread = null;
   }
+
+  public void setMap(GameMap map) {
+    
+  }
   
   private Runner rendrunner;
   private Thread renderingthread;
   private DisplayMode mode;
   private Camera cam;
+  private MapRenderer renderer;
+  private GameMap map;
   
   private void render() {
     //clear color is magenta to indicate a problem. The clear color should not
@@ -114,7 +121,8 @@ public class RenderingSystem {
     //setup the camera
     cam.loadCamera();
     
-    
+    //now draw the map
+    renderer.render(cam);
   }
   
   private static RenderingSystem instance;

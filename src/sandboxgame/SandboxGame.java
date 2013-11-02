@@ -5,6 +5,8 @@
 package sandboxgame;
 
 import com.sun.xml.internal.ws.util.ByteArrayBuffer;
+import fallingsand.terrain.Generator;
+import gpvm.map.GameMap;
 import java.awt.Color;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -44,7 +46,11 @@ public class SandboxGame {
   public static void main(String[] args) throws LWJGLException {
     DisplayMode mode = new DisplayMode(800, 600);
     
+    GameMap map = new GameMap(new Generator());
+    map.loadRegion(new Coordinate());
+    
     RenderingSystem.createSystem(mode);
+    RenderingSystem.getInstance().setMap(map);
     RenderingSystem.getInstance().waitForClose();
   }
     

@@ -14,17 +14,31 @@ public final class Region {
    */
   public static final byte REGION_SIZE = 16;
   
-  Region() {
+  /**
+   * Constructs a region with only 
+   */
+  public Region() {
     tiles = new Tile[REGION_SIZE * REGION_SIZE * REGION_SIZE];
+    
+    for(int i = 0; i < tiles.length; i++)
+      tiles[i] = new Tile();
   }
   
-  Region(Tile[] data) {
+  public Region(Tile[] data) {
     assert data.length == REGION_SIZE * REGION_SIZE * REGION_SIZE;
     tiles = data;
   }
   
-  //retreives the tile at the given point.
-  private Tile getTile(byte x, byte y, byte z) {
+  /**
+   * Retrieves the tile at the given point.  The location is relative to the
+   * origin of the region and not the origin of the map.
+   * 
+   * @param x The x coordinate of the tile.
+   * @param y The y coordinate of the tile.
+   * @param z The z coordinate of the tile.
+   * @return The tile at the given point.
+   */
+  public Tile getTile(byte x, byte y, byte z) {
     return tiles[z * REGION_SIZE * REGION_SIZE + x * REGION_SIZE + y];
   }
   
