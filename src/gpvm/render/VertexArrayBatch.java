@@ -33,11 +33,11 @@ public final class VertexArrayBatch implements RenderingBatch {
   
   @Override
   public void draw() {
-//    GL11.glPushClientAttrib(
-//            GL11.GL_COLOR_ARRAY | 
-//            GL11.GL_VERTEX_ARRAY |
-//            GL11.GL_NORMAL_ARRAY |
-//            GL11.GL_COLOR_ARRAY);
+    GL11.glPushClientAttrib(
+            GL11.GL_COLOR_ARRAY | 
+            GL11.GL_VERTEX_ARRAY |
+            GL11.GL_NORMAL_ARRAY |
+            GL11.GL_COLOR_ARRAY);
     
     //make sure that none of the arrays are enable accidentally
     GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
@@ -71,7 +71,7 @@ public final class VertexArrayBatch implements RenderingBatch {
     
     GL11.glDrawArrays(rendermode, 0, vertcnt);
     
-//    GL11.glPopClientAttrib();
+    GL11.glPopClientAttrib();
   }
   
   //the size in bytes of the vertices

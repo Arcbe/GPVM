@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import gpvm.util.IntMap;
 
 /**
  *
  * @author russell
  */
 public final class TileRegistry {
+  public class ReadOnlyTileRegistry {
+    public boolean containsTileID(long id) {
+      return containsTileID(id);
+    }
+  }
 
   public TileRegistry() {
     init();

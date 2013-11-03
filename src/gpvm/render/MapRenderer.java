@@ -26,16 +26,18 @@ class MapRenderer {
   }
   
   public void renderGrid(boolean grid) {
+    rendgrid = grid;
   }
   
   public void render(Camera cam) {
-    if(map == null) return;
+    //if(map == null) return;
     
     //setup the matrices
-    GL11.glMatrixMode(GL11.GL_PROJECTION);
+    GL11.glMatrixMode(GL11.GL_MODELVIEW);
     GL11.glLoadIdentity();
     
-    
+    RegionRenderer reg = new RegionRenderer();
+    reg.render(rendgrid);
   }
   
   private GameMap map;

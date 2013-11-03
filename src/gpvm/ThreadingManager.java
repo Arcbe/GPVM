@@ -20,8 +20,8 @@ public class ThreadingManager {
     return instance;
   }
   
-  public boolean canRead() {
-    return !writing;
+  public boolean canWrite() {
+    return writing;
   }
   
   public void requestRead() {

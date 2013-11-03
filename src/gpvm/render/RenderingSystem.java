@@ -50,6 +50,7 @@ public class RenderingSystem {
   
   private RenderingSystem(DisplayMode mode) {
     this.mode = mode;
+    renderer = new MapRenderer(VertexArrayBatch.class);
     cam = new Camera();
     rendrunner = new Runner();
     renderingthread = new Thread(rendrunner);
@@ -122,6 +123,7 @@ public class RenderingSystem {
     cam.loadCamera();
     
     //now draw the map
+    renderer.renderGrid(true);
     renderer.render(cam);
   }
   

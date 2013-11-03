@@ -4,14 +4,12 @@
  */
 package sandboxgame;
 
-import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 import fallingsand.terrain.Generator;
+import gpvm.Registrar;
+import gpvm.ThreadingManager;
 import gpvm.map.GameMap;
 import java.awt.Color;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -19,6 +17,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import gpvm.map.Region;
+import gpvm.map.TileDefinition;
 import gpvm.render.RawBatch;
 import gpvm.render.RenderingSystem;
 import gpvm.render.TileInfo;
@@ -44,7 +43,19 @@ public class SandboxGame {
    * @param args the command line arguments
    */
   public static void main(String[] args) throws LWJGLException {
+    Settings.loadStringBundle("text");
+    
     DisplayMode mode = new DisplayMode(800, 600);
+    
+    ThreadingManager threads = ThreadingManager.getInstance();
+    threads.requestWrite();
+    
+    try {
+      Registrar regi = Registrar.getInstance();
+      long tid = regi.addTileEntry(new TileDefinition("Grass", "base.grass", (byte)0, true));
+    } finally {
+      threads.releaseWrite();
+    }
     
     GameMap map = new GameMap(new Generator());
     map.loadRegion(new Coordinate());
@@ -57,7 +68,6 @@ public class SandboxGame {
   public static void stuff() {
     doTesting();
     
-    Settings.loadStringBundle("text");
     
     //create the drawing batch
     RawBatch bat = new RawBatch();
