@@ -1,6 +1,6 @@
 package gpvm.render;
 
-import gpvm.util.IntMap;
+import java.util.HashMap;
 
 /**
  *
@@ -24,12 +24,12 @@ public final class RenderRegistry {
   }
   
   public RendererEntry getEntry(long tileid) {
-    return data.getEntry(tileid);
+    return data.get(tileid);
   }
   
   public void addEntry(RendererEntry entry, long tileid) {
-    data.insert(tileid, entry);
+    data.put(tileid, entry);
   }
   
-  private IntMap<RendererEntry> data;
+  private HashMap<Long, RendererEntry> data;
 }

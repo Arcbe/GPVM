@@ -8,6 +8,31 @@ package gpvm.map;
  * @author russell
  */
 public final class Tile {
+  public class ReadOnlyTile {
+    /**
+     * Returns a long integer that is the tile id for this tile.
+     */
+    public long getType() {
+      return type;
+    }
+    
+    /**
+     * Returns the current damage value of the tile.
+     */
+    public long getDamage() {
+      return damage;
+    }
+    
+    /**
+     * Returns a read only instance of the tile data for this tile.  If
+     * there is no data then this method will return null.
+     */
+    public TileData.ReadOnlyTileData getTileData() {
+      if(data == null) return null;
+      else return data.new ReadOnlyTileData();
+    }
+  }
+  
   public long type;
   public long damage;
   public TileData data;

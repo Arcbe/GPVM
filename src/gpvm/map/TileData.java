@@ -1,14 +1,18 @@
 package gpvm.map;
 
 import com.sun.istack.internal.logging.Logger;
-import gpvm.util.IntMap;
 import gpvm.util.Settings;
 import gpvm.util.error.UnknownDataType;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Contains an arbitrary set of named fields for a tile.
  */
 public final class TileData {
+  public class ReadOnlyTileData {
+    
+  }
   
   /**
    * Enumerates the available data types for the fields in the tile data.
@@ -53,13 +57,13 @@ public final class TileData {
     public static DataType getType(Object obj) {
       return DataType.valueOf(obj.getClass().getSimpleName());
     }
-  }
+  } //end DataType
 
   /**
    * Constructs an empty TileData.
    */
   public TileData() {
-    values = new IntMap<>();
+    values = new HashMap<>();
   }
 
   /**
@@ -67,7 +71,7 @@ public final class TileData {
    *
    * @return A list of all field names.
    */
-  public long[] getValueNames() {
+  public Set<Integer> getValueNames() {
     return values.keySet();
   }
   
@@ -90,7 +94,7 @@ public final class TileData {
   public DataType getType(int key) {
     assert isPresent(key);
     
-    return DataType.getType(values.getEntry(key));
+    return DataType.getType(values.get(key));
   }
 
   /**
@@ -103,7 +107,7 @@ public final class TileData {
   public float getFloatValue(int key) {
     assert isPresent(key);
     
-    Object value = values.getEntry(key);
+    Object value = values.get(key);
     assert value instanceof Float;
     return (Float) value;
   }
@@ -118,7 +122,7 @@ public final class TileData {
   public int getInteger(int key) {
     assert isPresent(key);
     
-    Object value = values.getEntry(key);
+    Object value = values.get(key);
     assert value instanceof Integer;
     return (Integer)value;
   }
@@ -133,7 +137,7 @@ public final class TileData {
   public String getString(int key) {
     assert isPresent(key);
     
-    Object value = values.getEntry(key);
+    Object value = values.get(key);
     assert value instanceof String;
     return (String)value;
   }
@@ -147,9 +151,9 @@ public final class TileData {
    */
   public void setString(int key, String value) {
     assert isPresent(key);
-    assert values.getEntry(key) instanceof String;
+    assert values.get(key) instanceof String;
     
-    values.insert(key, value);
+    values.put(key, value);
   }
   
   /**
@@ -161,9 +165,9 @@ public final class TileData {
    */
   public void setFloat(int key, float value) {
     assert isPresent(key);
-    assert values.getEntry(key) instanceof Float;
+    assert values.get(key) instanceof Float;
     
-    values.insert(key, value);
+    values.put(key, value);
   }
   
   /**
@@ -175,10 +179,10 @@ public final class TileData {
    */
   public void setInteger(int key, int value) {
     assert isPresent(key);
-    assert values.getEntry(key) instanceof Integer;
+    assert values.get(key) instanceof Integer;
     
-    values.insert(key, value);
+    values.put(key, value);
   }
   
-  private IntMap<Object> values;
+  private HashMap<Integer, Object> values;
 }
