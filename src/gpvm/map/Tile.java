@@ -8,7 +8,7 @@ package gpvm.map;
  * @author russell
  */
 public final class Tile {
-  long type;
-  long damage;
-  TileData data;
+  public long type;
+  public long damage;
+  public TileData data;
 }

@@ -46,6 +46,43 @@ public class GameMap {
     lmode = mode;
   }
   
+  public Tile getTile(Coordinate coor) {
+    Region reg = getRegion(coor);
+    
+    if(reg == null) return null;
+    
+    return reg.getTile(
+            (byte) (coor.x % Region.REGION_SIZE),
+            (byte) (coor.y % Region.REGION_SIZE),
+            (byte) (coor.z % Region.REGION_SIZE));
+  }
+  
+  public Tile[] getNeighborTiles(Coordinate coor) {
+    Tile[] tiles = new Tile[6];
+    
+    coor.x += 1;
+    tiles[Direction.West.getIndex()] = getTile(coor);
+    
+    coor.x -= 2;
+    tiles[Direction.East.getIndex()] = getTile(coor);
+    
+    coor.x += 1;
+    coor.y += 1;
+    tiles[Direction.North.getIndex()] = getTile(coor);
+    
+    coor.y -= 2;
+    tiles[Direction.South.getIndex()] = getTile(coor);
+    
+    coor.y += 1;
+    coor.z += 1;
+    tiles[Direction.Up.getIndex()] = getTile(coor);
+    
+    coor.z -= 2;
+    tiles[Direction.Down.getIndex()] = getTile(coor);
+    
+    return tiles;
+  }
+  
   /**
    * Returns a region of the map. Depending on loading mode this method may
    * return null if the region is not currently loaded.
@@ -54,7 +91,7 @@ public class GameMap {
    * @return The region of the map containing the given coordinate or null.
    */
   public Region getRegion(Coordinate coor) {
-    Coordinate rc = coor.getRegionCoordiante();
+    Coordinate rc = coor.getRegionCoordinate();
     Region result = loadedregions.get(rc);
     if(result != null) return result;
     
@@ -64,6 +101,46 @@ public class GameMap {
       //TODO: add loading code for other modes.
       return null;
   }
+  
+  public Region[] getNeighborRegions(Coordinate loc) {
+    //collect all of the neighboring regions
+    Coordinate coor = loc.getRegionCoordinate();
+    Region[] nbregions = new Region[6];
+    
+    coor.x += Region.REGION_SIZE;
+    if(loadedregions.containsKey(coor)) {
+      nbregions[Direction.West.getIndex()] = loadedregions.get(coor);
+    }
+    
+    coor.x -= 2 * Region.REGION_SIZE;
+    if(loadedregions.containsKey(coor)) {
+      nbregions[Direction.East.getIndex()] = loadedregions.get(coor);
+    }
+    
+    coor.x += Region.REGION_SIZE;
+    coor.y += Region.REGION_SIZE;
+    if(loadedregions.containsKey(coor)) {
+      nbregions[Direction.North.getIndex()] = loadedregions.get(coor);
+    }
+    
+    coor.y -= 2 * Region.REGION_SIZE;
+    if(loadedregions.containsKey(coor)) {
+      nbregions[Direction.South.getIndex()] = loadedregions.get(coor);
+    }
+    
+    coor.y += Region.REGION_SIZE;
+    coor.z += Region.REGION_SIZE;
+    if(loadedregions.containsKey(coor)) {
+      nbregions[Direction.Up.getIndex()] = loadedregions.get(coor);
+    }
+    
+    coor.z -= 2 * Region.REGION_SIZE;
+    if(loadedregions.containsKey(coor)) {
+      nbregions[Direction.West.getIndex()] = loadedregions.get(coor);
+    }
+    
+    return nbregions;
+  }
 
   /**
    * Cause a region to be loaded into memory. depending on loading mode
@@ -72,48 +149,14 @@ public class GameMap {
    * 
    * @return The new region or null
    */
-  public Region loadRegion(Coordinate coor) {
+  public Region loadRegion(Coordinate loc) {
     assert generator != null;
-    assert coor != null;
+    assert loc != null;
     
-    //collect all of the neighboring regions
-    Region[] nbregions = new Region[6];
-    
-    coor.x += 1;
-    if(loadedregions.containsKey(coor)) {
-      nbregions[Direction.West.getIndex()] = loadedregions.get(coor);
-    }
-    
-    coor.x -= 2;
-    if(loadedregions.containsKey(coor)) {
-      nbregions[Direction.East.getIndex()] = loadedregions.get(coor);
-    }
-    
-    coor.x += 1;
-    coor.y += 1;
-    if(loadedregions.containsKey(coor)) {
-      nbregions[Direction.North.getIndex()] = loadedregions.get(coor);
-    }
-    
-    coor.y -= 2;
-    if(loadedregions.containsKey(coor)) {
-      nbregions[Direction.South.getIndex()] = loadedregions.get(coor);
-    }
-    
-    coor.y += 1;
-    coor.z += 1;
-    if(loadedregions.containsKey(coor)) {
-      nbregions[Direction.Up.getIndex()] = loadedregions.get(coor);
-    }
-    
-    coor.z -= 2;
-    if(loadedregions.containsKey(coor)) {
-      nbregions[Direction.West.getIndex()] = loadedregions.get(coor);
-    }
+    Coordinate coor = loc.getRegionCoordinate();
     
     //finally generate the region
-    coor.z += 1;
-    Region newregion = generator.generateRegion(coor, nbregions);
+    Region newregion = generator.generateRegion(coor, getNeighborRegions(coor));
     loadedregions.put(coor, newregion);
     return newregion;
   }

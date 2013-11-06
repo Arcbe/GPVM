@@ -4,6 +4,7 @@
  */
 package gpvm.render;
 
+import gpvm.ThreadingManager;
 import gpvm.map.GameMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,7 +104,7 @@ public class RenderingSystem {
   }
 
   public void setMap(GameMap map) {
-    
+    renderer.setMap(map);
   }
   
   private Runner rendrunner;
@@ -121,6 +122,14 @@ public class RenderingSystem {
     
     //setup the camera
     cam.loadCamera();
+    
+    //update the rendering info if needed
+    ThreadingManager.getInstance().requestRead();
+    try {
+      renderer.update(cam);
+    } finally {
+      ThreadingManager.getInstance().releaseRead();
+    }
     
     //now draw the map
     renderer.renderGrid(true);

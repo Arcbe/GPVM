@@ -4,7 +4,6 @@
  */
 package gpvm;
 
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -21,7 +20,11 @@ public class ThreadingManager {
   }
   
   public boolean canWrite() {
-    return writing;
+    return lock.isWriteLockedByCurrentThread();
+  }
+  
+  public boolean canRead() {
+    return lock.getReadHoldCount() > 0;
   }
   
   public void requestRead() {
@@ -34,11 +37,9 @@ public class ThreadingManager {
   
   public void requestWrite() {
     lock.writeLock().lock();
-    writing = true;
   }
   
   public void releaseWrite() {
-    writing = false;
     lock.writeLock().unlock();
   }
   
@@ -46,8 +47,7 @@ public class ThreadingManager {
     lock = new ReentrantReadWriteLock();
   }
   
-  private boolean writing;
-  private ReadWriteLock lock;
+  private ReentrantReadWriteLock lock;
   
   private static ThreadingManager instance = new ThreadingManager();
 }

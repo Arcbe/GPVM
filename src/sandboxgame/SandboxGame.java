@@ -58,7 +58,6 @@ public class SandboxGame {
     }
     
     GameMap map = new GameMap(new Generator());
-    map.loadRegion(new Coordinate());
     
     RenderingSystem.createSystem(mode);
     RenderingSystem.getInstance().setMap(map);

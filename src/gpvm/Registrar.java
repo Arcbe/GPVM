@@ -21,6 +21,10 @@ public class Registrar {
     return tiles.new ReadOnlyTileRegistry();
   }
   
+  public RenderRegistry.ReadOnlyRenderRegistry getRenderRegistry() {
+    return render.new ReadOnlyRenderRegistry();
+  }
+  
   public long addTileEntry(TileDefinition def) {
     //check to make sure that writing is allowed
     if(!ThreadingManager.getInstance().canWrite())

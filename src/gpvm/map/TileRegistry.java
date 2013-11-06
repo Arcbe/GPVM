@@ -12,7 +12,11 @@ import java.util.Iterator;
 public final class TileRegistry {
   public class ReadOnlyTileRegistry {
     public boolean containsTileID(long id) {
-      return containsTileID(id);
+      return TileRegistry.this.containsTileID(id);
+    }
+    
+    public TileDefinition getDefinition(long tileid) {
+      return TileRegistry.this.getDefinition(tileid);
     }
   }
 

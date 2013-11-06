@@ -15,7 +15,7 @@ import gpvm.util.geometry.Coordinate;
 public class Generator implements MapGenerator {
   @Override
   public Region generateRegion(Coordinate coor, Region[] neighbors) {
-    Region result = new Region();
+    Region result = new Region(coor);
     
     //create the ground
     if(coor.z == 0) {

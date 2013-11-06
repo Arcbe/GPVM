@@ -67,7 +67,7 @@ public final class TileData {
    *
    * @return A list of all field names.
    */
-  public int[] getValueNames() {
+  public long[] getValueNames() {
     return values.keySet();
   }
   

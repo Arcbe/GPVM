@@ -18,11 +18,32 @@ public class Coordinate {
 
   public Coordinate() {
   }
+  
+  public Coordinate(Coordinate orig) {
+    x = orig.x;
+    y = orig.y;
+    z = orig.z;
+  }
 
   public Coordinate(int x, int y, int z) {
     this.x = x;
     this.y = y;
     this.z = z;
+  }
+  
+  public Coordinate add(int i, int j, int k) {
+    x += i;
+    y += j;
+    z += k;
+    
+    return this;
+  }
+  
+  public Coordinate add(int i, int j, int k, Coordinate out) {
+    out.x = x + i;
+    out.y = y + j;
+    out.z = z + k;
+    return out;
   }
   
   /**
@@ -31,7 +52,7 @@ public class Coordinate {
    * 
    * @return The resulting coordinate
    */
-  public Coordinate getRegionCoordiante() {
+  public Coordinate getRegionCoordinate() {
     return getRegionCoordinate(new Coordinate());
   }
   
