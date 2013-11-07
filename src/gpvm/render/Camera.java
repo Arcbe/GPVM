@@ -44,6 +44,11 @@ public class Camera {
    */
   public float far;
 
+  /**
+   * Creates a camera at the origin facing in the positive x direction with 
+   * the positive z direction being the up ward direction and a field of field
+   * of 60 degrees.
+   */
   public Camera() {
     position = new Vector3f(0,0,0);
     direction = new Vector3f(1,0,0);
@@ -53,11 +58,24 @@ public class Camera {
     far = 100;
   }
 
-  public Camera(Vector3f position, Vector3f direction, Vector3f up, float fov) {
+  /**
+   * Creates a new camera with the given parameters.
+   * 
+   * @param position The position of the camera.
+   * @param direction The direction that the camera is facing. This does not
+   * need to be normalized.
+   * @param up The upward direction of the camera.
+   * @param fov The field of view for the camera.
+   * @param near The distance for the near clipping pane.
+   * @param far The distance for the far clipping pane.
+   */
+  public Camera(Vector3f position, Vector3f direction, Vector3f up, float fov, float near, float far) {
     this.position = position;
     this.direction = direction;
     this.up = up;
     this.fov = fov;
+    this.near = near;
+    this.far = far;
   }
   
   /**

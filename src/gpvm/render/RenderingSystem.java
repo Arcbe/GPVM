@@ -103,6 +103,12 @@ public class RenderingSystem {
     renderingthread = null;
   }
 
+  /**
+   * Sets the {@link GameMap} that the rendering system is currently
+   * rendering.
+   * 
+   * @param map The new {@link GameMap} for the rendering system.
+   */
   public void setMap(GameMap map) {
     renderer.setMap(map);
   }

@@ -21,6 +21,7 @@ public class IntUtils {
    * @param in The int to convert
    * @param out The array to store the bytes in
    * @param offset The index in the array to start storing the bytes
+   * @param ord The byte order to use for encoding the int.
    * @return The given array with the float bytes added.
    */
   public static byte[] intToBytes(int in, byte[] out, int offset, ByteOrder ord) {
@@ -39,7 +40,8 @@ public class IntUtils {
    * at least offset + 5.
    * 
    * @param bytes The array of bytes to convert.
-   * @param offset The offset to the bytes in the array
+   * @param offset The offset to the bytes in the array.
+   * @param ord The byte order of the encode int.
    * @return The int represented by the bytes.
    */
   public static int bytesToFloat(byte[] bytes, int offset, ByteOrder ord) {

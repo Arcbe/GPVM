@@ -25,7 +25,6 @@ import gpvm.render.VertexArrayBatch;
 import gpvm.render.renderers.ColorInfo;
 import gpvm.render.renderers.ColorRenderer;
 import gpvm.render.vertices.ColorVertex;
-import gpvm.testing.UtilTest;
 import gpvm.util.Settings;
 import gpvm.util.geometry.Coordinate;
 
@@ -34,13 +33,10 @@ import gpvm.util.geometry.Coordinate;
  * @author russell
  */
 public class SandboxGame {
-  
-  public static void doTesting() {
-    UtilTest.test();
-  }
 
   /**
    * @param args the command line arguments
+   * @throws LWJGLException  
    */
   public static void main(String[] args) throws LWJGLException {
     Settings.loadStringBundle("text");
@@ -64,8 +60,10 @@ public class SandboxGame {
     RenderingSystem.getInstance().waitForClose();
   }
     
+  /**
+   *
+   */
   public static void stuff() {
-    doTesting();
     
     
     //create the drawing batch

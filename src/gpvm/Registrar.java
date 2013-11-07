@@ -13,18 +13,44 @@ import gpvm.util.Settings;
  */
 public class Registrar {
   
+  /**
+   * Returns the current instance of the Registrar.
+   * @return The current registrar
+   */
   public static Registrar getInstance() {
     return instance;
   }
   
+  /**
+   * Returns a read only copy of the {@link TileRegistry} used by the
+   * registrar.
+   * 
+   * @return A read only copy of the {@link TileRegistry}
+   */
   public TileRegistry.ReadOnlyTileRegistry getTileRegistry() {
     return tiles.new ReadOnlyTileRegistry();
   }
   
+  /**
+   * Returns a read only copy of the {@link RenderRegsitry} used by the
+   * registrar.
+   * 
+   * @return A read only copy of the {@link RenderRegistry}
+   */
   public RenderRegistry.ReadOnlyRenderRegistry getRenderRegistry() {
     return render.new ReadOnlyRenderRegistry();
   }
   
+  /**
+   * Adds an entry to the {@link TileRegistry} used by the registrar.
+   * This method can only be called while the write lock from the {@link ThreadingManager}
+   * is locked by the current thread.
+   * 
+   * @param def The {@link TileDefinition} to add to the registry.
+   * @return The TileID assigned to the new entry.
+   * @throws IllegalStateException If the write lock is not locked by the current
+   *    thread.
+   */
   public long addTileEntry(TileDefinition def) {
     //check to make sure that writing is allowed
     if(!ThreadingManager.getInstance().canWrite())
@@ -33,6 +59,16 @@ public class Registrar {
     return tiles.addDefition(def);
   }
   
+  /**
+   * Adds an entry to the {@link RenderRegistry} used by the registrar.
+   * This method can only be called while the write lock from the {@link ThreadingManager}
+   * is locked by the current thread.
+   * 
+   * @param entry The entry to add to the registry.
+   * @param tileid The id for the tile to assign the entry.
+   * @throws IllegalStateException If the write lock is not locked by the current
+   *    thread.
+   */
   public void addRenderingEntry(RenderRegistry.RendererEntry entry, int tileid) {
     //check to make sure that writing is allowed
     if(!ThreadingManager.getInstance().canWrite())

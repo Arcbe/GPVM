@@ -22,7 +22,9 @@ public final class Region {
   private final Coordinate location;
   
   /**
-   * Constructs a region with only 
+   * Constructs a region with only empty {@link Tile}.
+   * 
+   * @param loc The location in the map where this region lies.
    */
   public Region(Coordinate loc) {
     tiles = new Tile[REGION_SIZE * REGION_SIZE * REGION_SIZE];
@@ -34,6 +36,12 @@ public final class Region {
     listeners = new ConcurrentLinkedDeque<>();
   }
   
+  /**
+   * Constructs a region with the given {@link Tile} data.
+   * 
+   * @param data The data to use when creating the {@link Region}
+   * @param loc The location of the region in the map.
+   */
   public Region(Tile[] data, Coordinate loc) {
     assert data.length == REGION_SIZE * REGION_SIZE * REGION_SIZE;
     tiles = data;
@@ -41,10 +49,21 @@ public final class Region {
     listeners = new ConcurrentLinkedDeque<>();
   }
   
+  /**
+   * Adds a listener for events occurring in the {@link Region}.
+   * 
+   * @param list The listener to attach to the {@link Region}
+   */
   public void addListener(RegionListener list) {
     listeners.add(list);
   }
   
+  /**
+   * Returns the location of the {@link Region} in the map.  This is the
+   * same {@link Coordinate} that was given in the constructor.
+   * 
+   * @return The location of the {@link Region}
+   */
   public Coordinate getLocation() {
     return location;
   }
@@ -62,6 +81,9 @@ public final class Region {
     return tiles[z * REGION_SIZE * REGION_SIZE + x * REGION_SIZE + y];
   }
   
+  /**
+   * Informs the {@link Region} that is being unloaded.
+   */
   public void unload() {
     Iterator<RegionListener> it = listeners.iterator();
     while(it.hasNext()) {

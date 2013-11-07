@@ -10,16 +10,79 @@ import java.util.Set;
  * Contains an arbitrary set of named fields for a tile.
  */
 public final class TileData {
+  /**
+   * A read only instance of TileData.
+   */
   public class ReadOnlyTileData {
+    /**
+     * @param key 
+     * @return 
+     * @see TileData#isPresent(int)  
+     */
+    public boolean isPresent(int key) {
+      return TileData.this.isPresent(key);
+    }
     
+    /**
+     * @return 
+     * @see TileData#getValueID()  
+     */
+    public Set<Integer> getValueIDs() {
+      return TileData.this.getValueIDs();
+    }
+    
+    /**
+     * @param key 
+     * @return 
+     * @see TileData#getType(int)  
+     */
+    public DataType getType(int key) {
+      return TileData.this.getType(key);
+    }
+    
+    /**
+     * @param key 
+     * @return 
+     * @see TileData#getFloatValue(int) 
+     */
+    public float getFloatValue(int key) {
+      return TileData.this.getFloatValue(key);
+    }
+    
+    /**
+     * @param key 
+     * @return 
+     * @see TileData#getIntValue(int) 
+     */
+    public int getIntValue(int key) {
+      return TileData.this.getIntValue(key);
+    }
+    
+    /**
+     * @param key 
+     * @return 
+     * @see TileData#getStringValue(int) 
+     */
+    public String getStringValue(int key) {
+      return TileData.this.getStringValue(key);
+    }
   }
   
   /**
    * Enumerates the available data types for the fields in the tile data.
    */
   public enum DataType {
+    /**
+     *
+     */
     Integer((byte)0),
+    /**
+     *
+     */
     Float((byte)1),
+    /**
+     *
+     */
     String((byte)2);
     
     final byte value;
@@ -71,7 +134,7 @@ public final class TileData {
    *
    * @return A list of all field names.
    */
-  public Set<Integer> getValueNames() {
+  public Set<Integer> getValueIDs() {
     return values.keySet();
   }
   
@@ -119,7 +182,7 @@ public final class TileData {
    * @param key The id of an integer field
    * @return The value of the given field
    */
-  public int getInteger(int key) {
+  public int getIntValue(int key) {
     assert isPresent(key);
     
     Object value = values.get(key);
@@ -134,7 +197,7 @@ public final class TileData {
    * @param key The id of an String field
    * @return The value of the given field
    */
-  public String getString(int key) {
+  public String getStringValue(int key) {
     assert isPresent(key);
     
     Object value = values.get(key);

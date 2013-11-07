@@ -30,6 +30,11 @@ public class GameMap {
     buffered
   }
 
+  /**
+   * Creates a new map for the game.
+   * 
+   * @param gen The generator to use for loading new {@link Region}s of the map.
+   */
   public GameMap(MapGenerator gen) {
     assert gen != null;
     generator = gen;
@@ -46,6 +51,13 @@ public class GameMap {
     lmode = mode;
   }
   
+  /**
+   * Returns the {@link Tile} at the given coordinate.  If the tile is 
+   * no in a loaded chunk then this may return null depending on the loading mode.
+   * 
+   * @param coor The coordinate of the requested {@link Tile}
+   * @return The {@link Tile} at the given coordinate.
+   */
   public Tile getTile(Coordinate coor) {
     Region reg = getRegion(coor);
     
@@ -57,6 +69,15 @@ public class GameMap {
             (byte) (coor.z % Region.REGION_SIZE));
   }
   
+  /**
+   * Returns an array of all of the neighboring {@link Tile}s of a
+   * {@link Coordinate}.  The indices of the {@link Tile}s are the values from
+   * the {@link Direction} enum.
+   * 
+   * @param coor The coordinate to look up the neighbors for.
+   * @return The neighboring {@link Tile}s of the given coordinate.
+   * @see Direction#getIndex()
+   */
   public Tile[] getNeighborTiles(Coordinate coor) {
     Tile[] tiles = new Tile[6];
     
@@ -102,6 +123,15 @@ public class GameMap {
       return null;
   }
   
+  /**
+   * Returns an array of all of the neighboring {@link Region}s of a
+   * {@link Coordinate}.  The indices of the {@link Tile}s are the values from
+   * the {@link Direction} enum.
+   * 
+   * @param loc The coordinate to look up the neighbors for.
+   * @return The neighboring {@link Region}s of the given coordinate.
+   * @see Direction#getIndex()
+   */
   public Region[] getNeighborRegions(Coordinate loc) {
     //collect all of the neighboring regions
     Coordinate coor = loc.getRegionCoordinate();
@@ -147,6 +177,7 @@ public class GameMap {
    * this will either return the new region, or null if a delay loading
    * mode is selected.
    * 
+   * @param loc The coordinate of a tile within the region to be loaded.
    * @return The new region or null
    */
   public Region loadRegion(Coordinate loc) {

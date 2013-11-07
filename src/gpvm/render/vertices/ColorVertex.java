@@ -17,12 +17,32 @@ import gpvm.util.IntUtils;
  * @author russell
  */
 public class ColorVertex implements Vertex{
+  /**
+   * The position on the x axis of the {@link ColorVertex}.
+   */
   public float x;
+  /**
+   * The position on the y axis of the {@link ColorVertex}.
+   */
   public float y;
+  /**
+   * The position on the z axis of the {@link ColorVertex}.
+   */
   public float z;
   
+  /**
+   * The color of the vertex in the ARGB format.
+   */
   public int color;
 
+  /**
+   * Creates a new {@link ColorVertex} from the given values.
+   * 
+   * @param x The x coordinate.
+   * @param y The y coordinate.
+   * @param z The z coordinate.
+   * @param color The color of the vertex.
+   */
   public ColorVertex(float x, float y, float z, int color) {
     this.x = x;
     this.y = y;

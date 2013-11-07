@@ -43,6 +43,11 @@ public enum Direction {
     this.value = value;
   }
   
+  /**
+   * Returns an integer associated with each direction.  This is the
+   * index that will be used for arrays that store neighboring objects.
+   * @return 
+   */
   public int getIndex() {
     return value;
   }

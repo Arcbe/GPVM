@@ -10,24 +10,54 @@ import java.util.Iterator;
  * @author russell
  */
 public final class TileRegistry {
+  /**
+   * An instance of a TileRegistry with only function that can read its state.
+   */
   public class ReadOnlyTileRegistry {
+    /**
+     * @see TileRegistry#containsTileID(long) 
+     * @param id
+     * @return 
+     */
     public boolean containsTileID(long id) {
       return TileRegistry.this.containsTileID(id);
     }
     
+    /**
+     * @see TileRegistry#getDefinition(long) 
+     * @param tileid
+     * @return 
+     */
     public TileDefinition getDefinition(long tileid) {
       return TileRegistry.this.getDefinition(tileid);
     }
   }
 
+  /**
+   * Creates an empty {@link TileRegistry}.
+   */
   public TileRegistry() {
     init();
   }
   
+  /**
+   * Checks whether a certain tile id has a {@link TileDefinition}
+   * associate with it.
+   * 
+   * @param id The id to check.
+   * @return Whether there is a {@link TileDefinition}
+   */
   public boolean containsTileID(long id) {
     return curindex > id;
   }
   
+  /**
+   * Adds a new {@link TileDefinition} to this registry and assigns is 
+   * a base Tile id.
+   * 
+   * @param def The {@link TileDefinition} to add.
+   * @return The tile id assigned to the {@link TileDefinition}
+   */
   public long addDefition(TileDefinition def) {
     //The tile metadata is store in the id, so 
     long newid = curindex;

@@ -21,6 +21,7 @@ public final class FloatUtils {
    * @param in The float to convert
    * @param out The array to store the bytes in
    * @param offset The index in the array to start storing the bytes
+   * @param ord The byte ordering to use when encoding the float
    * @return The given array with the float bytes added.
    */
   public static byte[] floatToBytes(float in, byte[] out, int offset, ByteOrder ord) {
@@ -40,6 +41,7 @@ public final class FloatUtils {
    * 
    * @param bytes The array of bytes to convert.
    * @param offset The offset to the bytes in the array
+   * @param ord The byte order of the encode float
    * @return The float represented by the bytes.
    */
   public static float bytesToFloat(byte[] bytes, int offset, ByteOrder ord) {

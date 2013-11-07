@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gpvm.render;
 
 import com.sun.istack.internal.logging.Logger;
@@ -17,16 +13,21 @@ import gpvm.util.Settings;
 import gpvm.util.geometry.Coordinate;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.SortedSet;
-import java.util.logging.Level;
 import org.lwjgl.opengl.GL11;
 
 /**
- *
+ * A renderer for a {@link Region} in the {@link GameMap}.
+ * 
  * @author russell
  */
 public class RegionRenderer implements RegionListener {
 
+  /**
+   * Creates a new {@link RegionRenderer} for the target region.
+   * 
+   * @param target The {@link Region} that will be rendered.
+   * @param gmap The {@link GameMap} that this region is a part of.
+   */
   public RegionRenderer(Region target, GameMap gmap) {
     reg = target;
     reg.addListener(this);
@@ -36,6 +37,12 @@ public class RegionRenderer implements RegionListener {
     dirty = true;
   }
   
+  /**
+   * Renders the target {@link Region} and optionally a green grid at the
+   * border of the {@link Region}.
+   * 
+   * @param grid Whether to also render a grid around the region.
+   */
   public void render(boolean grid) {
     assert !unloaded;
     
@@ -44,6 +51,10 @@ public class RegionRenderer implements RegionListener {
     }
   }
   
+  /**
+   * Allows the {@link RegionRenderer} to update itself if there was a recent
+   * change to the {@link Region}.
+   */
   public void update() {
     if(!dirty) return;
     assert !unloaded;

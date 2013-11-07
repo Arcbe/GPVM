@@ -54,6 +54,14 @@ public interface Vertex {
      */
     public final int size;
 
+    /**
+     * Constructs a new attribute format.
+     * 
+     * @param type The type of the attribute
+     * @param attribute The enum for hte attribute
+     * @param offset The offset within the vertex for the attribute
+     * @param size The number of values associated with the attribute.
+     */
     public AttributeFormat(int type, int attribute, int offset, int size) {
       this.type = type;
       this.attribute = attribute;
