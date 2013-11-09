@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
- *
+ * A registry of all {@link TileDefinition} indexed by tile id.  This class
+ * also assigns ids to {@link TileDefinition} when they are added and allows
+ * ids to be looked by canonical name.
+ * 
  * @author russell
  */
 public final class TileRegistry {
+  
   /**
    * An instance of a TileRegistry with only function that can read its state.
    */
@@ -31,6 +36,51 @@ public final class TileRegistry {
     public TileDefinition getDefinition(long tileid) {
       return TileRegistry.this.getDefinition(tileid);
     }
+    
+    /**
+     * @see TileRegistry#getTileID(java.lang.String) 
+     * @param tileid
+     * @return 
+     */
+    public long getTileID(String str) {
+      return TileRegistry.this.getTileID(str);
+    }
+    
+    /**
+     * @see TileRegistry#getTileIDs(java.lang.String[]) 
+     * @param tileid
+     * @return 
+     */
+    public long[] getTileIDs(String ... names) {
+      return TileRegistry.this.getTileIDs(names);
+    }
+    
+    /**
+     * @see TileRegistry#getTileIDs(java.util.Collection) 
+     * @param tileid
+     * @return 
+     */
+    public long[] getTileIDs(Collection<String> names) {
+      return TileRegistry.this.getTileIDs(names);
+    }
+    
+    /**
+     * @see TileRegistry#getTileIDs() 
+     * @param tileid
+     * @return 
+     */
+    public long[] getTileIDs() {
+      return TileRegistry.this.getTileIDs();
+    }
+  }
+  
+  /**
+   * Adds a listener for changes in the structure of the {@link TileRegistry}.
+   * 
+   * @param list The listener to add.
+   */
+  public void addListener(TileRegistryListener list) {
+    listeners.add(list);
   }
 
   /**
@@ -49,6 +99,17 @@ public final class TileRegistry {
    */
   public boolean containsTileID(long id) {
     return curindex > id;
+  }
+  
+  /**
+   * Removes all entries in this registry.
+   */
+  public void clear() {
+    curindex = 1;
+    tileids.clear();
+    tiles.clear();
+    
+    fireRegCleared();
   }
   
   /**
@@ -72,6 +133,7 @@ public final class TileRegistry {
     tiles.add(newent);
     
     tileids.put(def.canonname, newid);
+    fireAddedDefinition(def, newid);
     
     return newid;
   }
@@ -131,10 +193,40 @@ public final class TileRegistry {
     return result;
   }
   
+  /**
+   * Returns a list of all registered tile ids.
+   * 
+   * @return A list of all tile ids.
+   */
+  public long[] getTileIDs() {
+    Collection<Long> keys = tileids.values();
+    
+    long[] result = new long[keys.size()];
+    
+    Iterator<Long> it = keys.iterator();
+    for(int i = 0; i < result.length; i++) {
+      result[i] = it.next();
+    }
+    
+    return result;
+  }
+  
   private void init() {
     curindex = 1;
     tiles = new ArrayList<>();
     tileids = new HashMap<>();
+    listeners = new ArrayList<>();
+  }
+  
+  private void fireRegCleared() {
+    for(TileRegistryListener l : listeners)
+      l.registryCleared();
+  }
+  
+  private void fireAddedDefinition(TileDefinition def, long id) {
+    for(TileRegistryListener l: listeners) {
+      l.entryAdded(def, id);
+    }
   }
   
   // finds the index in the array of entrys for that id.
@@ -164,6 +256,7 @@ public final class TileRegistry {
   private long curindex;
   private ArrayList<TileEntry> tiles;
   private HashMap<String, Long> tileids;
+  private ArrayList<TileRegistryListener> listeners;
   
   private static class TileEntry {
     public long TileID;

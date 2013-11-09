@@ -1,7 +1,9 @@
 package gpvm;
 
+import gpvm.editor.panels.TileRegistryPanel;
 import gpvm.map.TileDefinition;
 import gpvm.map.TileRegistry;
+import gpvm.map.TileRegistryListener;
 import gpvm.render.RenderRegistry;
 import gpvm.util.Settings;
 
@@ -86,4 +88,8 @@ public class Registrar {
   }
   
   private static Registrar instance = new Registrar();
+
+  public void addTileRegistryListener(TileRegistryListener list) {
+    tiles.addListener(list);
+  }
 }

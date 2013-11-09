@@ -7,6 +7,7 @@ package sandboxgame;
 import fallingsand.terrain.Generator;
 import gpvm.Registrar;
 import gpvm.ThreadingManager;
+import gpvm.editor.panels.TileRegistryPanel;
 import gpvm.map.GameMap;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import gpvm.render.renderers.ColorRenderer;
 import gpvm.render.vertices.ColorVertex;
 import gpvm.util.Settings;
 import gpvm.util.geometry.Coordinate;
+import javax.swing.JFrame;
 
 /**
  *
@@ -40,6 +42,9 @@ public class SandboxGame {
    */
   public static void main(String[] args) throws LWJGLException {
     Settings.loadStringBundle("text");
+    
+    //set up editor
+    editorinit();
     
     DisplayMode mode = new DisplayMode(800, 600);
     
@@ -58,6 +63,17 @@ public class SandboxGame {
     RenderingSystem.createSystem(mode);
     RenderingSystem.getInstance().setMap(map);
     RenderingSystem.getInstance().waitForClose();
+  }
+  
+  public static void editorinit() {
+    JFrame editorframe = new JFrame("Editor");
+    
+    TileRegistryPanel trpanel = new TileRegistryPanel();
+    editorframe.add(trpanel);
+    
+    editorframe.setSize(400, 400);
+    editorframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    editorframe.setVisible(true);
   }
     
   /**
