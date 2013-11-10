@@ -19,7 +19,7 @@ public class Generator implements MapGenerator {
     
     //create the ground
     if(coor.z == 0) {
-      
+      result.getTile(0, 0, 0).type = 1;
     //create the below ground
     } else if (coor.z < 0) {
       

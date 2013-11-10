@@ -1,10 +1,12 @@
 package gpvm;
 
+import gpvm.editor.panels.RenderRegistryPanel;
 import gpvm.editor.panels.TileRegistryPanel;
 import gpvm.map.TileDefinition;
 import gpvm.map.TileRegistry;
 import gpvm.map.TileRegistryListener;
 import gpvm.render.RenderRegistry;
+import gpvm.render.RenderRegistryListener;
 import gpvm.util.Settings;
 
 /**
@@ -71,12 +73,32 @@ public class Registrar {
    * @throws IllegalStateException If the write lock is not locked by the current
    *    thread.
    */
-  public void addRenderingEntry(RenderRegistry.RendererEntry entry, int tileid) {
+  public void addRenderingEntry(RenderRegistry.RendererEntry entry, long tileid) {
     //check to make sure that writing is allowed
     if(!ThreadingManager.getInstance().canWrite())
       throw new IllegalStateException(Settings.getLocalString("err_writing_not_allowed"));
     
     render.addEntry(entry, tileid);
+  }
+
+  /**
+   * Adds a listeners to the TileRegistry contained within this {@link Registrar}.
+   * 
+   * @param list The listener to add.
+   * @see TileRegistry#addListener(gpvm.map.TileRegistryListener) 
+   */
+  public void addTileRegistryListener(TileRegistryListener list) {
+    tiles.addListener(list);
+  }
+
+  /**
+   * Adds a listener to the RenderRegistry contained within this {@link Registrar}.
+   * 
+   * @param list The listener to add.
+   * @see RenderRegistry#addListener(gpvm.render.RenderRegistryListener) 
+   */
+  public void addRenderRegistryListener(RenderRegistryListener list) {
+    render.addListener(list);
   }
   
   private TileRegistry tiles;
@@ -88,8 +110,4 @@ public class Registrar {
   }
   
   private static Registrar instance = new Registrar();
-
-  public void addTileRegistryListener(TileRegistryListener list) {
-    tiles.addListener(list);
-  }
 }

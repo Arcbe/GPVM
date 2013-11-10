@@ -5,6 +5,7 @@
 package gpvm.render.renderers;
 
 import gpvm.render.RenderInfo;
+import java.awt.Color;
 
 /**
  * A simple instance of {@link RenderInfo} that contains only a color
@@ -17,4 +18,16 @@ public class ColorInfo implements RenderInfo {
    * integer is in the ARGB format.
    */
   public int color;
+  
+  public ColorInfo() {
+    color = Color.magenta.getRGB();
+  }
+  
+  public ColorInfo(Color color) {
+    this(color.getRGB());
+  }
+  
+  public ColorInfo(int color) {
+    this.color = color;
+  }
 }

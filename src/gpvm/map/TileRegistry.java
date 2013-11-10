@@ -122,7 +122,7 @@ public final class TileRegistry {
   public long addDefition(TileDefinition def) {
     //The tile metadata is store in the id, so 
     long newid = curindex;
-    curindex += 1 << def.metadata;
+    curindex += def.metadata + 1;
     
     //insert the new entry at the end of the array
     //since the new id will always be higher than all previous ids the tiles

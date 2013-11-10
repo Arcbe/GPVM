@@ -7,6 +7,7 @@ package sandboxgame;
 import fallingsand.terrain.Generator;
 import gpvm.Registrar;
 import gpvm.ThreadingManager;
+import gpvm.editor.panels.RenderRegistryPanel;
 import gpvm.editor.panels.TileRegistryPanel;
 import gpvm.map.GameMap;
 import java.awt.Color;
@@ -20,6 +21,7 @@ import org.lwjgl.util.glu.GLU;
 import gpvm.map.Region;
 import gpvm.map.TileDefinition;
 import gpvm.render.RawBatch;
+import gpvm.render.RenderRegistry;
 import gpvm.render.RenderingSystem;
 import gpvm.render.TileInfo;
 import gpvm.render.VertexArrayBatch;
@@ -29,6 +31,7 @@ import gpvm.render.vertices.ColorVertex;
 import gpvm.util.Settings;
 import gpvm.util.geometry.Coordinate;
 import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 
 /**
  *
@@ -53,7 +56,15 @@ public class SandboxGame {
     
     try {
       Registrar regi = Registrar.getInstance();
-      long tid = regi.addTileEntry(new TileDefinition("Grass", "base.grass", (byte)0, true));
+      
+      //add some tiles
+      long tid = regi.addTileEntry(new TileDefinition("Grass", "base.grass", 0, true));
+      regi.addTileEntry(new TileDefinition("Dirt", "base.dirt", 0, true));
+      regi.addTileEntry(new TileDefinition("Stone", "base.stone", 1 << 24, true));
+      regi.addTileEntry(new TileDefinition("bananas", "base.b", 0, false));
+      
+      //now create add some rendering info
+      regi.addRenderingEntry(new RenderRegistry.RendererEntry(ColorRenderer.class, new ColorInfo(Color.GREEN)), tid);
     } finally {
       threads.releaseWrite();
     }
@@ -66,12 +77,17 @@ public class SandboxGame {
   }
   
   public static void editorinit() {
-    JFrame editorframe = new JFrame("Editor");
+    JFrame editorframe = new JFrame("Registrar");
+    JTabbedPane content = new JTabbedPane();
+    editorframe.add(content);
     
     TileRegistryPanel trpanel = new TileRegistryPanel();
-    editorframe.add(trpanel);
+    content.add(trpanel);
     
-    editorframe.setSize(400, 400);
+    RenderRegistryPanel rendreg = new RenderRegistryPanel();
+    content.add(rendreg);
+    
+    editorframe.setSize(800, 400);
     editorframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     editorframe.setVisible(true);
   }

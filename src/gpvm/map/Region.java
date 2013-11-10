@@ -77,7 +77,7 @@ public final class Region {
    * @param z The z coordinate of the tile.
    * @return The tile at the given point.
    */
-  public Tile getTile(byte x, byte y, byte z) {
+  public Tile getTile(int x, int y, int z) {
     return tiles[z * REGION_SIZE * REGION_SIZE + x * REGION_SIZE + y];
   }
   
