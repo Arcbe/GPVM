@@ -5,6 +5,7 @@
 package gpvm.render;
 
 import gpvm.ThreadingManager;
+import gpvm.input.InputSystem;
 import gpvm.map.GameMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -102,6 +103,16 @@ public class RenderingSystem {
     rendrunner = null;
     renderingthread = null;
   }
+  
+  /**
+   * Checks whether the rendering thread is alive and the {@link RenderingSystem}
+   * is updating the window.
+   * 
+   * @return Whether the rendering thread is alive.
+   */
+  public boolean isRunning() {
+    return renderingthread.isAlive();
+  }
 
   /**
    * Sets the {@link GameMap} that the rendering system is currently
@@ -111,6 +122,25 @@ public class RenderingSystem {
    */
   public void setMap(GameMap map) {
     renderer.setMap(map);
+  }
+  
+  /**
+   * Sets the {@link Camera} that will be used to create the projection matrix
+   * for rendering.
+   * 
+   * @param camera The {@link Camera} for the rendering system to use.
+   */
+  public void setCamera(Camera camera) {
+    cam = camera;
+  }
+  
+  /**
+   * Returns the camera that is currently in use by the {@link RenderingSystem}.
+   * 
+   * @return The current {@link Camera}
+   */
+  public Camera getCamera() {
+    return cam;
   }
   
   private Runner rendrunner;
@@ -161,6 +191,7 @@ public class RenderingSystem {
           if(!pause)
             render();
           
+          InputSystem.getInstance().pump();
           Display.update();
         }
       } catch (LWJGLException ex) {

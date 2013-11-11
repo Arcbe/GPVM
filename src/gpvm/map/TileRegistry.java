@@ -38,6 +38,15 @@ public final class TileRegistry {
     }
     
     /**
+     * @see TileRegistry#getEntry(long) 
+     * @param id
+     * @return 
+     */
+    public TileEntry getEntry(long id) {
+      return TileRegistry.this.getEntry(id);
+    }
+    
+    /**
      * @see TileRegistry#getTileID(java.lang.String) 
      * @param tileid
      * @return 
@@ -72,6 +81,10 @@ public final class TileRegistry {
     public long[] getTileIDs() {
       return TileRegistry.this.getTileIDs();
     }
+    
+    public long getBaseID(long id) {
+      return TileRegistry.this.getBaseID(id);
+    }
   }
   
   /**
@@ -88,6 +101,9 @@ public final class TileRegistry {
    */
   public TileRegistry() {
     init();
+    
+    //create a definition for air tiles.
+    airdef = new TileDefinition("Air", "Air", 0, false);
   }
   
   /**
@@ -127,9 +143,7 @@ public final class TileRegistry {
     //insert the new entry at the end of the array
     //since the new id will always be higher than all previous ids the tiles
     //ArrayList will always be sorted.
-    TileEntry newent = new TileEntry();
-    newent.TileID = newid;
-    newent.def = def;
+    TileEntry newent = new TileEntry(newid, def);
     tiles.add(newent);
     
     tileids.put(def.canonname, newid);
@@ -145,12 +159,24 @@ public final class TileRegistry {
    * @return The definition of the tile.
    */
   public TileDefinition getDefinition(long id) {
-    assert curindex > id;
-    
-    return tiles.get(getArrayIndex(id)).def;
+    if(id == 0) return airdef;
+    return getEntry(id).def;
   }
   
-  
+  /**
+   * Returns the entry for a given tile id.  This will include both the
+   * {@link TileDefinition} and the base id for that definition.
+   * 
+   * @param id The id of the {@link TileDefinition} to look up.
+   * @return The requested tile.
+   */
+  public TileEntry getEntry(long id) {
+    assert containsTileID(id);
+    
+    if(id == 0) return null;
+    
+    return tiles.get(getArrayIndex(id));
+  }
   
   /**
    * Returns the tile id associated with a given name.
@@ -210,6 +236,16 @@ public final class TileRegistry {
     
     return result;
   }
+
+  /**
+   * Gets the base index for a given tileid.
+   * 
+   * @param id The tile id to find the base id for
+   * @return The base id of the given tileid without metadata.
+   */
+  private long getBaseID(long id) {
+    return tiles.get(getArrayIndex(id)).TileID;
+  }
   
   private void init() {
     curindex = 1;
@@ -229,9 +265,10 @@ public final class TileRegistry {
     }
   }
   
-  // finds the index in the array of entrys for that id.
-  // Basially a binary search that checks for a range of values for each id.
   private int getArrayIndex(long id) {
+    //0 is a special case for an empty tile.
+    if(id == 0) return 0;
+    
     int start = 0;
     int end = tiles.size() - 1;
     
@@ -257,9 +294,15 @@ public final class TileRegistry {
   private ArrayList<TileEntry> tiles;
   private HashMap<String, Long> tileids;
   private ArrayList<TileRegistryListener> listeners;
+  private TileDefinition airdef;
   
-  private static class TileEntry {
-    public long TileID;
-    public TileDefinition def;
+  public static class TileEntry {
+    public final long TileID;
+    public final TileDefinition def;
+
+    public TileEntry(long TileID, TileDefinition def) {
+      this.TileID = TileID;
+      this.def = def;
+    }
   }
 }

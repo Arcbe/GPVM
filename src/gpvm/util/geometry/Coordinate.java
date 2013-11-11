@@ -74,6 +74,21 @@ public class Coordinate {
   }
   
   /**
+   * Adds the given {@link Coordinate} to this {@link Coordinate} and 
+   * returns a reference to this {@link Coordinate}
+   * 
+   * @param cor The {@link Coordinate} to add to this one.
+   * @return This {@link Coordinate} after the addition.
+   */
+  public Coordinate add(Coordinate cor) {
+    x += cor.x;
+    y += cor.y;
+    z += cor.z;
+    
+    return this;
+  }
+  
+  /**
    * Adds the given value to this {@link Coordinate}, but stores the
    * result in the given coordinate without modifying the this one.
    * 

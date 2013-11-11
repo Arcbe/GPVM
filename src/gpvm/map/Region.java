@@ -78,6 +78,13 @@ public final class Region {
    * @return The tile at the given point.
    */
   public Tile getTile(int x, int y, int z) {
+    assert x < REGION_SIZE;
+    assert y < REGION_SIZE;
+    assert z < REGION_SIZE;
+    assert x > 0;
+    assert y > 0;
+    assert z > 0;
+    
     return tiles[z * REGION_SIZE * REGION_SIZE + x * REGION_SIZE + y];
   }
   

@@ -11,10 +11,11 @@ import java.util.HashMap;
 import org.lwjgl.opengl.GL11;
 
 /**
- *
+ * Handles the rendering of a GameMap.
+ * 
  * @author russell
  */
-final class MapRenderer {
+public final class MapRenderer {
   public MapRenderer(Class<? extends RenderingBatch> renderer) {
     rendgrid = false;
     drawlist = new ArrayList<>();
@@ -33,7 +34,7 @@ final class MapRenderer {
     renderclass = renderer;
     
     for(RegionRenderer rend : renderers.values()) {
-      rend.setRenderingBatch(renderclass);
+      rend.setRenderBatch(renderclass);
     }
   }
   
@@ -43,7 +44,16 @@ final class MapRenderer {
   
   public void update(Camera cam) {
     drawlist.clear();
-    drawlist.add(new RegionRenderer(map.getRegion(new Coordinate()),map));
+    
+    if(renderers.containsKey(new Coordinate())) {
+      drawlist.add(renderers.get(new Coordinate()));
+    } else {
+      RegionRenderer rend = new RegionRenderer(map.getRegion(new Coordinate()), map);
+      rend.setRenderBatch(renderclass);
+      rend.update();
+      renderers.put(new Coordinate(), rend);
+      drawlist.add(rend);
+    }
   }
   
   public void render(Camera cam) {

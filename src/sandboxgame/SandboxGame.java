@@ -9,6 +9,8 @@ import gpvm.Registrar;
 import gpvm.ThreadingManager;
 import gpvm.editor.panels.RenderRegistryPanel;
 import gpvm.editor.panels.TileRegistryPanel;
+import gpvm.input.InputSystem;
+import gpvm.input.KeyListener;
 import gpvm.map.GameMap;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import gpvm.map.Region;
 import gpvm.map.TileDefinition;
+import gpvm.render.Camera;
 import gpvm.render.RawBatch;
 import gpvm.render.RenderRegistry;
 import gpvm.render.RenderingSystem;
@@ -30,8 +33,12 @@ import gpvm.render.renderers.ColorRenderer;
 import gpvm.render.vertices.ColorVertex;
 import gpvm.util.Settings;
 import gpvm.util.geometry.Coordinate;
+import gpvm.util.geometry.Direction;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
+import org.lwjgl.util.vector.Matrix3f;
+import org.lwjgl.util.vector.Quaternion;
+import org.lwjgl.util.vector.Vector3f;
 
 /**
  *
@@ -43,7 +50,7 @@ public class SandboxGame {
    * @param args the command line arguments
    * @throws LWJGLException  
    */
-  public static void main(String[] args) throws LWJGLException {
+  public static void main(String[] args) throws LWJGLException, InterruptedException {
     Settings.loadStringBundle("text");
     
     //set up editor
@@ -73,8 +80,58 @@ public class SandboxGame {
     
     RenderingSystem.createSystem(mode);
     RenderingSystem.getInstance().setMap(map);
-    RenderingSystem.getInstance().waitForClose();
+    
+    moving = new Vector3f();
+    direction = new Matrix3f();
+    
+    KeyListener list = new KeyListener() {
+
+      @Override
+      public void keyPressed(int code) {
+        switch(code) {
+          case Keyboard.KEY_W: moving.y = .1f; break;
+          case Keyboard.KEY_A: moving.x = -.1f; break;
+          case Keyboard.KEY_S: moving.y = -.1f; break;
+          case Keyboard.KEY_D: moving.x = .1f; break;
+          case Keyboard.KEY_Q: moving.z = .1f; break;
+          case Keyboard.KEY_E: moving.z = -.1f; break;
+        }
+      }
+
+      @Override
+      public void keyReleased(int code) {
+        switch(code) {
+          case Keyboard.KEY_W: moving.y = 0; break;
+          case Keyboard.KEY_A: moving.x = 0; break;
+          case Keyboard.KEY_S: moving.y = 0; break;
+          case Keyboard.KEY_D: moving.x = 0; break;
+          case Keyboard.KEY_Q: moving.z = 0; break;
+          case Keyboard.KEY_E: moving.z = 0; break;
+        }
+      }
+    };
+    
+    InputSystem.getInstance().addKeyListener(Keyboard.KEY_W, list);
+    InputSystem.getInstance().addKeyListener(Keyboard.KEY_A, list);
+    InputSystem.getInstance().addKeyListener(Keyboard.KEY_S, list);
+    InputSystem.getInstance().addKeyListener(Keyboard.KEY_D, list);
+    InputSystem.getInstance().addKeyListener(Keyboard.KEY_Q, list);
+    InputSystem.getInstance().addKeyListener(Keyboard.KEY_E, list);
+    
+    Camera cam = RenderingSystem.getInstance().getCamera();
+    while(RenderingSystem.getInstance().isRunning()) {
+      cam.position.z += moving.z;
+      cam.position.y += moving.y;
+      cam.position.x += moving.x;
+      
+      Thread.sleep(10);
+    }
+    
+    System.exit(0);
   }
+  
+  private static Vector3f moving;
+  private static Matrix3f direction;
   
   public static void editorinit() {
     JFrame editorframe = new JFrame("Registrar");

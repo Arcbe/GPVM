@@ -13,6 +13,11 @@ import gpvm.util.Settings;
 import gpvm.util.geometry.Coordinate;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -20,7 +25,7 @@ import org.lwjgl.opengl.GL11;
  * 
  * @author russell
  */
-public class RegionRenderer implements RegionListener {
+public final class RegionRenderer implements RegionListener {
 
   /**
    * Creates a new {@link RegionRenderer} for the target region.
@@ -35,6 +40,107 @@ public class RegionRenderer implements RegionListener {
     
     unloaded = false;
     dirty = true;
+    drawables = new ArrayList<>();
+    tiles = new HashMap<>();
+    
+    scanRegion();
+  }
+  
+  /**
+   * Clears all rendering data and regenerates it from the map.
+   */
+  public void scanRegion() {
+    //clear all of the data
+    drawables.clear();
+    tiles.clear();
+    
+    Coordinate curloc = new Coordinate();
+    
+    //construct the various tile infos.
+    for(byte i = 0; i < Region.REGION_SIZE; i++) {
+      for(byte j = 0; j < Region.REGION_SIZE; j++) {
+        for(byte k = 0; k < Region.REGION_SIZE; k++) {
+          curloc.x = i;
+          curloc.y = j;
+          curloc.z = k;
+          Tile tile = map.getTile(curloc.add(reg.getLocation()));
+          
+          //the region should be loaded so no null tiles
+          //and air tiles are not rendered.
+          assert tile != null;
+          if(tile.type == 0) continue;
+          
+          //construct and populate the tile info.
+          TileInfo info = new TileInfo();
+          info.adjacenttiles = map.getNeighborTiles(curloc);
+          
+          //there has to be at least one non opaque adjacent tile inorder to render the tile
+          boolean visible = false;
+          for(Tile t : info.adjacenttiles) {
+            if(t.type == 0 || 
+                    !Registrar.getInstance().getTileRegistry().getDefinition(t.type).opaque) {
+              visible = true;
+              break;
+            }
+          }
+          if(!visible) continue;
+          
+          TileRegistry.TileEntry ent = Registrar.getInstance().getTileRegistry().getEntry(tile.type);
+          info.absolutepos = new Coordinate(curloc);
+          info.definition = ent.def;
+          info.relativepos = new Coordinate(i, j, k);
+          info.tile = tile;
+          info.info = Registrar.getInstance().getRenderRegistry().getEntry(ent.TileID).info;
+          
+          tiles.put(new Coordinate(curloc), info);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Runs through the list of tiles and creates {@link RenderingBatch}s for them.
+   */
+  public void createRenderers() {
+    drawables.clear();
+    
+    Collection<TileInfo> ts = tiles.values();
+    boolean[] processed = new boolean[ts.size()];
+    
+    TileRegistry.ReadOnlyTileRegistry tr = Registrar.getInstance().getTileRegistry();
+    RenderRegistry.ReadOnlyRenderRegistry rr = Registrar.getInstance().getRenderRegistry();
+    
+    int ind = 0;
+    for(TileInfo tile : ts) {
+      if(processed[ind]) continue;
+      
+      //when an un processed tile is found collect all of the ones that use the same renderer.
+      int j = 0;
+      ArrayList<TileInfo> infos = new ArrayList<>();
+      Class<? extends TileRenderer> renderer = rr.getEntry(tr.getBaseID(tile.tile.type)).renderer;
+      for(TileInfo col : ts) {
+        if(renderer == rr.getEntry(tr.getBaseID(col.tile.type)).renderer) {
+          processed[j] = true;
+          infos.add(col);
+        }
+        j++;
+      }
+      try {
+        //now that we have all of the tiles time to be the rendering batch
+        TileRenderer rend = renderer.newInstance();
+        RawBatch[] raws = rend.batchTiles(infos);
+        
+        for(RawBatch bat : raws) {
+          RenderingBatch finbat = renderclass.newInstance();
+          finbat.compile(bat);
+          drawables.add(finbat);
+        }
+      } catch (IllegalAccessException | InstantiationException ex) {
+        java.util.logging.Logger.getLogger(RegionRenderer.class.getName()).log(Level.SEVERE, Settings.getLocalString("err_invalid_renderer"), ex);
+      }
+      
+      ind++;
+    }
   }
   
   /**
@@ -49,6 +155,10 @@ public class RegionRenderer implements RegionListener {
     if(grid) {
       getGrid().draw();
     }
+    
+    for(RenderingBatch bat : drawables) {
+      bat.draw();
+    }
   }
   
   /**
@@ -59,94 +169,13 @@ public class RegionRenderer implements RegionListener {
     if(!dirty) return;
     assert !unloaded;
     
-    ArrayList<TileInfo> tiles = new ArrayList<>();
-    ArrayList<Class<? extends TileRenderer>> renderers = new ArrayList<>();
-    Coordinate loc = reg.getLocation();
+    createRenderers();
     
-    //get the info for all of the tiles in the region.
-    for(byte i = 0; i < Region.REGION_SIZE; i++) {
-      for(byte j = 0; j < Region.REGION_SIZE; j++) {
-        for(byte k = 0; k < Region.REGION_SIZE; k++) {
-          Tile tile = map.getTile(loc.add(i, j, k));
-          if(tile == null) continue;
-          
-          //check the to see if the tile is visible
-          Tile[] nbtiles = map.getNeighborTiles(loc);
-          TileRegistry.ReadOnlyTileRegistry tregis = Registrar.getInstance().getTileRegistry();
-          boolean visible = false;
-          for(Tile t : nbtiles) {
-            if(t == null) {
-              visible = true;
-              break;
-            }
-            
-            TileDefinition def = tregis.getDefinition(t.type);
-            if(!def.opaque) {
-              visible = true;
-              break;
-            }
-          }
-          
-          if(!visible) continue;
-          
-          //now start populating the tile info for rendering.
-          TileInfo info = new TileInfo();
-          info.absolutepos = loc.add(i, j, k, new Coordinate());
-          info.adjacenttiles = map.getNeighborTiles(info.absolutepos);
-          info.definition = tregis.getDefinition(tile.type);
-          info.relativepos = new Coordinate(i, j, k);
-          info.tile = tile;
-          
-          RenderRegistry.RendererEntry entry = Registrar.getInstance().getRenderRegistry().getEntry(tile.type);
-          info.info = entry.info;
-          
-          tiles.add(info);
-          renderers.add(entry.renderer);
-        }
-      }
-    }
-    
-    assert tiles.size() == renderers.size();
-    boolean[] checks = new boolean[tiles.size()];
-    for(int i = 0; i < checks.length; i++) checks[i] = false;
-    
-    ArrayList<TileInfo> refined = new ArrayList<>();
-    for(int i = 0; i < tiles.size(); i++) {
-      if(checks[i]) continue;
-      Class<? extends TileRenderer> currend = renderers.get(i);
-      
-      TileRenderer rend = null;
-      try {
-        rend = currend.newInstance();
-      } catch(InstantiationException | IllegalAccessException ex) {
-        Logger.getLogger(RegionRenderer.class).severe(Settings.getLocalString("err_invalid_renderer"), ex);
-        continue;
-      }
-      
-      refined.clear();
-      //go through and collect all of the tile infos.
-      for(int j = i; j < tiles.size(); j++) {
-        if(renderers.get(j).equals(currend)) {
-          checks[j] = true;
-          refined.add(tiles.get(j));
-        }
-      }
-      
-      RawBatch[] bats = rend.batchTiles(refined);
-      
-      for(RawBatch tar : bats) {
-        RenderingBatch fin;
-        try {
-          fin = renderclass.newInstance();
-        } catch (IllegalAccessException | InstantiationException ex) {
-          Logger.getLogger(RegionRenderer.class).severe(Settings.getLocalString("err_invalid_renderer"), ex);
-          return;
-        }
-        
-        fin.compile(tar);
-        drawables.add(fin);
-      }
-    }
+    dirty = false;
+  }
+  
+  public void setRenderBatch(Class<? extends RenderingBatch> batclass) {
+    renderclass = batclass;
   }
 
   @Override
@@ -165,6 +194,7 @@ public class RegionRenderer implements RegionListener {
   private GameMap map;
   private Class<? extends RenderingBatch> renderclass;
   private ArrayList<RenderingBatch> drawables;
+  private Map<Coordinate, TileInfo> tiles;
   
   private static VertexArrayBatch grid;
   
@@ -221,9 +251,5 @@ public class RegionRenderer implements RegionListener {
     grid.compile(bat);
     
     return grid;
-  }
-
-  void setRenderingBatch(Class<? extends RenderingBatch> renderclass) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 }

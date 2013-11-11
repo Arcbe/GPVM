@@ -63,10 +63,16 @@ public class GameMap {
     
     if(reg == null) return null;
     
-    return reg.getTile(
-            (byte) (coor.x % Region.REGION_SIZE),
-            (byte) (coor.y % Region.REGION_SIZE),
-            (byte) (coor.z % Region.REGION_SIZE));
+    byte x = (byte) (coor.x % Region.REGION_SIZE);
+    byte y = (byte) (coor.y % Region.REGION_SIZE);
+    byte z = (byte) (coor.z % Region.REGION_SIZE);
+    
+    //make sure that they are not negative
+    if(x < 0) x += Region.REGION_SIZE;
+    if(y < 0) y += Region.REGION_SIZE;
+    if(z < 0) z += Region.REGION_SIZE;
+    
+    return reg.getTile(x, y, z);
   }
   
   /**
@@ -100,6 +106,7 @@ public class GameMap {
     
     coor.z -= 2;
     tiles[Direction.Down.getIndex()] = getTile(coor);
+    coor.z += 1;
     
     return tiles;
   }
