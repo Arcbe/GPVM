@@ -36,7 +36,7 @@ public class Settings {
     assert bundle != null && bundle.containsKey(key);
     
     if(bundle == null) {
-      throw new NullPointerException("No resource bundle has been loaded.");
+      throw new NullPointerException(java.util.ResourceBundle.getBundle("text").getString("NO RESOURCE BUNDLE HAS BEEN LOADED."));
     }
     
     return bundle.getString(key);

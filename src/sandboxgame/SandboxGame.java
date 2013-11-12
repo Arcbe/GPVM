@@ -11,6 +11,7 @@ import gpvm.editor.panels.RenderRegistryPanel;
 import gpvm.editor.panels.TileRegistryPanel;
 import gpvm.input.InputSystem;
 import gpvm.input.KeyListener;
+import gpvm.io.YAMLLoader;
 import gpvm.map.GameMap;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -33,11 +34,11 @@ import gpvm.render.renderers.ColorRenderer;
 import gpvm.render.vertices.ColorVertex;
 import gpvm.util.Settings;
 import gpvm.util.geometry.Coordinate;
-import gpvm.util.geometry.Direction;
+import java.io.File;
+import java.net.URISyntaxException;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import org.lwjgl.util.vector.Matrix3f;
-import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
 
 /**
@@ -50,8 +51,13 @@ public class SandboxGame {
    * @param args the command line arguments
    * @throws LWJGLException  
    */
-  public static void main(String[] args) throws LWJGLException, InterruptedException {
+  public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException {
     Settings.loadStringBundle("text");
+    
+    //test the loading code
+    
+    YAMLLoader loader = new YAMLLoader();
+    loader.loadFile(new File(ClassLoader.getSystemResource("mod/modinfo.yml").toURI()));
     
     //set up editor
     editorinit();
