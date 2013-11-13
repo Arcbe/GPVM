@@ -4,13 +4,14 @@
  */
 package sandboxgame;
 
-import fallingsand.terrain.Generator;
+import hyperion.Generator;
 import gpvm.Registrar;
 import gpvm.ThreadingManager;
 import gpvm.editor.panels.RenderRegistryPanel;
 import gpvm.editor.panels.TileRegistryPanel;
 import gpvm.input.InputSystem;
 import gpvm.input.KeyListener;
+import gpvm.io.DataLoader;
 import gpvm.io.YAMLLoader;
 import gpvm.map.GameMap;
 import java.awt.Color;
@@ -23,6 +24,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import gpvm.map.Region;
 import gpvm.map.TileDefinition;
+import gpvm.modding.ModManager;
 import gpvm.render.Camera;
 import gpvm.render.RawBatch;
 import gpvm.render.RenderRegistry;
@@ -57,7 +59,7 @@ public class SandboxGame {
     //test the loading code
     
     YAMLLoader loader = new YAMLLoader();
-    loader.loadFile(new File(ClassLoader.getSystemResource("mod/modinfo.yml").toURI()));
+    DataLoader.registerLoader(loader, "yml", "yaml");
     
     //set up editor
     editorinit();
@@ -66,6 +68,9 @@ public class SandboxGame {
     
     ThreadingManager threads = ThreadingManager.getInstance();
     threads.requestWrite();
+    
+    ModManager mods = new ModManager();
+    mods.findMods();
     
     try {
       Registrar regi = Registrar.getInstance();

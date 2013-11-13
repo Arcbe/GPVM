@@ -1,3 +1,5 @@
 ## YAML Template.
 ---
 name: base
+map-generator: hyperion.Generator
+mod-class: hyperion.ModHandler
