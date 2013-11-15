@@ -2,6 +2,7 @@
 package gpvm.io;
 
 import gpvm.util.Settings;
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,6 +51,10 @@ public final class DataNode {
     return values.get(name).getClass();
   }
   
+  public boolean isType(String name, Class type) {
+    return contains(name) && values.get(name).getClass().equals(type);
+  }
+  
   /**
    * Returns the value associated with the given name.  If either the value
    * does not exist or is the wrong data type a warning is logged, and null is returned
@@ -64,6 +69,16 @@ public final class DataNode {
     }
     
     return (T) values.get(name);
+  }
+
+  /**
+   * Returns a {@link Collection} of all the field names that have data
+   * associated with them.
+   * 
+   * @return A {@link Collection} of all the field names.
+   */
+  public Collection<String> getValues() {
+    return values.keySet();
   }
   
   private Map<String, Object> values;

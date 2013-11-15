@@ -20,7 +20,7 @@ package gpvm.modding;
  * 
  * @author russell
  */
-public abstract class ModLoader {
+public abstract class ModController {
   protected Mod parent;
   
   /**

@@ -36,7 +36,6 @@ import gpvm.render.renderers.ColorRenderer;
 import gpvm.render.vertices.ColorVertex;
 import gpvm.util.Settings;
 import gpvm.util.geometry.Coordinate;
-import java.io.File;
 import java.net.URISyntaxException;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -51,26 +50,25 @@ public class SandboxGame {
 
   /**
    * @param args the command line arguments
-   * @throws LWJGLException  
+   * @throws LWJGLException
    */
   public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException {
     Settings.loadStringBundle("text");
     
-    //test the loading code
-    
+    //set up the data loaders for the game
     YAMLLoader loader = new YAMLLoader();
     DataLoader.registerLoader(loader, "yml", "yaml");
     
-    //set up editor
-    editorinit();
+    //set up launcher
+    launcherInit();
     
     DisplayMode mode = new DisplayMode(800, 600);
     
     ThreadingManager threads = ThreadingManager.getInstance();
     threads.requestWrite();
     
-    ModManager mods = new ModManager();
-    mods.findMods();
+    
+    ModManager.getInstance().findMods();
     
     try {
       Registrar regi = Registrar.getInstance();
@@ -144,7 +142,7 @@ public class SandboxGame {
   private static Vector3f moving;
   private static Matrix3f direction;
   
-  public static void editorinit() {
+  public static void launcherInit() {
     JFrame editorframe = new JFrame("Registrar");
     JTabbedPane content = new JTabbedPane();
     editorframe.add(content);

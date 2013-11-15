@@ -29,8 +29,18 @@ import java.util.logging.Logger;
  * @author russell
  */
 public class ModManager {
-  public ModManager() {
-    mods = new ArrayList<>();
+  public static ModManager getInstance() {
+    return instance;
+  }
+  
+  public ArrayList<Mod.ModIdentifier> getFoundMods() {
+    ArrayList<Mod.ModIdentifier> result = new ArrayList<>();
+    
+    for(Mod m : mods) {
+      result.add(m.getIdentifier());
+    }
+    
+    return result;
   }
   
   public void findMods() {
@@ -62,6 +72,12 @@ public class ModManager {
   }
   
   private ArrayList<Mod> mods;
+  
+  private ModManager() {
+    mods = new ArrayList<>();
+  }
+  
+  private static ModManager instance = new ModManager();
   
   private static class ModVisitor implements FileVisitor<Path> {
     public PathMatcher jar;

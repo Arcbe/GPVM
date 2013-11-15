@@ -4,13 +4,13 @@
  */
 package hyperion;
 
-import gpvm.modding.ModLoader;
+import gpvm.modding.ModController;
 
 /**
  *
  * @author russell
  */
-public class ModHandler extends ModLoader {
+public class ModHandler extends ModController {
 
   @Override
   public void initialize() {
