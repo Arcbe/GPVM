@@ -1,0 +1,7 @@
+## YAML Template.
+---
+
+Grass:
+  canonicalname: grass
+  opaque: yes
+  metadata: 0

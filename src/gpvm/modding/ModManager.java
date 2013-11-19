@@ -17,6 +17,8 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,14 +35,22 @@ public class ModManager {
     return instance;
   }
   
-  public ArrayList<Mod.ModIdentifier> getFoundMods() {
-    ArrayList<Mod.ModIdentifier> result = new ArrayList<>();
+  public Mod.ModIdentifier[] getFoundMods() {
+    Mod.ModIdentifier[] result = new Mod.ModIdentifier[mods.size()];
     
-    for(Mod m : mods) {
-      result.add(m.getIdentifier());
-    }
+    int index = 0;
+    for(Mod m : mods.values())
+      result[index++] = m.getIdentifier();
     
     return result;
+  }
+
+  public Mod getMod(Mod.ModIdentifier id) {
+    return getMod(id.name);
+  }
+  
+  public Mod getMod(String id) {
+    return mods.get(id);
   }
   
   public void findMods() {
@@ -55,26 +65,31 @@ public class ModManager {
       Files.walkFileTree(files.getPath("."), mvisit);
     } catch (IOException ex) {
       //this error should not happen.
-      Logger.getLogger(ModManager.class.getName()).log(Level.SEVERE, null, ex);
+      log.log(Level.SEVERE, null, ex);
     }
     
-    //go through all of the possible mod infos.
+    //go through all of the possible mod infos in the file system.
     for(Path path : mvisit.mods) {
       try {
         Mod m = Mod.createMod(path);
-        mods.add(m);
-      } catch (FileNotFoundException ex) {
-        Logger.getLogger(ModManager.class.getName()).log(Level.SEVERE, null, ex);
-      } catch (MalformedURLException ex) {
-        Logger.getLogger(ModManager.class.getName()).log(Level.SEVERE, null, ex);
+        
+        Mod.ModIdentifier id = m.getIdentifier();
+        if(mods.containsKey(id.name)) {
+          
+        }
+        
+        mods.put(m.getIdentifier().name, m);
+      } catch (FileNotFoundException | MalformedURLException ex) {
+        log.log(Level.SEVERE, null, ex);
       }
     }
   }
   
-  private ArrayList<Mod> mods;
+  private Map<String, Mod> mods;
+  private static final Logger log = Logger.getLogger(ModManager.class.getName());
   
   private ModManager() {
-    mods = new ArrayList<>();
+    mods = new HashMap<>();
   }
   
   private static ModManager instance = new ModManager();
@@ -106,8 +121,7 @@ public class ModManager {
 
     @Override
     public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-      String msg = String.format(Settings.getLocalString("warn_invalid_file"), file);
-      Logger.getLogger(ModManager.class.getCanonicalName()).log(Level.WARNING, msg, exc);
+      log.log(Level.WARNING, Settings.getLocalString("warn_invalid_file"), file);
       return FileVisitResult.CONTINUE;
     }
 

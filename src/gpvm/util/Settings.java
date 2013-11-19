@@ -4,7 +4,6 @@
  */
 package gpvm.util;
 
-import com.sun.istack.internal.logging.Logger;
 import java.util.ResourceBundle;
 
 /**
@@ -14,6 +13,7 @@ import java.util.ResourceBundle;
  */
 public class Settings {
   private static ResourceBundle bundle;
+  private static String bundlename;
   
   /**
    * Loads the resource bundle for strings using the default locale.
@@ -22,6 +22,11 @@ public class Settings {
    */
   public static void loadStringBundle(String name) {
     bundle = ResourceBundle.getBundle(name);
+    bundlename = name;
+  }
+  
+  public static String getStringBundleName() {
+    return bundlename;
   }
   
   /**

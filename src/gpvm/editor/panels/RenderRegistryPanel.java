@@ -7,7 +7,6 @@ import gpvm.map.TileRegistryListener;
 import gpvm.render.RenderInfo;
 import gpvm.render.RenderRegistry;
 import gpvm.render.RenderRegistryListener;
-import gpvm.render.TileRenderer;
 import gpvm.util.Settings;
 import java.util.ArrayList;
 import java.util.Collections;

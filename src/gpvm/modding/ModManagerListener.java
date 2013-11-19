@@ -4,12 +4,13 @@
  */
 package gpvm.modding;
 
-import javax.swing.JPanel;
-
 /**
  *
  * @author russell
  */
-public class ModManagerListener extends JPanel{
-  
+public class ModManagerListener {
+  public ModManagerListener() {
+    
+  }
 }
+

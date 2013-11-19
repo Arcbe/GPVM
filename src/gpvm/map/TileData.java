@@ -1,10 +1,11 @@
 package gpvm.map;
 
-import com.sun.istack.internal.logging.Logger;
 import gpvm.util.Settings;
 import gpvm.util.error.UnknownDataType;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Contains an arbitrary set of named fields for a tile.
@@ -104,7 +105,7 @@ public final class TileData {
         case Float: return Float.class;
         case String: return String.class;
         default:
-          Logger.getLogger(DataType.class).severe(Settings.getLocalString("err_unknown_data_type"));
+          Logger.getLogger(DataType.class.getName()).log(Level.SEVERE, Settings.getLocalString("err_unknown_data_type"));
           throw new UnknownDataType();
       }
     }

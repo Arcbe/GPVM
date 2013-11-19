@@ -39,6 +39,12 @@ public final class Mod {
       this.name = name;
       this.version = version;
     }
+  
+    @Override
+    public String toString() {
+      if(version == null) return name;
+      return String.format("%s %s", name, version);
+    }
   }
   
   public boolean validate() {
@@ -55,6 +61,12 @@ public final class Mod {
   
   public ModIdentifier getIdentifier() {
     return new ModIdentifier(name, version);
+  }
+  
+  @Override
+  public String toString() {
+    if(version == null) return name;
+    return String.format("%s %s", name, version);
   }
   
   /**

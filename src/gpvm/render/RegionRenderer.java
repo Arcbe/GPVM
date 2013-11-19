@@ -1,12 +1,10 @@
 package gpvm.render;
 
-import com.sun.istack.internal.logging.Logger;
 import gpvm.Registrar;
 import gpvm.map.GameMap;
 import gpvm.map.Region;
 import gpvm.map.RegionListener;
 import gpvm.map.Tile;
-import gpvm.map.TileDefinition;
 import gpvm.map.TileRegistry;
 import gpvm.render.vertices.ColorVertex;
 import gpvm.util.Settings;
@@ -15,7 +13,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import org.lwjgl.opengl.GL11;

@@ -46,7 +46,7 @@ public final class DataLoader {
    * @throws FileNotFoundException Thrown if the file is either not present or
    * it is not a readable file.
    */
-  public static DataNode loadFile(File data) throws FileNotFoundException {
+  public static DataNode loadFile(File data) throws FileNotFoundException, InvalidDataFileException {
     //check to make sure that the file is actually present;
     if(!data.canRead() || !data.isFile()) {
       throw new FileNotFoundException();
@@ -70,7 +70,7 @@ public final class DataLoader {
     }
     
     //if nothing works return null.
-    return null;
+    throw new InvalidDataFileException();
   }
   
   private static Map<String, DataFileLoader> loaders = new HashMap<>();

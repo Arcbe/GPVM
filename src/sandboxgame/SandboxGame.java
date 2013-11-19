@@ -7,6 +7,7 @@ package sandboxgame;
 import hyperion.Generator;
 import gpvm.Registrar;
 import gpvm.ThreadingManager;
+import gpvm.editor.panels.ModInformationPanel;
 import gpvm.editor.panels.RenderRegistryPanel;
 import gpvm.editor.panels.TileRegistryPanel;
 import gpvm.input.InputSystem;
@@ -37,8 +38,12 @@ import gpvm.render.vertices.ColorVertex;
 import gpvm.util.Settings;
 import gpvm.util.geometry.Coordinate;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -54,10 +59,18 @@ public class SandboxGame {
    */
   public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException {
     Settings.loadStringBundle("text");
+    try {
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+      Logger.getLogger(SandboxGame.class.getName()).log(Level.SEVERE, null, ex);
+    }
     
     //set up the data loaders for the game
     YAMLLoader loader = new YAMLLoader();
     DataLoader.registerLoader(loader, "yml", "yaml");
+    
+    //find the mods.
+    ModManager.getInstance().findMods();
     
     //set up launcher
     launcherInit();
@@ -68,7 +81,6 @@ public class SandboxGame {
     threads.requestWrite();
     
     
-    ModManager.getInstance().findMods();
     
     try {
       Registrar regi = Registrar.getInstance();
@@ -152,6 +164,9 @@ public class SandboxGame {
     
     RenderRegistryPanel rendreg = new RenderRegistryPanel();
     content.add(rendreg);
+    
+    ModInformationPanel mods = new ModInformationPanel();
+    content.add(mods);
     
     editorframe.setSize(800, 400);
     editorframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
