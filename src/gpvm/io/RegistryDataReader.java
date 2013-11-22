@@ -4,6 +4,8 @@
  */
 package gpvm.io;
 
+import gpvm.Registrar;
+import gpvm.ThreadingManager;
 import gpvm.map.TileDefinition;
 import gpvm.util.Settings;
 import java.io.File;
@@ -24,6 +26,7 @@ public class RegistryDataReader {
   public void loadTileRegistryData(File in, String namespace) throws FileNotFoundException, InvalidDataFileException {
     DataNode data = DataLoader.loadFile(in);
     
+    ThreadingManager.getInstance().requestWrite();
     for(String val : data.getValues()) {
       if(!data.isType(val, DataNode.class)) {
         log.log(Level.WARNING, Settings.getLocalString("err_unknown_tile_data"), val);
@@ -38,8 +41,13 @@ public class RegistryDataReader {
       int metadata = 0;
       if(cur.isType(METADATA_FIELD, Integer.class)) metadata = cur.getValue(METADATA_FIELD);
       
-      TileDefinition def = new TileDefinition(val, canonname, metadata, true)
+      boolean opaque = true;
+      if(cur.isType(OPAQUE_FIELD, Boolean.class)) opaque = cur.getValue(OPAQUE_FIELD);
+      
+      TileDefinition def = new TileDefinition(val, canonname, metadata, opaque);
+      Registrar.getInstance().addTileEntry(def);
     }
+    ThreadingManager.getInstance().releaseWrite();
   }
   
   private static final Logger log = Logger.getLogger(RegistryDataReader.class.getName());

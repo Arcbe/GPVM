@@ -11,7 +11,10 @@ import gpvm.modding.ModManager;
 import gpvm.util.Settings;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -31,6 +34,7 @@ public class ModInformationPanel extends JPanel{
   public ModInformationPanel() {
     super(new BorderLayout(PADDING, PADDING));
     setName(Settings.getLocalString("panel_name_mod_information"));
+    loaded = false;
     
     //create the list of mods
     modlist = new JList<>(ModManager.getInstance().getFoundMods());
@@ -51,13 +55,27 @@ public class ModInformationPanel extends JPanel{
       public void valueChanged(ListSelectionEvent e) {
         if(e.getValueIsAdjusting()) return;
         
-        display.displayMod(ModManager.getInstance().getMod(modlist.getSelectedValue()));
+        current = ModManager.getInstance().getMod(modlist.getSelectedValue());
+        display.displayMod(current);
+        
+        if(current != null && !loaded) load.setEnabled(true);
       }
     });
+    
+    //create the panel for buttons
+    load = new JButton(Settings.getLocalString("button_load_mod"));
+    load.setEnabled(false);
+    JPanel bot = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    
+    bot.add(load);
+    add(bot, BorderLayout.SOUTH);
   }
   
+  private JButton load;
   private ModInfoDisplay display;
   private JList<ModIdentifier> modlist;
+  private Mod current;
+  private boolean loaded;
   
   private static class ModInfoDisplay extends JPanel {
     public static int NUM_COLS = 2;
