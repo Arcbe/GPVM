@@ -5,6 +5,7 @@
 package gpvm.util;
 
 import java.util.ResourceBundle;
+import org.lwjgl.opengl.DisplayMode;
 
 /**
  * Loads and stores the settings for the game.
@@ -14,6 +15,9 @@ import java.util.ResourceBundle;
 public class Settings {
   private static ResourceBundle bundle;
   private static String bundlename;
+  
+  //various settings for the game along with their defaults
+  private static DisplayMode dispmod = new DisplayMode(800, 600);
   
   /**
    * Loads the resource bundle for strings using the default locale.
@@ -45,5 +49,9 @@ public class Settings {
     }
     
     return bundle.getString(key);
+  }
+
+  public static DisplayMode getDisplayMode() {
+    return dispmod;
   }
 }

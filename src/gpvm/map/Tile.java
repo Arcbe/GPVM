@@ -8,6 +8,7 @@ package gpvm.map;
  * @author russell
  */
 public final class Tile {
+  public static final long NULL = 0;
   /**
    * An instance of a Tile that only has function that can read its state and
    * not modify it.

@@ -142,6 +142,18 @@ public class RenderingSystem {
   public Camera getCamera() {
     return cam;
   }
+
+  public void setPaused(boolean val) {
+    assert rendrunner != null;
+    
+    rendrunner.pause = val;
+  }
+  
+  public boolean isPaused() {
+    assert rendrunner != null;
+    
+    return rendrunner.pause;
+  }
   
   private Runner rendrunner;
   private Thread renderingthread;

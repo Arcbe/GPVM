@@ -27,4 +27,75 @@ public class RawBatch {
    * The rendering mode that will be used with the list of vertices.
    */
   public int rendermode;
+  
+  /**
+   * An optional object that can provide custom effects.  If left null
+   * then this parameter will be ignored.
+   */
+  public RenderingState state;
+  
+  /**
+   * Checks whether this {@link RawBatch} can be combined with a given
+   * {@link RawBatch}
+   * @param other The {@link RawBatch} to check.
+   * @return Whether the two {@link RawBatch}es can be combined.
+   */
+  public boolean compatible(RawBatch other) {
+    if(other.rendermode != rendermode) return false;
+    
+    //check the rendering states.
+    if(state == null ^ other.state == null) return false;
+    if(state != null && !state.compatible(other.state)) return false;
+    
+    if(indices == null ^ other.indices == null) return false;
+    
+    //quick check to see if either is empty.
+    if(vertices.length == 0 || other.vertices.length == 0) return true;
+    
+    Vertex.AttributeFormat[] form = vertices[0].getFormat();
+    Vertex.AttributeFormat[] oform = other.vertices[0].getFormat();
+    if(form.length != oform.length) return false;
+    
+    for(int i = 0; i < form.length; i++) {
+      boolean found = false;
+      for(int j = 0; j < form.length; j++) {
+        if(form[i].equals(oform[j])) {
+          found = true;
+          break;
+        }
+      }
+      
+      if(!found) return false;
+    }
+    
+    return true;
+  }
+  
+  /**
+   * Combines two {@link RawBatch}es so that this batch can be used to
+   * render the original two batches.
+   * 
+   * @param other The {@link RawBatch} to combine with this one.
+   */
+  public void combine(RawBatch other) {
+    assert compatible(other);
+    
+    //copy the vertices into the new array.
+    Vertex[] nvertices = new Vertex[vertices.length + other.vertices.length];
+    for(int i = 0; i < vertices.length; i++)
+      nvertices[i] = vertices[i];
+    for(int i = 0; i < other.vertices.length; i++)
+      nvertices[i + vertices.length] = other.vertices[i];
+    vertices = nvertices;
+    
+    //copy the indices into the new array
+    if(indices == null) return;
+    int[] nindices = new int[indices.length + other.indices.length];
+    for(int i = 0; i < indices.length; i++)
+      nindices[i] = indices[i];
+    //don't forget to offset the indices from the other batch.
+    for(int i = 0; i < other.indices.length; i++)
+      nindices[i + indices.length] = indices[i] + vertices.length;
+    indices = nindices;
+  }
 }

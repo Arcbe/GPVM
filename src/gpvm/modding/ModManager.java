@@ -4,6 +4,7 @@
  */
 package gpvm.modding;
 
+import gpvm.io.InvalidDataFileException;
 import gpvm.util.Settings;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -81,6 +82,8 @@ public class ModManager {
         mods.put(m.getIdentifier().name, m);
       } catch (FileNotFoundException | MalformedURLException ex) {
         log.log(Level.SEVERE, null, ex);
+      } catch (InvalidDataFileException ex) {
+        Logger.getLogger(ModManager.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
   }

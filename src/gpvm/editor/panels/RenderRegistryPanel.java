@@ -67,7 +67,7 @@ public class RenderRegistryPanel extends JScrollPane {
         RenderRegistry.RendererEntry rent = renderer.getEntry(i);
         if(rent != null) {
           entry.info = rent.info;
-          entry.renderer = rent.renderer.getCanonicalName();
+          entry.renderer = rent.renderer.getClass().getCanonicalName();
         }
         
         entries.add(entry);
@@ -121,7 +121,7 @@ public class RenderRegistryPanel extends JScrollPane {
        
        ent.id = tileid;
        ent.info = entry.info;
-       ent.renderer = entry.renderer.getCanonicalName();
+       ent.renderer = entry.renderer.getClass().getCanonicalName();
        
        int ind;
        for(ind = 0; ind < entries.size(); ind++) {
@@ -146,7 +146,7 @@ public class RenderRegistryPanel extends JScrollPane {
       RenderRegistry.RendererEntry rent = Registrar.getInstance().getRenderRegistry().getEntry(id);
       if(rent != null) {
         entry.info = rent.info;
-        entry.renderer = rent.renderer.getCanonicalName();
+        entry.renderer = rent.renderer.getClass().getCanonicalName();
       }
       
       entries.add(entry);

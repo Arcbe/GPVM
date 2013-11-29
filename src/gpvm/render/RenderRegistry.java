@@ -1,5 +1,6 @@
 package gpvm.render;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -34,7 +35,7 @@ public final class RenderRegistry {
     /**
      * The class of the {@link TileRenderer}used for these tiles.
      */
-    public final Class<? extends TileRenderer> renderer;
+    public final TileRenderer renderer;
     
     /**
      * Any information for the rendering of a {@link Tile} using this.
@@ -47,10 +48,18 @@ public final class RenderRegistry {
      * @param renderer The class of the renderer for this entry.
      * @param info Any addition rendering information for this entry.
      */
-    public RendererEntry(Class<? extends TileRenderer> renderer, RenderInfo info) {
-      this.renderer = renderer;
+    public RendererEntry(Class<? extends TileRenderer> renderer, RenderInfo info) throws InstantiationException, IllegalAccessException {
+      //create the renderer for the tiles if needed.
+      if(!renderers.containsKey(renderer) || renderers.get(renderer).get() == null) {
+        this.renderer = renderer.newInstance();
+        renderers.put(renderer, new WeakReference<>(this.renderer));
+      } else //TODO: possible timing bug here, investigate.
+        this.renderer = renderers.get(renderer).get();
+      
       this.info = info;
     }
+    
+    private static HashMap<Class<?>, WeakReference<TileRenderer>> renderers = new HashMap<>();
   }
   
   /**

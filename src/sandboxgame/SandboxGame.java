@@ -75,32 +75,12 @@ public class SandboxGame {
     //set up launcher
     launcherInit();
     
-    DisplayMode mode = new DisplayMode(800, 600);
-    
-    ThreadingManager threads = ThreadingManager.getInstance();
-    threads.requestWrite();
-    
-    
-    
-    try {
-      Registrar regi = Registrar.getInstance();
-      
-      //add some tiles
-      long tid = regi.addTileEntry(new TileDefinition("Grass", "base.grass", 0, true));
-      regi.addTileEntry(new TileDefinition("Dirt", "base.dirt", 0, true));
-      regi.addTileEntry(new TileDefinition("Stone", "base.stone", 1 << 24, true));
-      regi.addTileEntry(new TileDefinition("bananas", "base.b", 0, false));
-      
-      //now create add some rendering info
-      regi.addRenderingEntry(new RenderRegistry.RendererEntry(ColorRenderer.class, new ColorInfo(Color.GREEN)), tid);
-    } finally {
-      threads.releaseWrite();
-    }
-    
-    GameMap map = new GameMap(new Generator());
-    
-    RenderingSystem.createSystem(mode);
-    RenderingSystem.getInstance().setMap(map);
+//    DisplayMode mode = new DisplayMode(800, 600);
+//    
+//    GameMap map = new GameMap(new Generator());
+//    
+//    RenderingSystem.createSystem(mode);
+//    RenderingSystem.getInstance().setMap(map);
     
     moving = new Vector3f();
     direction = new Matrix3f();
@@ -139,11 +119,14 @@ public class SandboxGame {
     InputSystem.getInstance().addKeyListener(Keyboard.KEY_Q, list);
     InputSystem.getInstance().addKeyListener(Keyboard.KEY_E, list);
     
-    Camera cam = RenderingSystem.getInstance().getCamera();
-    while(RenderingSystem.getInstance().isRunning()) {
-      cam.position.z += moving.z;
-      cam.position.y += moving.y;
-      cam.position.x += moving.x;
+    
+    while(RenderingSystem.getInstance() == null || RenderingSystem.getInstance().isRunning()) {
+      Camera cam = RenderingSystem.getInstance().getCamera();
+      if(cam != null) {
+        cam.position.z += moving.z;
+        cam.position.y += moving.y;
+        cam.position.x += moving.x;
+      }
       
       Thread.sleep(10);
     }
@@ -240,7 +223,7 @@ public class SandboxGame {
     tiles.add(info);
     ColorRenderer cr = new ColorRenderer();
     VertexArrayBatch rend2 = new VertexArrayBatch();
-    rend2.compile(cr.batchTiles(tiles)[0]);
+    //rend2.compile(cr.batchTiles(tiles)[0]);
     
     //Display.setDisplayMode(new DisplayMode(800, 600));
     //Display.create();

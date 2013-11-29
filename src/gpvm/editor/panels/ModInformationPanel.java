@@ -5,6 +5,7 @@
  */
 package gpvm.editor.panels;
 
+import gpvm.GameManager;
 import gpvm.modding.Mod;
 import gpvm.modding.Mod.ModIdentifier;
 import gpvm.modding.ModManager;
@@ -13,6 +14,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -66,6 +69,13 @@ public class ModInformationPanel extends JPanel{
     load = new JButton(Settings.getLocalString("button_load_mod"));
     load.setEnabled(false);
     JPanel bot = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    load.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        GameManager.getInstance().startGame();
+      }
+    });
     
     bot.add(load);
     add(bot, BorderLayout.SOUTH);

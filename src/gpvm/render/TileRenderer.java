@@ -7,26 +7,10 @@ package gpvm.render;
 import java.util.Collection;
 
 /**
- * Converts a set of tiles into a RawBatch that can be then be rendered.
+ * Super interface for class that can render tiles.  This interface is
+ * meant only as a marker for class that can render tiles.
  * 
  * @author russell
  */
-public abstract class TileRenderer {
-  
-  /**
-   * Converts a set of tiles into a set of renderable batches of vertices.
-   * 
-   * @param info The information for each tile that the batch should render.
-   * @return The batches that can be used to render the given tiles.
-   */
-  public abstract RawBatch[] batchTiles(Collection<TileInfo> info);
-  
-  /**
-   * Returns the class that will be used to stored rending information for
-   * tiles that use this renderer.  A null value indicates that there is no
-   * addition rendering information for the tiles.
-   * 
-   * @return The class of the RenderInfo used for this renderer.
-   */
-  public abstract Class<? extends RenderInfo> getRenderInfo();
+public interface TileRenderer {
 }

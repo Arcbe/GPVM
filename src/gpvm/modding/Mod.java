@@ -6,6 +6,7 @@ package gpvm.modding;
 
 import gpvm.io.DataLoader;
 import gpvm.io.DataNode;
+import gpvm.io.InvalidDataFileException;
 import gpvm.map.MapGenerator;
 import gpvm.util.Settings;
 import java.io.FileNotFoundException;
@@ -78,7 +79,7 @@ public final class Mod {
    * @param path The {@link Path} for the data file to load the mod from.
    * @return The new mod, or null if path was not a valid modinfo file.
    */
-  public static Mod createMod(Path path) throws FileNotFoundException, MalformedURLException {
+  public static Mod createMod(Path path) throws FileNotFoundException, MalformedURLException, InvalidDataFileException {
     //first see if we can load the file.
     DataNode root = DataLoader.loadFile(path.toFile());
     if(root == null) {
