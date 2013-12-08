@@ -4,15 +4,19 @@
  */
 package gpvm.util;
 
+import java.text.MessageFormat;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.lwjgl.opengl.DisplayMode;
 
 /**
- * Loads and stores the settings for the game.
+ * Handles {@link String} localization and formatting.
  * 
  * @author russell
  */
-public class Settings {
+public class StringManager {
   private static ResourceBundle bundle;
   private static String bundlename;
   
@@ -42,16 +46,27 @@ public class Settings {
    * @return The string associated with the given key.
    */
   public static String getLocalString(String key) {
-    assert bundle != null && bundle.containsKey(key);
-    
     if(bundle == null) {
-      throw new NullPointerException(java.util.ResourceBundle.getBundle("text").getString("NO RESOURCE BUNDLE HAS BEEN LOADED."));
+      return "NO RESOURCE BUNDLE HAS BEEN REGISTERED";
     }
     
-    return bundle.getString(key);
+    try {
+      return bundle.getString(key);
+    } catch(MissingResourceException ex) {
+      log.log(Level.SEVERE, "Missing entry for localized string {0}", key);
+      return "";
+    }
+  }
+  
+  public static String getLocalString(String key, Object ... params) {
+    String base = getLocalString(key);
+    
+    return MessageFormat.format(base, params);
   }
 
   public static DisplayMode getDisplayMode() {
     return dispmod;
   }
+  
+  private static final Logger log = Logger.getLogger(StringManager.class.getName());
 }

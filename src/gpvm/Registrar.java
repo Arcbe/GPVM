@@ -7,7 +7,7 @@ import gpvm.map.TileRegistry;
 import gpvm.map.TileRegistryListener;
 import gpvm.render.RenderRegistry;
 import gpvm.render.RenderRegistryListener;
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 
 /**
  * Contains all registries used by the current game.  Along with convenience
@@ -58,7 +58,7 @@ public class Registrar {
   public long addTileEntry(TileDefinition def) {
     //check to make sure that writing is allowed
     if(!ThreadingManager.getInstance().canWrite())
-      throw new IllegalStateException(Settings.getLocalString("err_writing_not_allowed"));
+      throw new IllegalStateException(StringManager.getLocalString("err_writing_not_allowed"));
     
     return tiles.addDefition(def);
   }
@@ -76,7 +76,7 @@ public class Registrar {
   public void addRenderingEntry(RenderRegistry.RendererEntry entry, long tileid) {
     //check to make sure that writing is allowed
     if(!ThreadingManager.getInstance().canWrite())
-      throw new IllegalStateException(Settings.getLocalString("err_writing_not_allowed"));
+      throw new IllegalStateException(StringManager.getLocalString("err_writing_not_allowed"));
     
     render.addEntry(entry, tileid);
   }

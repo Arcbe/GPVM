@@ -1,7 +1,7 @@
 
 package gpvm.io;
 
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
@@ -44,7 +44,7 @@ public final class DataNode {
    */
   public Class<?> valueType(String name) {
     if(!contains(name)) {
-      String msg = String.format(Settings.getLocalString("err_no_data_value"), name);
+      String msg = String.format(StringManager.getLocalString("err_no_data_value"), name);
       throw new NoDataValueException(msg);
     }
     
@@ -64,7 +64,7 @@ public final class DataNode {
    */
   public <T> T getValue(String name) {
     if(!contains(name)) {
-      String msg = String.format(Settings.getLocalString("err_no_data_value"), name);
+      String msg = String.format(StringManager.getLocalString("err_no_data_value"), name);
       throw new NoDataValueException(msg);
     }
     

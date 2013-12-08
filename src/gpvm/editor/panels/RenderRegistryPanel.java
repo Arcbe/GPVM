@@ -7,7 +7,7 @@ import gpvm.map.TileRegistryListener;
 import gpvm.render.RenderInfo;
 import gpvm.render.RenderRegistry;
 import gpvm.render.RenderRegistryListener;
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +28,7 @@ public class RenderRegistryPanel extends JScrollPane {
    * events from the {@link RenderRegistry}.
    */
   public RenderRegistryPanel() {
-    setName(Settings.getLocalString("panel_name_render_registry"));
+    setName(StringManager.getLocalString("panel_name_render_registry"));
     
     model = new RenderRegModel();
     content = new JTable(model);
@@ -80,10 +80,10 @@ public class RenderRegistryPanel extends JScrollPane {
     public String getColumnName(int index) {
       switch(index) {
         default: return null;
-        case 0: return Settings.getLocalString("col_name_canonname");
-        case 1: return Settings.getLocalString("col_name_tileid");
-        case 2: return Settings.getLocalString("col_name_renderer");
-        case 3: return Settings.getLocalString("col_name_render_info");
+        case 0: return StringManager.getLocalString("col_name_canonname");
+        case 1: return StringManager.getLocalString("col_name_tileid");
+        case 2: return StringManager.getLocalString("col_name_renderer");
+        case 3: return StringManager.getLocalString("col_name_render_info");
       }
     }
     

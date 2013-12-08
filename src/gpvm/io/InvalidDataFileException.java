@@ -4,7 +4,7 @@
  */
 package gpvm.io;
 
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 import java.io.IOException;
 
 /**
@@ -16,7 +16,7 @@ import java.io.IOException;
 public class InvalidDataFileException extends IOException {
 
   public InvalidDataFileException() {
-    super(Settings.getLocalString("err_invalid_data_file"));
+    super(StringManager.getLocalString("err_invalid_data_file"));
   }
 
   public InvalidDataFileException(String message) {

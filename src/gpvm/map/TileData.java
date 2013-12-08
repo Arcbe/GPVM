@@ -1,6 +1,6 @@
 package gpvm.map;
 
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 import gpvm.util.error.UnknownDataType;
 import java.util.HashMap;
 import java.util.Set;
@@ -105,7 +105,7 @@ public final class TileData {
         case Float: return Float.class;
         case String: return String.class;
         default:
-          Logger.getLogger(DataType.class.getName()).log(Level.SEVERE, Settings.getLocalString("err_unknown_data_type"));
+          Logger.getLogger(DataType.class.getName()).log(Level.SEVERE, StringManager.getLocalString("err_unknown_data_type"));
           throw new UnknownDataType();
       }
     }

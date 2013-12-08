@@ -7,13 +7,19 @@ package gpvm.modding;
 import gpvm.io.DataLoader;
 import gpvm.io.DataNode;
 import gpvm.io.InvalidDataFileException;
+import gpvm.io.RegistryDataReader;
 import gpvm.map.MapGenerator;
-import gpvm.util.Settings;
+import gpvm.util.MPUClassLoader;
+import gpvm.util.StringManager;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +31,8 @@ public final class Mod {
   public static final String NAME_FIELD = "name";
   public static final String DEP_FIELD = "dependency";
   public static final String GENERATOR_FIELD = "map-generator";
+  public static final String CONTROLLER_FIELD = "mod-controller";
+  public static final String TILE_DEFINITION_FILE = "tile-definition";
   
   /**
    * Contains information that can uniquely identify a mod.
@@ -52,16 +60,66 @@ public final class Mod {
     boolean result = true;
     
     if(name == null) {
-      String msg = String.format(Settings.getLocalString("warn_mod_missing_name"), location);
-      Logger.getLogger(Mod.class.getCanonicalName()).log(Level.WARNING, msg);
+      log.log(Level.WARNING, StringManager.getLocalString("warn_mod_missing_name"), location);
       result = false;
     }
     
     return result;
   }
   
+  public Class<?> getClass(String cname) throws ClassNotFoundException {
+    return loader.loadClass(cname);
+  }
+  
+  public URL getResource(String rname) {
+    return loader.findResource(rname);
+  }
+  
+  public InputStream getResourceStream(String rname) {
+    return loader.getResourceAsStream(rname);
+  }
+  
   public ModIdentifier getIdentifier() {
     return new ModIdentifier(name, version);
+  }
+  
+  public void intialize() {
+    if(controller != null) controller.initialize();
+    
+    log.log(Level.INFO, StringManager.getLocalString("info_mod_init", name));
+  }
+  
+  public void preload() {
+    //this is where the tiles will be added by the mod controller
+    for(String file : tdfiles) {
+      try {
+        URL res = getResource(file);
+        if(res == null) {
+          log.log(Level.SEVERE, StringManager.getLocalString("err_tile_def_not_found", file));
+          continue;
+        }
+        
+        RegistryDataReader.loadTileRegistryData(getResource(file), name);
+      } catch (URISyntaxException | FileNotFoundException | InvalidDataFileException ex) {
+        log.log(Level.SEVERE, StringManager.getLocalString("err_invalid_tile_def_file", file), ex);
+      }
+    }
+    
+    if(controller != null) controller.preload();
+    
+    log.log(Level.INFO, StringManager.getLocalString("info_mod_preload", name));
+  }
+  
+  public void load() {
+    if(controller != null) controller.load();
+    
+    log.log(Level.INFO, StringManager.getLocalString("info_mod_load", name));
+  }
+  
+  public void postload() {
+    if(controller != null) controller.postload();
+    
+    log.log(Level.INFO, StringManager.getLocalString("info_mod_load", name));
   }
   
   @Override
@@ -83,46 +141,49 @@ public final class Mod {
     //first see if we can load the file.
     DataNode root = DataLoader.loadFile(path.toFile());
     if(root == null) {
-      String msg = String.format(Settings.getLocalString("warn_invalid_mod"), path);
-      Logger.getLogger(Mod.class.getCanonicalName()).log(Level.WARNING, msg);
+      log.log(Level.WARNING, StringManager.getLocalString("warn_invalid_mod"), path);
       return null;
     }
     
     //declare the various mod parameters
-    Mod result = new Mod();
-    result.loader = URLClassLoader.newInstance(new URL[]{path.toUri().toURL()});
+    Mod result = new Mod(path.getParent().toUri().toURL());
     
     for(String field : root.getValues()) {
       switch(field) {
         //field for the name of the mod
         case NAME_FIELD:
-          if(root.isType(field, String.class)) {
-            result.name = root.getValue(field);
-          } else {
-            String msg = String.format(Settings.getLocalString("warn_mod_name_string"), path);
-            Logger.getLogger(Mod.class.getName()).log(Level.WARNING, msg);
-          }
+          if(!result.setName(root.getValue(NAME_FIELD)))
+            log.log(Level.WARNING, StringManager.getLocalString("warn_mod_name_string", path));
           break;
           
         //field for the class of the mods map generator.
         case GENERATOR_FIELD:
-          try {
-            result.mapgenerator = (Class<? extends MapGenerator>) result.loader.loadClass(root.getValue(field).toString());
-          } catch(ClassNotFoundException ex) {
-            String msg = String.format(Settings.getLocalString("warn_invalid_map_generator"), path);
-            Logger.getLogger(Mod.class.getName()).log(Level.WARNING, msg, ex);
-          }
+          if(!result.setGenerator(root.getValue(GENERATOR_FIELD)))
+            log.log(Level.WARNING, StringManager.getLocalString("warn_invalid_map_generator", path));
+          break;
+          
+        //field for the mod controller
+        case CONTROLLER_FIELD:
+          if(!result.setController(root.getValue(CONTROLLER_FIELD)))
+            log.log(Level.WARNING, StringManager.getLocalString("warn_invalid_mod_controller", path));
+          break;
+          
+        //field for adding files of tile definitions.
+        case TILE_DEFINITION_FILE:
+          if(!result.addTileDefinitionfiles(root.getValue(TILE_DEFINITION_FILE)))
+            log.log(Level.WARNING, StringManager.getLocalString("warn_invalid_tile_definitions", path));
           break;
       }
     }
     
     //check to make sure the mod is good.
     if(result.validate()) {
-      String msg = String.format(Settings.getLocalString("info_mod_found"), result.name, path);
-      Logger.getLogger(Mod.class.getName()).log(Level.INFO, msg);
+      log.log(Level.INFO, StringManager.getLocalString("info_mod_created"), new Object[]{result.name, path.toString()});
       return result;
     } else return null;
   }
+  
+  private static final Logger log = Logger.getLogger(Mod.class.getName());
   
   private URLClassLoader loader;
   
@@ -130,7 +191,83 @@ public final class Mod {
   private Class<? extends MapGenerator> mapgenerator;
   private String name;
   private String version;
+  private ModController controller;
+  private List<String> tdfiles;
+  private List<String> rendfiles;
   
-  private Mod() {
+  private Mod(URL path) {
+    tdfiles = new ArrayList<>();
+    rendfiles = new ArrayList<>();
+    
+    loader = new MPUClassLoader(new URL[]{path});
+  }
+  
+  private boolean setName(Object obj) {
+    if(obj instanceof String) {
+      name = (String) obj;
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  private boolean setGenerator(Object obj) {
+    if(obj instanceof String) {
+      Class<?> gen = null;
+      try {
+        gen = getClass((String) obj);
+      } catch(ClassNotFoundException ex) {
+        log.log(Level.SEVERE, StringManager.getLocalString("err_map_gen_not_found", obj), ex);
+        return false;
+      }
+      
+      //check to make sure this is a proper generator
+      if(!MapGenerator.class.isAssignableFrom(gen)) {
+        log.log(Level.SEVERE, StringManager.getLocalString("err_map_gen_wrong_super", obj));
+        return false;
+      }
+      
+      mapgenerator = (Class<? extends MapGenerator>) gen;
+      return true;
+    } else {
+      return false;
+    }
+  }
+    
+  private boolean setController(Object obj) {
+    if(obj instanceof String) {
+      Class<?> cont = null;
+      try {
+        cont = getClass((String) obj);
+      } catch(ClassNotFoundException ex) {
+        log.log(Level.SEVERE, StringManager.getLocalString("err_mod_cont_not_found", obj), ex);
+        return false;
+      }
+      
+      //check to make sure this is a proper controller
+      if(!ModController.class.isAssignableFrom(cont)) {
+        log.log(Level.SEVERE, StringManager.getLocalString("err_mod_cont_wrong_super", obj));
+        return false;
+      }
+      try {
+        controller = (ModController) cont.newInstance();
+      } catch (InstantiationException | IllegalAccessException ex) {
+        Logger.getLogger(Mod.class.getName()).log(Level.SEVERE, StringManager.getLocalString("err_mod_cont_instance", obj), ex);
+      }
+      
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  private boolean addTileDefinitionfiles(Object obj) {
+    if(obj instanceof String) {
+      tdfiles.add((String) obj);
+      return true;
+      //TODO: add code for lists of files
+    } else {
+      return false;
+    }
   }
 }

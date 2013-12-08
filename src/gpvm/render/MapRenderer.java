@@ -43,6 +43,8 @@ public final class MapRenderer {
   }
   
   public void update(Camera cam) {
+    assert map != null;
+    
     drawlist.clear();
     
     if(renderers.containsKey(new Coordinate())) {

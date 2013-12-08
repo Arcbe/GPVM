@@ -4,7 +4,7 @@
  */
 package gpvm.io;
 
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 
 /**
  * Thrown by {@link DataNode} when an attempt is made to access a value

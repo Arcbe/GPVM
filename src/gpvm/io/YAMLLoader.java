@@ -4,7 +4,7 @@
  */
 package gpvm.io;
 
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,7 +42,7 @@ public class YAMLLoader implements DataFileLoader{
     
     //if this an empty file then return an empty DataNode and a warning
     if(data == null) {
-      String msg = String.format(Settings.getLocalString("warn_empty_data_file"), file.toString());
+      String msg = String.format(StringManager.getLocalString("warn_empty_data_file"), file.toString());
       Logger.getLogger(YAMLLoader.class.getCanonicalName()).log(Level.WARNING, msg);
       return new DataNode(null);
     }

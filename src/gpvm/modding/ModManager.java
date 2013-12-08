@@ -5,7 +5,7 @@
 package gpvm.modding;
 
 import gpvm.io.InvalidDataFileException;
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -19,6 +19,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +33,33 @@ import java.util.logging.Logger;
  * @author russell
  */
 public class ModManager {
+  /**
+   * An enum representing the various states that the {@link ModManager} can be
+   * in during the course of the Game.
+   */
+  public enum State {
+    /**
+     * In this state no mods are loaded, this may be before any have been loaded
+     * or after all mods have been unloaded.
+     */
+    Unloaded,
+    
+    /**
+     * This state indicates that mods are currently being loaded by the manager.
+     */
+    Loading,
+    /**
+     * In this state all active mods have been loaded, however any inactive mods
+     * are not loaded at this time.
+     */
+    Loaded,
+    
+    /**
+     * This state indicates that the mod manager is currently unloading all mods.
+     */
+    Unloading
+  }
+  
   public static ModManager getInstance() {
     return instance;
   }
@@ -44,6 +72,81 @@ public class ModManager {
       result[index++] = m.getIdentifier();
     
     return result;
+  }
+  
+  public void addActiveMod(String modname) {
+    if(curstate != State.Unloaded) {
+      log.log(Level.WARNING, StringManager.getLocalString("warn_act_mod_while_loaded"), modname);
+      return;
+    }
+    
+    Mod addition = getMod(modname);
+    
+    if(addition == null) {
+      log.log(Level.WARNING, StringManager.getLocalString("warn_act_unknown_mod"));
+      return;
+    }
+    
+    activemods.add(addition);
+    
+    log.log(Level.INFO, StringManager.getLocalString("info_activate_mod"), modname);
+  }
+  
+  public void setActiveMods(String ... modnames) {
+    log.log(Level.INFO, StringManager.getLocalString("info_clear_act_mods"));
+    
+    activemods.clear();
+    
+    for(int i = 0; i < modnames.length; i++)
+      addActiveMod(modnames[i]);
+  }
+  
+  public void setActiveMods(Mod.ModIdentifier ... ids) {
+    String[] names = new String[ids.length];
+    
+    for(int i = 0; i < ids.length; i++)
+      names[i] = ids[i].name;
+    
+    setActiveMods(names);
+  }
+
+  public void loadMods() {
+    //check to mae sure everything is in order
+    if(curstate != State.Unloaded) {
+      log.log(Level.WARNING, StringManager.getLocalString("warn_mods_already_loaded"));
+      return;
+    }
+    
+    if(activemods.isEmpty()) {
+      log.log(Level.WARNING, StringManager.getLocalString("warn_no_active_mods"));
+      return;
+    }
+    
+    //set the state
+    curstate = State.Loading;
+    
+    //begin the loading
+    //all of the mods should be initialized.
+    for(Mod mod : activemods) {
+      mod.preload();
+    }
+    
+    log.log(Level.INFO, StringManager.getLocalString("info_mods_preloaded"));
+    
+    for(Mod mod : activemods) {
+      mod.load();
+    }
+    
+    log.log(Level.INFO, StringManager.getLocalString("info_mods_loaded"));
+    
+    for(Mod mod : activemods) {
+      mod.postload();
+    }
+    
+    log.log(Level.INFO, StringManager.getLocalString("info_mods_postloaded"));
+    
+    //set the state
+    curstate = State.Loaded;
   }
 
   public Mod getMod(Mod.ModIdentifier id) {
@@ -79,20 +182,29 @@ public class ModManager {
           
         }
         
-        mods.put(m.getIdentifier().name, m);
-      } catch (FileNotFoundException | MalformedURLException ex) {
+        addMod(m);
+      } catch (FileNotFoundException | MalformedURLException | InvalidDataFileException ex) {
         log.log(Level.SEVERE, null, ex);
-      } catch (InvalidDataFileException ex) {
-        Logger.getLogger(ModManager.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
   }
   
+  public void addMod(Mod add) {
+    add.intialize();
+    
+    mods.put(add.getIdentifier().name, add);
+  }
+  
   private Map<String, Mod> mods;
+  private List<Mod> activemods;
+  private State curstate;
+  
   private static final Logger log = Logger.getLogger(ModManager.class.getName());
   
   private ModManager() {
     mods = new HashMap<>();
+    activemods = new ArrayList<>();
+    curstate = State.Unloaded;
   }
   
   private static ModManager instance = new ModManager();
@@ -124,7 +236,7 @@ public class ModManager {
 
     @Override
     public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-      log.log(Level.WARNING, Settings.getLocalString("warn_invalid_file"), file);
+      log.log(Level.WARNING, StringManager.getLocalString("warn_invalid_file"), file);
       return FileVisitResult.CONTINUE;
     }
 

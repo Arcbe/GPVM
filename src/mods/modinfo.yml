@@ -1,5 +1,6 @@
 ## YAML Template.
 ---
-name: base
+name: hyperion-base
 map-generator: hyperion.Generator
-mod-class: hyperion.ModHandler
+mod-controller: hyperion.ModHandler
+tile-definition: tiles.yml

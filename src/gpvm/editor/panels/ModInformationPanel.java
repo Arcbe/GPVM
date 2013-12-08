@@ -9,21 +9,18 @@ import gpvm.GameManager;
 import gpvm.modding.Mod;
 import gpvm.modding.Mod.ModIdentifier;
 import gpvm.modding.ModManager;
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -36,7 +33,7 @@ public class ModInformationPanel extends JPanel{
   
   public ModInformationPanel() {
     super(new BorderLayout(PADDING, PADDING));
-    setName(Settings.getLocalString("panel_name_mod_information"));
+    setName(StringManager.getLocalString("panel_name_mod_information"));
     loaded = false;
     
     //create the list of mods
@@ -66,13 +63,16 @@ public class ModInformationPanel extends JPanel{
     });
     
     //create the panel for buttons
-    load = new JButton(Settings.getLocalString("button_load_mod"));
+    load = new JButton(StringManager.getLocalString("button_load_mod"));
     load.setEnabled(false);
     JPanel bot = new JPanel(new FlowLayout(FlowLayout.LEFT));
     load.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
+        assert current != null;
+        
+        ModManager.getInstance().setActiveMods(current.getIdentifier());
         GameManager.getInstance().startGame();
       }
     });
@@ -97,7 +97,7 @@ public class ModInformationPanel extends JPanel{
     
     public ModInfoDisplay() {
       super(new GridLayout(NUM_ROWS, NUM_COLS));
-      setName(Settings.getLocalString("mod_info_display_name"));
+      setName(StringManager.getLocalString("mod_info_display_name"));
       
       name = new JLabel();
       version = new JLabel();
@@ -111,8 +111,8 @@ public class ModInformationPanel extends JPanel{
       if(m == null) return;
       
       ModIdentifier id = m.getIdentifier();
-      name.setText(String.format(Settings.getLocalString("mod_info_display_name_label"), id.name));
-      version.setText(String.format(Settings.getLocalString("mod_info_display_version_label"), id.version));
+      name.setText(StringManager.getLocalString("mod_info_display_name_label", id.name));
+      version.setText(StringManager.getLocalString("mod_info_display_version_label", id.version));
     }
   }
 }

@@ -5,7 +5,7 @@ import gpvm.ThreadingManager;
 import gpvm.map.TileDefinition;
 import gpvm.map.TileRegistry;
 import gpvm.map.TileRegistryListener;
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +21,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class TileRegistryPanel extends JScrollPane {
   public TileRegistryPanel() {
-    setName(Settings.getLocalString("panel_name_tile_registry"));
+    setName(StringManager.getLocalString("panel_name_tile_registry"));
     
     model = new TileRegTableModel();
     content = new JTable(model);
@@ -98,11 +98,11 @@ public class TileRegistryPanel extends JScrollPane {
     public String getColumnName(int index) {
       switch (index){
         default: return null;
-        case 0: return Settings.getLocalString("col_name_tilename");
-        case 1: return Settings.getLocalString("col_name_tileid");
-        case 2: return Settings.getLocalString("col_name_canonname");
-        case 3: return Settings.getLocalString("col_name_metadata");
-        case 4: return Settings.getLocalString("col_name_opaque");
+        case 0: return StringManager.getLocalString("col_name_tilename");
+        case 1: return StringManager.getLocalString("col_name_tileid");
+        case 2: return StringManager.getLocalString("col_name_canonname");
+        case 3: return StringManager.getLocalString("col_name_metadata");
+        case 4: return StringManager.getLocalString("col_name_opaque");
       }
     }
     

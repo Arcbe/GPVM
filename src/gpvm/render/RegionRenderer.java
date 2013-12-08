@@ -8,7 +8,7 @@ import gpvm.map.Tile;
 import gpvm.map.TileDefinition;
 import gpvm.map.TileRegistry;
 import gpvm.render.vertices.ColorVertex;
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 import gpvm.util.geometry.Coordinate;
 import java.awt.Color;
 import java.util.ArrayList;

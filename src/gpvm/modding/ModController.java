@@ -20,43 +20,44 @@ package gpvm.modding;
  * 
  * @author russell
  */
-public abstract class ModController {
+public class ModController {
   protected Mod parent;
-  
-  /**
-   * Called before initialization.  This can be used for any operation that needs to be done before
-   * the mod is initialized.
-   */
-  public void preInit() {}
   
   /**
    * Initializes the mod.  At this point none of the assets for the mod should
    * be loaded, but all the settings should loaded and the {@link Mod} should be
-   * set up with all of the information it needs.
+   * set up with all of the information it will use to load content.  Any mods that
+   * this one depends on are not guaranteed to be added to the class path at this
+   * point.
    */
-  public abstract void initialize();
+  public void initialize() {}
   
   /**
-   * Called after initialization.  This can be used for any final initialization
-   * that requires other mods to be initialized.
+   * Called prior to loading the mod.
    */
-  public void postInit() {}
+  public void preload() {}
   
   /**
    * Loads the assets of the {@link Mod}.  For many resources the {@link Mod}
-   * for this class can handle loading assets once it has been told what to load.
+   * for this class can handle loading assets once it has been given set of files
+   * to load assets from.
    */
-  public abstract void load();
+  public void load() {}
+  
+  /**
+   * Called after all active mods are loaded.
+   */
+  public void postload() {}
   
   /**
    * Unloads all of the assets for the mod.  At the end of this the mod should
    * not have any references or assets loaded into the game state.
    */
-  public abstract void unload();
+  public void unload() {}
   
   /**
    * This method is called when the mod is no longer going to be loaded.
    * Handles any final cleanup of the mod.
    */
-  public abstract void destroy();
+  public void destroy() {}
 }

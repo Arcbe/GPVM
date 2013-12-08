@@ -4,8 +4,9 @@
  */
 package gpvm;
 
+import gpvm.modding.ModManager;
 import gpvm.render.RenderingSystem;
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 
 /**
  * Controls the overall state of the game.  This class will initialize the
@@ -21,7 +22,10 @@ public class GameManager {
   }
   
   public void startGame() {
-    RenderingSystem.createSystem(Settings.getDisplayMode());
+    //first load the mods, the manager already knows what mods to load.
+    ModManager.getInstance().loadMods();
+    
+    RenderingSystem.createSystem(StringManager.getDisplayMode());
   }
   
   public boolean isPaused() {

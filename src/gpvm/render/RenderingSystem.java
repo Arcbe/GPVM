@@ -14,7 +14,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
-import gpvm.util.Settings;
+import gpvm.util.StringManager;
 
 /**
  * Maintains a screen and controls the rendering for the entire game. 
@@ -52,7 +52,6 @@ public class RenderingSystem {
   
   private RenderingSystem(DisplayMode mode) {
     this.mode = mode;
-    renderer = new MapRenderer(VertexArrayBatch.class);
     cam = new Camera();
     rendrunner = new Runner();
     renderingthread = new Thread(rendrunner);
@@ -121,7 +120,10 @@ public class RenderingSystem {
    * @param map The new {@link GameMap} for the rendering system.
    */
   public void setMap(GameMap map) {
+    //TODO: this should not be hard coded.
+    if(renderer == null) renderer = new MapRenderer(VertexArrayBatch.class);
     renderer.setMap(map);
+    this.map = map;
   }
   
   /**
@@ -163,6 +165,9 @@ public class RenderingSystem {
   private GameMap map;
   
   private void render() {
+    //if there is no map there is nothing to render.
+    if(renderer == null) return;
+    
     //clear color is magenta to indicate a problem. The clear color should not
     //be visible
     GL11.glClearColor(1, 0, 1, 1);
@@ -207,7 +212,7 @@ public class RenderingSystem {
           Display.update();
         }
       } catch (LWJGLException ex) {
-        Logger.getLogger(RenderingSystem.class.getName()).log(Level.SEVERE, Settings.getLocalString("err_rendering_init"), ex);
+        Logger.getLogger(RenderingSystem.class.getName()).log(Level.SEVERE, StringManager.getLocalString("err_rendering_init"), ex);
       } finally {
         Display.destroy();
         running = false;
