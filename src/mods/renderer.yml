@@ -1,0 +1,4 @@
+Grass:
+  rendering-class: gpvm.render.renderers.ColorRenderer
+  rendering-info:
+    color: 0xFF00FF00

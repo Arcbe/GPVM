@@ -1,6 +1,9 @@
 ## YAML Template.
 ---
 name: hyperion-base
-map-generator: hyperion.Generator
 mod-controller: hyperion.ModHandler
 tile-definition: tiles.yml
+rendering-info: renderer.yml
+world: 
+  generator: hyperion.Generator
+  name: Overworld

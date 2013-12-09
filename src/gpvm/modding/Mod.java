@@ -9,6 +9,8 @@ import gpvm.io.DataNode;
 import gpvm.io.InvalidDataFileException;
 import gpvm.io.RegistryDataReader;
 import gpvm.map.MapGenerator;
+import gpvm.map.Universe;
+import gpvm.map.Universe.World;
 import gpvm.util.MPUClassLoader;
 import gpvm.util.StringManager;
 import java.io.FileNotFoundException;
@@ -19,6 +21,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +35,8 @@ public final class Mod {
   public static final String DEP_FIELD = "dependency";
   public static final String GENERATOR_FIELD = "map-generator";
   public static final String CONTROLLER_FIELD = "mod-controller";
-  public static final String TILE_DEFINITION_FILE = "tile-definition";
+  public static final String TILE_DEFINITION_FIELD = "tile-definition";
+  public static final String RENDERING_FILE_FIELD = "rendering-info";
   
   /**
    * Contains information that can uniquely identify a mod.
@@ -83,6 +87,10 @@ public final class Mod {
     return new ModIdentifier(name, version);
   }
   
+  public List<World> getWorlds() {
+    return Collections.unmodifiableList(worlds);
+  }
+  
   public void intialize() {
     if(controller != null) controller.initialize();
     
@@ -102,6 +110,21 @@ public final class Mod {
         RegistryDataReader.loadTileRegistryData(getResource(file), name);
       } catch (URISyntaxException | FileNotFoundException | InvalidDataFileException ex) {
         log.log(Level.SEVERE, StringManager.getLocalString("err_invalid_tile_def_file", file), ex);
+      }
+    }
+    
+    //load all of the rendering data
+    for(String file : rendfiles) {
+      try {
+        URL res = getResource(file);
+        if(res == null) {
+          log.log(Level.SEVERE, StringManager.getLocalString("err_rendering_file_not_found", file));
+          continue;
+        }
+        
+        RegistryDataReader.loadRenderRegistryData(res, name, loader);
+      } catch (URISyntaxException | FileNotFoundException | InvalidDataFileException | InstantiationException | IllegalAccessException | NoSuchFieldException | ClassNotFoundException ex) {
+        log.log(Level.SEVERE, StringManager.getLocalString("err_invalid_rendering_file", file), ex);
       }
     }
     
@@ -169,9 +192,15 @@ public final class Mod {
           break;
           
         //field for adding files of tile definitions.
-        case TILE_DEFINITION_FILE:
-          if(!result.addTileDefinitionfiles(root.getValue(TILE_DEFINITION_FILE)))
+        case TILE_DEFINITION_FIELD:
+          if(!result.addTileDefinitionFiles(root.getValue(TILE_DEFINITION_FIELD)))
             log.log(Level.WARNING, StringManager.getLocalString("warn_invalid_tile_definitions", path));
+          break;
+        
+        //field for adding rendering information files.
+        case RENDERING_FILE_FIELD:
+          if(!result.addRenderingFiles(root.getValue(RENDERING_FILE_FIELD)))
+            log.log(Level.WARNING, StringManager.getLocalString("warn_invalid_rendering_file", path));
           break;
       }
     }
@@ -188,7 +217,7 @@ public final class Mod {
   private URLClassLoader loader;
   
   private Path location;
-  private Class<? extends MapGenerator> mapgenerator;
+  private List<Universe.World> worlds;
   private String name;
   private String version;
   private ModController controller;
@@ -227,7 +256,10 @@ public final class Mod {
         return false;
       }
       
-      mapgenerator = (Class<? extends MapGenerator>) gen;
+      World nworld = new World();
+      nworld.generator = (Class<? extends MapGenerator>) gen;
+      nworld.name = "" + worlds.size();
+      
       return true;
     } else {
       return false;
@@ -261,9 +293,19 @@ public final class Mod {
     }
   }
   
-  private boolean addTileDefinitionfiles(Object obj) {
+  private boolean addTileDefinitionFiles(Object obj) {
     if(obj instanceof String) {
       tdfiles.add((String) obj);
+      return true;
+      //TODO: add code for lists of files
+    } else {
+      return false;
+    }
+  }
+  
+  private boolean addRenderingFiles(Object obj) {
+    if(obj instanceof String) {
+      rendfiles.add((String) obj);
       return true;
       //TODO: add code for lists of files
     } else {

@@ -37,7 +37,7 @@ public class ModInformationPanel extends JPanel{
     loaded = false;
     
     //create the list of mods
-    modlist = new JList<>(ModManager.getInstance().getFoundMods());
+    modlist = new JList<>(ModManager.getInstance().getInitializedMods());
     JScrollPane scrolls = new JScrollPane();
     scrolls.getViewport().add(modlist);
     add(scrolls, BorderLayout.WEST);

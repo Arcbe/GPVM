@@ -7,6 +7,8 @@ package gpvm.io;
 import gpvm.Registrar;
 import gpvm.ThreadingManager;
 import gpvm.map.TileDefinition;
+import gpvm.render.RenderRegistry;
+import gpvm.render.TileRenderer;
 import gpvm.util.StringManager;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,6 +31,10 @@ public class RegistryDataReader {
   public static final String OPAQUE_FIELD = "opaque";
   public static final String NAMESPACE_SEPERATOR = ".";
   
+  //field names for Render Registry names
+  public static final String RENDERER_CLASS_FIELD = "rendering-class";
+  public static final String RENDERING_INFO_FIELD = "rendering-info";
+  
   public static void loadTileRegistryData(URL url, String namespace) throws URISyntaxException, FileNotFoundException, InvalidDataFileException {
     File in = new File(url.toURI());
     
@@ -43,7 +49,8 @@ public class RegistryDataReader {
     try {
       for(String val : data.getValues()) {
         if(!data.isType(val, DataNode.class)) {
-          log.log(Level.WARNING, StringManager.getLocalString("err_unknown_tile_data"), val);
+          log.log(Level.WARNING, StringManager.getLocalString("warn_unknown_tile_data", val, in));
+          continue;
         }
 
         DataNode cur = data.getValue(val);
@@ -60,6 +67,47 @@ public class RegistryDataReader {
 
         TileDefinition def = new TileDefinition(val, canonname, metadata, opaque);
         Registrar.getInstance().addTileEntry(def);
+      }
+    } finally {
+      ThreadingManager.getInstance().releaseWrite();
+    }
+  }
+  
+  public static void loadRenderRegistryData(URL url, String namespace, ClassLoader loader) throws URISyntaxException, FileNotFoundException, InvalidDataFileException, InstantiationException, IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
+    File in = new File(url.toURI());
+    
+    loadRenderRegistryData(in, namespace, loader);
+  }
+  
+  public static void loadRenderRegistryData(File in, String namespace, ClassLoader loader) throws FileNotFoundException, InvalidDataFileException, InstantiationException, IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
+    DataNode data = DataLoader.loadFile(in);
+    
+    ThreadingManager.getInstance().requestWrite();
+    
+    try {
+      for(String val : data.getValues()) {
+        if(!data.isType(val, DataNode.class)) {
+          log.log(Level.WARNING, StringManager.getLocalString("warn_unknown_render_data", val, in));
+          continue;
+        }
+        
+        DataNode entrydata = data.getValue(val);
+        DataNode renddata = null;
+        Class<? extends TileRenderer> rendclass = null;
+        
+        //get the rendering class.
+        if(entrydata.isType(RENDERER_CLASS_FIELD, String.class)) {
+          rendclass = (Class<? extends TileRenderer>) loader.loadClass((String) entrydata.getValue(RENDERER_CLASS_FIELD));
+        }
+        
+        //get the data for the rendering entry.
+        if(entrydata.isType(RENDERING_INFO_FIELD, DataNode.class)) {
+          renddata = entrydata.getValue(RENDERING_INFO_FIELD);
+        }
+          
+        RenderRegistry.RendererEntry entry = new RenderRegistry.RendererEntry(rendclass, renddata);
+        long tileid = Registrar.getInstance().getTileRegistry().getTileID(namespace + NAMESPACE_SEPERATOR + val);
+        Registrar.getInstance().addRenderingEntry(entry, tileid);
       }
     } finally {
       ThreadingManager.getInstance().releaseWrite();

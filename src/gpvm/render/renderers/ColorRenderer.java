@@ -45,7 +45,7 @@ public class ColorRenderer implements StaticRenderer {
       color = Color.magenta.getRGB();
     } else {
       assert tile.info instanceof ColorInfo;
-      color = ((ColorInfo)tile.info).color;
+      color = (int) (long) ((ColorInfo)tile.info).color;
     }
 
     //add the east face

@@ -13,4 +13,12 @@ import java.util.Collection;
  * @author russell
  */
 public interface TileRenderer {
+  /**
+   * Returns the class that will be used to stored rending information for
+   * tiles that use this renderer.  A null value indicates that there is no
+   * addition rendering information for the tiles.
+   * 
+   * @return The class of the RenderInfo used for this renderer.
+   */
+  public Class<? extends RenderInfo> getRenderInfo();
 }

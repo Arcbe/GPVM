@@ -52,7 +52,7 @@ public final class DataNode {
   }
   
   public boolean isType(String name, Class type) {
-    return contains(name) && values.get(name).getClass().equals(type);
+    return contains(name) && type.isAssignableFrom(values.get(name).getClass());
   }
   
   /**

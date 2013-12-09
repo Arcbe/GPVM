@@ -4,6 +4,8 @@
  */
 package gpvm.render;
 
+import gpvm.io.DataNode;
+
 /**
  * An interface to signify that a class is used to store render information.
  * Data fields will be populated from a file when a TileRenderer that is using this
@@ -16,4 +18,5 @@ package gpvm.render;
  * @author russell
  */
 public interface RenderInfo {
+  
 }

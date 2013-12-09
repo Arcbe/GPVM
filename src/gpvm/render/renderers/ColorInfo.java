@@ -5,6 +5,7 @@
 package gpvm.render.renderers;
 
 import gpvm.render.RenderInfo;
+import gpvm.util.StringManager;
 import java.awt.Color;
 
 /**
@@ -17,17 +18,22 @@ public class ColorInfo implements RenderInfo {
    * An integer representing the color for this {@link RenderInfo}.  The
    * integer is in the ARGB format.
    */
-  public int color;
+  public Long color;
   
   public ColorInfo() {
-    color = Color.magenta.getRGB();
+    color = (long) Color.magenta.getRGB();
   }
   
   public ColorInfo(Color color) {
     this(color.getRGB());
   }
   
-  public ColorInfo(int color) {
+  public ColorInfo(long color) {
     this.color = color;
+  }
+  
+  @Override
+  public String toString() {
+    return StringManager.getLocalString("tostring_color_info", String.format("%8X", color));
   }
 }

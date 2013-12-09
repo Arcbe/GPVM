@@ -64,7 +64,7 @@ public class ModManager {
     return instance;
   }
   
-  public Mod.ModIdentifier[] getFoundMods() {
+  public Mod.ModIdentifier[] getInitializedMods() {
     Mod.ModIdentifier[] result = new Mod.ModIdentifier[mods.size()];
     
     int index = 0;

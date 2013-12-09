@@ -1,8 +1,13 @@
 package gpvm.render;
 
+import gpvm.io.DataNode;
+import gpvm.util.StringManager;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A registry containing {@link TileRenderer} and {@link RenderInfo} for
@@ -45,18 +50,43 @@ public final class RenderRegistry {
     /**
      * Creates a new entry for the {@link RenderRegistry}.
      * 
-     * @param renderer The class of the renderer for this entry.
-     * @param info Any addition rendering information for this entry.
+     * @param renderclass The class of the renderclass for this entry.
+     * @param info Any addition rendering information for this entry.  This will
+     *            be used to 
      */
-    public RendererEntry(Class<? extends TileRenderer> renderer, RenderInfo info) throws InstantiationException, IllegalAccessException {
-      //create the renderer for the tiles if needed.
-      if(!renderers.containsKey(renderer) || renderers.get(renderer).get() == null) {
-        this.renderer = renderer.newInstance();
-        renderers.put(renderer, new WeakReference<>(this.renderer));
+    public RendererEntry(Class<? extends TileRenderer> renderclass, DataNode data) throws InstantiationException, IllegalAccessException, NoSuchFieldException {
+      //create the renderclass for the tiles if needed.
+      if(!renderers.containsKey(renderclass) || renderers.get(renderclass).get() == null) {
+        this.renderer = renderclass.newInstance();
+        renderers.put(renderclass, new WeakReference<>(this.renderer));
       } else //TODO: possible timing bug here, investigate.
-        this.renderer = renderers.get(renderer).get();
+        this.renderer = renderers.get(renderclass).get();
       
-      this.info = info;
+      info = populateRenderInfo(renderer.getRenderInfo(), data);
+    }
+    
+    private static RenderInfo populateRenderInfo(Class<? extends RenderInfo> infoclass, DataNode data) throws InstantiationException, IllegalAccessException, NoSuchFieldException {
+      //first create the info class
+      RenderInfo info = infoclass.newInstance();
+      
+      for(String val : data.getValues()) {
+        Field f;
+        try {
+          f = infoclass.getDeclaredField(val);
+        } catch (NoSuchFieldException | SecurityException ex) {
+          log.log(Level.SEVERE, StringManager.getLocalString("err_missing_renderer_field", val, infoclass), ex);
+          
+          throw ex;
+        }
+        
+        if(data.isType(val, f.getType())) {
+          f.set(info, data.getValue(val));
+        } else {
+          log.log(Level.SEVERE, StringManager.getLocalString("err_wrong_render_field_type", val, infoclass));
+        }
+      }
+      
+      return info;
     }
     
     private static HashMap<Class<?>, WeakReference<TileRenderer>> renderers = new HashMap<>();
@@ -124,4 +154,6 @@ public final class RenderRegistry {
   
   private HashMap<Long, RendererEntry> data;
   private ArrayList<RenderRegistryListener> listeners;
+  
+  private static final Logger log = Logger.getLogger(RenderRegistry.class.getName());
 }

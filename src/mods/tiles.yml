@@ -2,6 +2,9 @@
 ---
 
 Grass:
-  canonicalname: grass
   opaque: yes
   metadata: 0
+  
+Stone:
+  opaque: yes
+  metadata: 32
