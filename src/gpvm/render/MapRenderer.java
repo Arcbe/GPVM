@@ -5,10 +5,12 @@
 package gpvm.render;
 
 import gpvm.map.GameMap;
+import gpvm.map.Region;
 import gpvm.util.geometry.Coordinate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector3f;
 
 /**
  * Handles the rendering of a GameMap.
@@ -47,14 +49,18 @@ public final class MapRenderer {
     
     drawlist.clear();
     
-    if(renderers.containsKey(new Coordinate())) {
-      drawlist.add(renderers.get(new Coordinate()));
+    if(cam.direction.x > 0) {
+      addQuad(Quad.PxNy, cam.position);
+      addQuad(Quad.PxPy, cam.position);
+      
+      if(cam.direction.y > 0) addQuad(Quad.NxPy, cam.position);
+      else addQuad(Quad.NxNy, cam.position);
     } else {
-      RegionRenderer rend = new RegionRenderer(map.getRegion(new Coordinate()), map);
-      rend.setRenderBatch(renderclass);
-      rend.update();
-      renderers.put(new Coordinate(), rend);
-      drawlist.add(rend);
+      addQuad(Quad.NxNy, cam.position);
+      addQuad(Quad.NxPy, cam.position);
+      
+      if(cam.direction.y > 0) addQuad(Quad.PxPy, cam.position);
+      else addQuad(Quad.PxNy, cam.position);
     }
   }
   
@@ -63,15 +69,58 @@ public final class MapRenderer {
     
     //setup the matrices
     GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    GL11.glLoadIdentity();
     
-    for(RegionRenderer reg : drawlist)
+    for(RegionRenderer reg : drawlist) {
+      Coordinate loc = reg.getLocation();
+      GL11.glLoadIdentity();
+      GL11.glScalef(2, 2,2);
+      GL11.glTranslatef(loc.x, loc.y, loc.z);
+      
       reg.render(rendgrid);
+    }
   }
+  
+  private static int drawdistance = 2;
   
   private GameMap map;
   private ArrayList<RegionRenderer> drawlist;
   private HashMap<Coordinate, RegionRenderer> renderers;
   private Class<? extends RenderingBatch> renderclass;
   private boolean rendgrid;
+  
+  private void addRenderer(Coordinate location) {
+    if(renderers.containsKey(location)) {
+      drawlist.add(renderers.get(location));
+    } else {
+      RegionRenderer rend = new RegionRenderer(map.getRegion(location), map);
+      rend.setRenderBatch(renderclass);
+      renderers.put(location, rend);
+      drawlist.add(rend);
+    }
+  }
+  
+  private void addQuad(Quad q, Vector3f origin) {
+    int mi = (q == Quad.PxNy || q == Quad.PxPy ? 1 : -1);
+    int mj = (q == Quad.PxPy || q == Quad.NxPy ? 1 : -1);
+    
+    for(int i = 0; i < drawdistance; i++) {
+      for(int j = 0; j < drawdistance; j++) {
+        for(int k = 0; k < drawdistance; k++) {
+          int x = (int)origin.x + mi * i * Region.REGION_SIZE;
+          int y = (int)origin.y + mj * j * Region.REGION_SIZE;
+          int z = (int)origin.z + k * Region.REGION_SIZE;
+          Coordinate loc = new Coordinate(x, y, z);
+          
+          addRenderer(loc);
+        }
+      }
+    }
+  }
+  
+  private enum Quad {
+    PxPy,
+    PxNy,
+    NxPy,
+    NxNy
+  }
 }

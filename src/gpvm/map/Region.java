@@ -18,7 +18,7 @@ public final class Region {
   /**
    * Each region will be a cube with edges of length REGION_SIZE.
    */
-  public static final byte REGION_SIZE = 16;
+  public static final byte REGION_SIZE = 64;
   private final Coordinate location;
   
   /**

@@ -197,10 +197,11 @@ public class RenderingSystem {
     public boolean running = true;
     
     @Override
-    public void run() {
+    public synchronized void run() {
       try {
         //initialize the display
         Display.setDisplayModeAndFullscreen(mode);
+        Display.setVSyncEnabled(true);
         Display.create();
         
         //start doig the rendering
@@ -210,6 +211,12 @@ public class RenderingSystem {
           
           InputSystem.getInstance().pump();
           Display.update();
+          
+          try {
+            wait(16);
+          } catch (InterruptedException ex) {
+            Logger.getLogger(RenderingSystem.class.getName()).log(Level.SEVERE, null, ex);
+          }
         }
       } catch (LWJGLException ex) {
         Logger.getLogger(RenderingSystem.class.getName()).log(Level.SEVERE, StringManager.getLocalString("err_rendering_init"), ex);

@@ -64,8 +64,7 @@ public final class DataNode {
    */
   public <T> T getValue(String name) {
     if(!contains(name)) {
-      String msg = String.format(StringManager.getLocalString("err_no_data_value"), name);
-      throw new NoDataValueException(msg);
+      throw new NoDataValueException(StringManager.getLocalString("err_no_data_value", name));
     }
     
     return (T) values.get(name);

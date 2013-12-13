@@ -5,6 +5,7 @@
 package gpvm.modding;
 
 import gpvm.io.InvalidDataFileException;
+import gpvm.map.Universe;
 import gpvm.util.StringManager;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,6 +19,8 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,6 +148,12 @@ public class ModManager {
     
     log.log(Level.INFO, StringManager.getLocalString("info_mods_postloaded"));
     
+    //time to add worlds to the game universe
+    for(Mod mod : activemods) {
+      Universe.getInstance().addWorlds(mod.getWorlds());
+      overworlds.addAll(mod.getOverworlds());
+    }
+    
     //set the state
     curstate = State.Loaded;
   }
@@ -155,6 +164,10 @@ public class ModManager {
   
   public Mod getMod(String id) {
     return mods.get(id);
+  }
+  
+  public List<String> getOverworlds() {
+    return Collections.unmodifiableList(overworlds);
   }
   
   public void findMods() {
@@ -197,6 +210,7 @@ public class ModManager {
   
   private Map<String, Mod> mods;
   private List<Mod> activemods;
+  private List<String> overworlds;
   private State curstate;
   
   private static final Logger log = Logger.getLogger(ModManager.class.getName());
@@ -204,6 +218,8 @@ public class ModManager {
   private ModManager() {
     mods = new HashMap<>();
     activemods = new ArrayList<>();
+    overworlds = new ArrayList<>();
+    
     curstate = State.Unloaded;
   }
   

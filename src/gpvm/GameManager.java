@@ -4,9 +4,11 @@
  */
 package gpvm;
 
+import gpvm.map.Universe;
 import gpvm.modding.ModManager;
 import gpvm.render.RenderingSystem;
 import gpvm.util.StringManager;
+import java.util.List;
 
 /**
  * Controls the overall state of the game.  This class will initialize the
@@ -25,7 +27,11 @@ public class GameManager {
     //first load the mods, the manager already knows what mods to load.
     ModManager.getInstance().loadMods();
     
+    List<String> names = ModManager.getInstance().getOverworlds();
+    String start = names.get(0);
+    
     RenderingSystem.createSystem(StringManager.getDisplayMode());
+    Universe.getInstance().setActiveWorld(start);
   }
   
   public boolean isPaused() {

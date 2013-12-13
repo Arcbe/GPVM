@@ -4,7 +4,9 @@
  */
 package gpvm.map;
 
+import gpvm.render.RenderingSystem;
 import gpvm.util.StringManager;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -36,13 +38,33 @@ public class Universe {
     
     GameMap nmap = new GameMap(gen);
     worlds.put(world.name, nmap);
+    
+    log.log(Level.INFO, StringManager.getLocalString("info_world_added", world.name));
+  }
+  
+  public void addWorlds(Collection<World> worlds) {
+    for(World world : worlds)
+      addWorld(world);
   }
   
   public GameMap getWorld(String name) {
     return worlds.get(name);
   }
   
+  public void setActiveWorld(String name) {
+    GameMap map = getWorld(name);
+    
+    RenderingSystem.getInstance().setMap(map);
+    
+    activemap = map;
+  }
+  
+  public GameMap getActiveWorld() {
+    return activemap;
+  }
+  
   private Map<String, GameMap> worlds;
+  private GameMap activemap;
   
   private Universe() {
     worlds = new HashMap<>();

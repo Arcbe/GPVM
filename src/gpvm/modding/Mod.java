@@ -21,6 +21,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -33,10 +34,13 @@ import java.util.logging.Logger;
 public final class Mod {
   public static final String NAME_FIELD = "name";
   public static final String DEP_FIELD = "dependency";
-  public static final String GENERATOR_FIELD = "map-generator";
+  public static final String WORLD_FIELD = "world";
+  public static final String WORLD_NAME_FIELD = "name";
+  public static final String WORLD_GENERATOR_FIELD = "generator";
   public static final String CONTROLLER_FIELD = "mod-controller";
   public static final String TILE_DEFINITION_FIELD = "tile-definition";
   public static final String RENDERING_FILE_FIELD = "rendering-info";
+  public static final String OVERWORLD_FIELD = "overworld";
   
   /**
    * Contains information that can uniquely identify a mod.
@@ -89,6 +93,10 @@ public final class Mod {
   
   public List<World> getWorlds() {
     return Collections.unmodifiableList(worlds);
+  }
+
+  public List<String> getOverworlds() {
+    return Collections.unmodifiableList(overworlds);
   }
   
   public void intialize() {
@@ -180,8 +188,8 @@ public final class Mod {
           break;
           
         //field for the class of the mods map generator.
-        case GENERATOR_FIELD:
-          if(!result.setGenerator(root.getValue(GENERATOR_FIELD)))
+        case WORLD_FIELD:
+          if(!result.addWorld(root.getValue(WORLD_FIELD)))
             log.log(Level.WARNING, StringManager.getLocalString("warn_invalid_map_generator", path));
           break;
           
@@ -202,12 +210,20 @@ public final class Mod {
           if(!result.addRenderingFiles(root.getValue(RENDERING_FILE_FIELD)))
             log.log(Level.WARNING, StringManager.getLocalString("warn_invalid_rendering_file", path));
           break;
+          
+        case OVERWORLD_FIELD:
+          if(!result.addOverworlds(root.getValue(OVERWORLD_FIELD)))
+            log.log(Level.WARNING, StringManager.getLocalString("warn_invalid_overworld", path));
+          break;
+          
+        default:
+          log.log(Level.WARNING, StringManager.getLocalString("warn_unknown_mod_field", path, field));
       }
     }
     
     //check to make sure the mod is good.
     if(result.validate()) {
-      log.log(Level.INFO, StringManager.getLocalString("info_mod_created"), new Object[]{result.name, path.toString()});
+      log.log(Level.INFO, StringManager.getLocalString("info_mod_created", result.name, path));
       return result;
     } else return null;
   }
@@ -223,10 +239,13 @@ public final class Mod {
   private ModController controller;
   private List<String> tdfiles;
   private List<String> rendfiles;
+  private List<String> overworlds;
   
   private Mod(URL path) {
     tdfiles = new ArrayList<>();
     rendfiles = new ArrayList<>();
+    overworlds = new ArrayList<>();
+    worlds = new ArrayList<>();
     
     loader = new MPUClassLoader(new URL[]{path});
   }
@@ -240,11 +259,14 @@ public final class Mod {
     }
   }
   
-  private boolean setGenerator(Object obj) {
-    if(obj instanceof String) {
+  private boolean addWorld(Object obj) {
+    if(obj instanceof DataNode) {
+      DataNode data = (DataNode) obj;
+      if(!data.isType(WORLD_GENERATOR_FIELD, String.class)) return false;
+      
       Class<?> gen = null;
       try {
-        gen = getClass((String) obj);
+        gen = getClass((String) data.getValue(WORLD_GENERATOR_FIELD));
       } catch(ClassNotFoundException ex) {
         log.log(Level.SEVERE, StringManager.getLocalString("err_map_gen_not_found", obj), ex);
         return false;
@@ -258,7 +280,14 @@ public final class Mod {
       
       World nworld = new World();
       nworld.generator = (Class<? extends MapGenerator>) gen;
-      nworld.name = "" + worlds.size();
+      
+      if(data.isType(WORLD_NAME_FIELD, String.class))
+        nworld.name = data.getValue(WORLD_NAME_FIELD);
+      else
+        //give the world an working name.
+        nworld.name = "" + worlds.size();
+      
+      worlds.add(nworld);
       
       return true;
     } else {
@@ -308,6 +337,15 @@ public final class Mod {
       rendfiles.add((String) obj);
       return true;
       //TODO: add code for lists of files
+    } else {
+      return false;
+    }
+  }
+  
+  private boolean addOverworlds(Object obj) {
+    if(obj instanceof String) {
+      overworlds.add((String) obj);
+      return true;
     } else {
       return false;
     }

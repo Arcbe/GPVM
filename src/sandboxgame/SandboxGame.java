@@ -11,25 +11,11 @@ import gpvm.input.InputSystem;
 import gpvm.input.KeyListener;
 import gpvm.io.DataLoader;
 import gpvm.io.YAMLLoader;
-import java.awt.Color;
-import java.util.ArrayList;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
-import gpvm.map.Region;
 import gpvm.modding.ModManager;
-import gpvm.render.Camera;
-import gpvm.render.RawBatch;
 import gpvm.render.RenderingSystem;
-import gpvm.render.TileInfo;
-import gpvm.render.VertexArrayBatch;
-import gpvm.render.renderers.ColorInfo;
-import gpvm.render.renderers.ColorRenderer;
-import gpvm.render.vertices.ColorVertex;
 import gpvm.util.StringManager;
-import gpvm.util.geometry.Coordinate;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,12 +73,12 @@ public class SandboxGame {
         Vector3f vec = RenderingSystem.getInstance().getCamera().position;
         
         switch(code) {
-          case Keyboard.KEY_W: vec.y = .1f; break;
-          case Keyboard.KEY_A: vec.x = -.1f; break;
-          case Keyboard.KEY_S: vec.y = -.1f; break;
-          case Keyboard.KEY_D: vec.x = .1f; break;
-          case Keyboard.KEY_Q: vec.z = .1f; break;
-          case Keyboard.KEY_E: vec.z = -.1f; break;
+          case Keyboard.KEY_W: vec.y += 1f; break;
+          case Keyboard.KEY_A: vec.x -= 1f; break;
+          case Keyboard.KEY_S: vec.y -= 1f; break;
+          case Keyboard.KEY_D: vec.x += 1f; break;
+          case Keyboard.KEY_Q: vec.z += 1f; break;
+          case Keyboard.KEY_E: vec.z -= 1f; break;
         }
       }
 
