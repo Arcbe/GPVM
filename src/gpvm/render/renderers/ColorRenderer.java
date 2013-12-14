@@ -26,6 +26,7 @@ import static gpvm.util.geometry.Direction.*;
  * @author russell
  */
 public class ColorRenderer implements StaticRenderer {
+  public ColorRenderer() {}
 
   @Override
   public Class<? extends RenderInfo> getRenderInfo() {

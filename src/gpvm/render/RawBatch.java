@@ -80,19 +80,24 @@ public class RawBatch {
   public void combine(RawBatch other) {
     assert compatible(other);
     
+    //if there is nothing in this batch then just copy the other one
+    if(vertices == null) {
+      rendermode = other.rendermode;
+      vertices = other.vertices;
+      indices = other.indices;
+      return;
+    }
+    
     //copy the vertices into the new array.
     Vertex[] nvertices = new Vertex[vertices.length + other.vertices.length];
-    for(int i = 0; i < vertices.length; i++)
-      nvertices[i] = vertices[i];
-    for(int i = 0; i < other.vertices.length; i++)
-      nvertices[i + vertices.length] = other.vertices[i];
+    System.arraycopy(vertices, 0, nvertices, 0, vertices.length);
+    System.arraycopy(other.vertices, 0, nvertices, vertices.length, other.vertices.length);
     vertices = nvertices;
     
     //copy the indices into the new array
     if(indices == null) return;
     int[] nindices = new int[indices.length + other.indices.length];
-    for(int i = 0; i < indices.length; i++)
-      nindices[i] = indices[i];
+    System.arraycopy(indices, 0, nindices, 0, indices.length);
     //don't forget to offset the indices from the other batch.
     for(int i = 0; i < other.indices.length; i++)
       nindices[i + indices.length] = indices[i] + vertices.length;

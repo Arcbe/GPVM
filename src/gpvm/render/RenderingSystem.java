@@ -185,7 +185,7 @@ public class RenderingSystem {
     }
     
     //now draw the map
-    renderer.renderGrid(true);
+    renderer.renderGrid(false);
     renderer.render(cam);
   }
   

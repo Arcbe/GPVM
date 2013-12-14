@@ -5,10 +5,9 @@
 package gpvm.map;
 
 import gpvm.util.geometry.Coordinate;
-import java.awt.Point;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
@@ -18,7 +17,7 @@ public final class Region {
   /**
    * Each region will be a cube with edges of length REGION_SIZE.
    */
-  public static final byte REGION_SIZE = 64;
+  public static final byte REGION_SIZE = 32;
   private final Coordinate location;
   
   /**
@@ -30,10 +29,10 @@ public final class Region {
     tiles = new Tile[REGION_SIZE * REGION_SIZE * REGION_SIZE];
     location = loc;
     
-    for(int i = 0; i < tiles.length; i++)
+    for(int i = tiles.length - 1; i >= 0; i--)
       tiles[i] = new Tile();
     
-    listeners = new ConcurrentLinkedDeque<>();
+    listeners = new ConcurrentLinkedQueue<>();
   }
   
   /**
@@ -46,7 +45,7 @@ public final class Region {
     assert data.length == REGION_SIZE * REGION_SIZE * REGION_SIZE;
     tiles = data;
     location = loc;
-    listeners = new ConcurrentLinkedDeque<>();
+    listeners = new ConcurrentLinkedQueue<>();
   }
   
   /**
@@ -98,6 +97,6 @@ public final class Region {
     }
   }
   
-  private ConcurrentLinkedDeque<RegionListener> listeners;
+  private Collection<RegionListener> listeners;
   private Tile[] tiles;
 }

@@ -62,6 +62,9 @@ public final class MapRenderer {
       if(cam.direction.y > 0) addQuad(Quad.PxPy, cam.position);
       else addQuad(Quad.PxNy, cam.position);
     }
+    
+    for(RegionRenderer reg : drawlist)
+      reg.update();
   }
   
   public void render(Camera cam) {
@@ -80,7 +83,7 @@ public final class MapRenderer {
     }
   }
   
-  private static int drawdistance = 2;
+  private static int drawdistance = 4;
   
   private GameMap map;
   private ArrayList<RegionRenderer> drawlist;
@@ -99,16 +102,24 @@ public final class MapRenderer {
     }
   }
   
-  private void addQuad(Quad q, Vector3f origin) {
+  private void addQuad(Quad q, Vector3f start) {
+    int sx = (int)start.x / Region.REGION_SIZE;
+    int sy = (int)start.y / Region.REGION_SIZE;
+    int sz = (int)start.z / Region.REGION_SIZE;
+    
+    sx *= Region.REGION_SIZE;
+    sy *= Region.REGION_SIZE;
+    sz *= Region.REGION_SIZE;
+    
     int mi = (q == Quad.PxNy || q == Quad.PxPy ? 1 : -1);
     int mj = (q == Quad.PxPy || q == Quad.NxPy ? 1 : -1);
     
     for(int i = 0; i < drawdistance; i++) {
       for(int j = 0; j < drawdistance; j++) {
         for(int k = 0; k < drawdistance; k++) {
-          int x = (int)origin.x + mi * i * Region.REGION_SIZE;
-          int y = (int)origin.y + mj * j * Region.REGION_SIZE;
-          int z = (int)origin.z + k * Region.REGION_SIZE;
+          int x = sx + mi * i * Region.REGION_SIZE;
+          int y = sy + mj * j * Region.REGION_SIZE;
+          int z = sz + k * Region.REGION_SIZE;
           Coordinate loc = new Coordinate(x, y, z);
           
           addRenderer(loc);

@@ -1,4 +1,9 @@
 Grass:
   rendering-class: gpvm.render.renderers.ColorRenderer
   rendering-info:
-    color: 0xFF00FF00
+    color: 0xFF00CC00
+    
+Stone:
+  rendering-class: gpvm.render.renderers.ColorRenderer
+  rendering-info:
+    color: 0xFF999999

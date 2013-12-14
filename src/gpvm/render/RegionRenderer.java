@@ -39,6 +39,7 @@ public final class RegionRenderer implements RegionListener {
     reg = target;
     reg.addListener(this);
     map = gmap;
+    dirty = true;
     
     unloaded = false;
     entries = new ArrayList<>();
@@ -62,6 +63,8 @@ public final class RegionRenderer implements RegionListener {
         }
       }
     }
+    
+    dirty = false;
   }
   
   /**
@@ -172,6 +175,9 @@ public final class RegionRenderer implements RegionListener {
   public void update() {
     assert !unloaded;
     
+    if(dirty)
+      scanRegion();
+    
     for(RenderingEntry ent : entries)
       ent.update();
   }
@@ -190,6 +196,7 @@ public final class RegionRenderer implements RegionListener {
   }
   
   private boolean unloaded;
+  private boolean dirty;
   private Region reg;
   private GameMap map;
   private Class<? extends RenderingBatch> renderclass;
@@ -279,6 +286,7 @@ public final class RegionRenderer implements RegionListener {
         comp.combine(bat);
       
       compiled.compile(comp);
+      dirty = false;
     }
 
     private void remove(Coordinate loc) {

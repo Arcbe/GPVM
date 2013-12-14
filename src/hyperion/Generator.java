@@ -4,8 +4,10 @@
  */
 package hyperion;
 
+import gpvm.Registrar;
 import gpvm.map.MapGenerator;
 import gpvm.map.Region;
+import gpvm.map.Tile;
 import gpvm.util.geometry.Coordinate;
 
 /**
@@ -15,13 +17,16 @@ import gpvm.util.geometry.Coordinate;
 public class Generator implements MapGenerator {
   @Override
   public Region generateRegion(Coordinate coor, Region[] neighbors) {
-    Region result = new Region(coor);
+    initvariables();
     
     //create the ground
+    Tile[] data = new Tile[Region.REGION_SIZE * Region.REGION_SIZE * Region.REGION_SIZE];
     if(coor.z == 0) {
       for(int i = 0; i < Region.REGION_SIZE; i++) {
-        for(int j = 0; j < Region.REGION_SIZE; j++) {
-          result.getTile(i, j, 0).type = 1;
+        for(int j = i; j < Region.REGION_SIZE; j++) {
+          Tile t = new Tile();
+          t.type = grass;
+          data[j * Region.REGION_SIZE + i] = t;
         }
       }
     //create the below ground
@@ -29,6 +34,18 @@ public class Generator implements MapGenerator {
       
     }
     
-    return result;
+    return new Region(data, coor);
   }
+  
+  private void initvariables() {
+    if(init) return;
+    
+    init = true;
+    grass = Registrar.getInstance().getTileRegistry().getTileID("hyperion-base.Grass");
+    stone = Registrar.getInstance().getTileRegistry().getTileID("hyperion-base.Stone");
+  }
+  
+  private static boolean init = false;
+  private static long grass;
+  private static long stone;
 }

@@ -55,7 +55,7 @@ public class Camera {
     up = new Vector3f(0,0,1);
     fov = 60;
     near = 1;
-    far = 100;
+    far = 1000;
   }
 
   /**
