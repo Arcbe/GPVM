@@ -15,6 +15,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 import gpvm.util.StringManager;
+import org.lwjgl.util.glu.GLU;
 
 /**
  * Maintains a screen and controls the rendering for the entire game. 
@@ -172,6 +173,7 @@ public class RenderingSystem {
     //be visible
     GL11.glClearColor(1, 0, 1, 1);
     GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+    GL11.glEnable(GL11.GL_DEPTH_TEST);
     
     //setup the camera
     cam.loadCamera();

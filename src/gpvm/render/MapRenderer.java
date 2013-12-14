@@ -76,7 +76,6 @@ public final class MapRenderer {
     for(RegionRenderer reg : drawlist) {
       Coordinate loc = reg.getLocation();
       GL11.glLoadIdentity();
-      GL11.glScalef(2, 2,2);
       GL11.glTranslatef(loc.x, loc.y, loc.z);
       
       reg.render(rendgrid);
@@ -92,10 +91,13 @@ public final class MapRenderer {
   private boolean rendgrid;
   
   private void addRenderer(Coordinate location) {
+    RegionRenderer rend = null;
     if(renderers.containsKey(location)) {
-      drawlist.add(renderers.get(location));
+      rend = renderers.get(location);
+      
+      if(!drawlist.contains(rend)) drawlist.add(rend);
     } else {
-      RegionRenderer rend = new RegionRenderer(map.getRegion(location), map);
+      rend = new RegionRenderer(map.getRegion(location), map);
       rend.setRenderBatch(renderclass);
       renderers.put(location, rend);
       drawlist.add(rend);

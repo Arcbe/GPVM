@@ -21,7 +21,7 @@ public class StringManager {
   private static String bundlename;
   
   //various settings for the game along with their defaults
-  private static DisplayMode dispmod = new DisplayMode(800, 600);
+  private static DisplayMode dispmod = new DisplayMode(1024, 768);
   
   /**
    * Loads the resource bundle for strings using the default locale.

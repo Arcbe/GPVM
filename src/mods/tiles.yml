@@ -8,3 +8,11 @@ Grass:
 Stone:
   opaque: yes
   metadata: 0
+  
+Water:
+  opaque: yes
+  metadata: 0
+  
+Lava:
+  opaque: yes
+  metadata: 0
