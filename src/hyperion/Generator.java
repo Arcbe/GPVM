@@ -23,9 +23,12 @@ public class Generator implements MapGenerator {
     Tile[] data = new Tile[Region.REGION_SIZE * Region.REGION_SIZE * Region.REGION_SIZE];
     if(coor.z == 0) {
       for(int i = 0; i < Region.REGION_SIZE; i++) {
-        for(int j = i; j < Region.REGION_SIZE; j++) {
+        for(int j = 0; j < Region.REGION_SIZE; j++) {
           Tile t = new Tile();
-          t.type = grass;
+          if((i + j) % 2 == 0)
+            t.type = grass;
+          else
+            t.type = stone;
           data[j * Region.REGION_SIZE + i] = t;
         }
       }

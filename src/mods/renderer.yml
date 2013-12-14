@@ -6,4 +6,4 @@ Grass:
 Stone:
   rendering-class: gpvm.render.renderers.ColorRenderer
   rendering-info:
-    color: 0xFF999999
+    color: 0xFF888888

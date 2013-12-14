@@ -270,7 +270,7 @@ public final class TileRegistry {
     if(id == 0) return 0;
     
     int start = 0;
-    int end = tiles.size() - 1;
+    int end = tiles.size();
     
     int result;
     while(start != end) {
