@@ -24,13 +24,14 @@ public class GameManager {
   }
   
   public void startGame() {
+    RenderingSystem.createSystem(StringManager.getDisplayMode());
+    
     //first load the mods, the manager already knows what mods to load.
     ModManager.getInstance().loadMods();
     
     List<String> names = ModManager.getInstance().getOverworlds();
     String start = names.get(0);
     
-    RenderingSystem.createSystem(StringManager.getDisplayMode());
     Universe.getInstance().setActiveWorld(start);
   }
   

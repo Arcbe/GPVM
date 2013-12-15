@@ -63,37 +63,6 @@ public class SandboxGame {
     
     moving = new Vector3f();
     direction = new Matrix3f();
-    
-    KeyListener list = new KeyListener() {
-
-      @Override
-      public void keyPressed(int code) {
-        if(RenderingSystem.getInstance() == null) return;
-        
-        Vector3f vec = RenderingSystem.getInstance().getCamera().position;
-        
-        switch(code) {
-          case Keyboard.KEY_W: vec.y += 1f; break;
-          case Keyboard.KEY_A: vec.x -= 1f; break;
-          case Keyboard.KEY_S: vec.y -= 1f; break;
-          case Keyboard.KEY_D: vec.x += 1f; break;
-          case Keyboard.KEY_Q: vec.z += 1f; break;
-          case Keyboard.KEY_E: vec.z -= 1f; break;
-        }
-      }
-
-      @Override
-      public void keyReleased(int code) {
-        
-      }
-    };
-    
-    InputSystem.getInstance().addKeyListener(Keyboard.KEY_W, list);
-    InputSystem.getInstance().addKeyListener(Keyboard.KEY_A, list);
-    InputSystem.getInstance().addKeyListener(Keyboard.KEY_S, list);
-    InputSystem.getInstance().addKeyListener(Keyboard.KEY_D, list);
-    InputSystem.getInstance().addKeyListener(Keyboard.KEY_Q, list);
-    InputSystem.getInstance().addKeyListener(Keyboard.KEY_E, list);
   }
   
   private static Vector3f moving;

@@ -7,6 +7,7 @@ package gpvm.render;
 import gpvm.map.GameMap;
 import gpvm.map.Region;
 import gpvm.util.geometry.Coordinate;
+import gpvm.util.geometry.Vector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.lwjgl.opengl.GL11;
@@ -104,7 +105,7 @@ public final class MapRenderer {
     }
   }
   
-  private void addQuad(Quad q, Vector3f start) {
+  private void addQuad(Quad q, Vector start) {
     int sx = (int)start.x / Region.REGION_SIZE;
     int sy = (int)start.y / Region.REGION_SIZE;
     int sz = (int)start.z / Region.REGION_SIZE;

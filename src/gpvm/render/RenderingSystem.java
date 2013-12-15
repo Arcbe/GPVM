@@ -15,6 +15,9 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 import gpvm.util.StringManager;
+import gpvm.util.Updateable;
+import java.util.ArrayList;
+import java.util.List;
 import org.lwjgl.util.glu.GLU;
 
 /**
@@ -48,15 +51,6 @@ public class RenderingSystem {
    */
   public static RenderingSystem getInstance() {
     return instance;
-  }
-
-  
-  private RenderingSystem(DisplayMode mode) {
-    this.mode = mode;
-    cam = new Camera();
-    rendrunner = new Runner();
-    renderingthread = new Thread(rendrunner);
-    renderingthread.setName("Rendering System");
   }
   
   /**
@@ -158,12 +152,32 @@ public class RenderingSystem {
     return rendrunner.pause;
   }
   
+  public void addUpdater(Updateable up) {
+    updaters.add(up);
+  }
+  
   private Runner rendrunner;
   private Thread renderingthread;
   private DisplayMode mode;
   private Camera cam;
   private MapRenderer renderer;
   private GameMap map;
+  private List<Updateable> updaters;
+
+  private RenderingSystem(DisplayMode mode) {
+    this.mode = mode;
+    cam = new Camera();
+    rendrunner = new Runner();
+    updaters = new ArrayList<>();
+    
+    renderingthread = new Thread(rendrunner);
+    renderingthread.setName("Rendering System");
+  }
+  
+  private void pumpUpdaters() {
+    for(Updateable up : updaters)
+      up.Update();
+  }
   
   private void render() {
     //if there is no map there is nothing to render.
@@ -208,10 +222,14 @@ public class RenderingSystem {
         
         //start doig the rendering
         while(running && !Display.isCloseRequested()) {
-          if(!pause)
+          if(!pause) {
+            InputSystem.getInstance().pump();
+            pumpUpdaters();
+            
             render();
+          }
           
-          InputSystem.getInstance().pump();
+          
           Display.update();
           
           try {
