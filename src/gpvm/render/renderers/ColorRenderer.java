@@ -49,18 +49,18 @@ public class ColorRenderer implements StaticRenderer {
       color = (int) (long) ((ColorInfo)tile.info).color;
     }
 
-    //add the east face
-    if(tile.adjacenttiles[East.getIndex()] == null ||
-            !Registrar.getInstance().getTileRegistry().getDefinition(tile.adjacenttiles[East.getIndex()].type).opaque) {
+    //add the west face
+    if(tile.adjacenttiles[West.getIndex()] == null ||
+            !Registrar.getInstance().getTileRegistry().getDefinition(tile.adjacenttiles[West.getIndex()].type).opaque) {
       vertices.add(new ColorVertex(loc.x, loc.y, loc.z, color));
       vertices.add(new ColorVertex(loc.x, loc.y + 1, loc.z, color));
       vertices.add(new ColorVertex(loc.x, loc.y + 1, loc.z + 1, color));
       vertices.add(new ColorVertex(loc.x, loc.y, loc.z + 1, color));
     }
 
-    //west face
-    if(tile.adjacenttiles[West.getIndex()] == null ||
-            !Registrar.getInstance().getTileRegistry().getDefinition(tile.adjacenttiles[West.getIndex()].type).opaque) {
+    //east face
+    if(tile.adjacenttiles[East.getIndex()] == null ||
+            !Registrar.getInstance().getTileRegistry().getDefinition(tile.adjacenttiles[East.getIndex()].type).opaque) {
       vertices.add(new ColorVertex(loc.x + 1, loc.y, loc.z, color));
       vertices.add(new ColorVertex(loc.x + 1, loc.y + 1, loc.z, color));
       vertices.add(new ColorVertex(loc.x + 1, loc.y + 1, loc.z + 1, color));

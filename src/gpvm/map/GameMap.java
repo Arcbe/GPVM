@@ -88,10 +88,10 @@ public class GameMap {
     Tile[] tiles = new Tile[6];
     
     coor.x += 1;
-    tiles[Direction.West.getIndex()] = getTile(coor);
+    tiles[Direction.East.getIndex()] = getTile(coor);
     
     coor.x -= 2;
-    tiles[Direction.East.getIndex()] = getTile(coor);
+    tiles[Direction.West.getIndex()] = getTile(coor);
     
     coor.x += 1;
     coor.y += 1;

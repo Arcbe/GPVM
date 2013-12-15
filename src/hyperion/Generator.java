@@ -21,7 +21,7 @@ public class Generator implements MapGenerator {
     
     //create the ground
     Tile[] data = new Tile[Region.REGION_SIZE * Region.REGION_SIZE * Region.REGION_SIZE];
-    if(coor.z == 0 && coor.x == 0 && coor.y == 0) {
+    if((coor.z / Region.REGION_SIZE + coor.x / Region.REGION_SIZE + coor.y / Region.REGION_SIZE) % 2 == 0) {
       for(int i = 0; i < Region.REGION_SIZE; i++) {
         for(int j = 0; j < Region.REGION_SIZE; j++) {
           Tile t = new Tile();

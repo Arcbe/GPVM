@@ -13,11 +13,11 @@ package gpvm.util.geometry;
  */
 public enum Direction {
   /**
-   * negative x direction
+   * positive x direction
    */
   East(0),
   /**
-   * positive x direction
+   * negative x direction
    */
   West(1),
   /**
