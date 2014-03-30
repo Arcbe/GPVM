@@ -6,9 +6,13 @@ package gpvm;
 
 import gpvm.map.Universe;
 import gpvm.modding.ModManager;
-import gpvm.render.RenderingSystem;
+import gpvm.render.GraphicsSystem;
 import gpvm.util.StringManager;
 import java.util.List;
+import taiga.code.registration.RegisteredSystem;
+
+import static gpvm.HardcodedValues.GAMEMANAGER_NAME;
+import taiga.code.util.SettingManager;
 
 /**
  * Controls the overall state of the game.  This class will initialize the
@@ -18,13 +22,13 @@ import java.util.List;
  * 
  * @author russell
  */
-public class GameManager {
+public class GameManager extends RegisteredSystem {
   public static GameManager getInstance() {
     return instance;
   }
   
   public void startGame() {
-    RenderingSystem.createSystem(StringManager.getDisplayMode());
+    GraphicsSystem.createSystem(StringManager.getDisplayMode());
     
     //first load the mods, the manager already knows what mods to load.
     ModManager.getInstance().loadMods();
@@ -34,18 +38,21 @@ public class GameManager {
     
     Universe.getInstance().setActiveWorld(start);
   }
-  
-  public boolean isPaused() {
-    return paused;
-  }
-  
-  public void setPaused(boolean val) {
-    paused = val;
+
+  @Override
+  public void resetObject() {}
+
+  @Override
+  protected void startSystem() {}
+
+  @Override
+  protected void stopSystem() {}
+
+  private GameManager() {
+    super(GAMEMANAGER_NAME);
     
-    RenderingSystem.getInstance().setPaused(val);
+    addChild(new SettingManager());
   }
-  
-  private boolean paused;
   
   private static GameManager instance = new GameManager();
 }

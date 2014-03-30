@@ -4,6 +4,7 @@
  */
 package gpvm.render;
 
+import static gpvm.HardcodedValues.GRAPHICSSYSTEM_NAME;
 import gpvm.ThreadingManager;
 import gpvm.input.InputSystem;
 import gpvm.map.GameMap;
@@ -13,12 +14,11 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector3f;
 import gpvm.util.StringManager;
 import gpvm.util.Updateable;
 import java.util.ArrayList;
 import java.util.List;
-import org.lwjgl.util.glu.GLU;
+import taiga.code.registration.RegisteredSystem;
 
 /**
  * Maintains a screen and controls the rendering for the entire game. 
@@ -28,7 +28,7 @@ import org.lwjgl.util.glu.GLU;
  * 
  * @author russell
  */
-public class RenderingSystem {
+public class GraphicsSystem extends RegisteredSystem {
   /**
    * Creates a new Rendering system using the given mode.
    * 
@@ -39,7 +39,7 @@ public class RenderingSystem {
       instance.destroy();
     }
     
-    instance = new RenderingSystem(mode);
+    instance = new GraphicsSystem(mode);
     instance.start();
   }
   
@@ -49,7 +49,7 @@ public class RenderingSystem {
    * 
    * @return A instance of a rendering system or null
    */
-  public static RenderingSystem getInstance() {
+  public static GraphicsSystem getInstance() {
     return instance;
   }
   
@@ -58,7 +58,8 @@ public class RenderingSystem {
    * then this function has no effect.  Once destroyed the rendering system
    * cannot be restarted with this method.
    */
-  public void start() {
+  @Override
+  public void startSystem() {
     assert renderingthread != null;
     assert rendrunner != null;
     if(!renderingthread.isAlive())
@@ -97,16 +98,6 @@ public class RenderingSystem {
     rendrunner = null;
     renderingthread = null;
   }
-  
-  /**
-   * Checks whether the rendering thread is alive and the {@link RenderingSystem}
-   * is updating the window.
-   * 
-   * @return Whether the rendering thread is alive.
-   */
-  public boolean isRunning() {
-    return renderingthread.isAlive();
-  }
 
   /**
    * Sets the {@link GameMap} that the rendering system is currently
@@ -116,9 +107,16 @@ public class RenderingSystem {
    */
   public void setMap(GameMap map) {
     //TODO: this should not be hard coded.
-    if(renderer == null) renderer = new MapRenderer(VertexArrayBatch.class);
-    renderer.setMap(map);
+    if(renderer == null) renderer = new MapData();
+    MapRenderer rend = new MapRenderer(VertexArrayBatch.class);
+    rend.setMap(map);
     this.map = map;
+    renderer.map = rend;
+  }
+  
+  public void setSkyBox(SkyBoxRenderer sky) {
+    if(renderer == null) renderer = new MapData();
+    renderer.sky = sky;
   }
   
   /**
@@ -132,18 +130,12 @@ public class RenderingSystem {
   }
   
   /**
-   * Returns the camera that is currently in use by the {@link RenderingSystem}.
+   * Returns the camera that is currently in use by the {@link GraphicsSystem}.
    * 
    * @return The current {@link Camera}
    */
   public Camera getCamera() {
     return cam;
-  }
-
-  public void setPaused(boolean val) {
-    assert rendrunner != null;
-    
-    rendrunner.pause = val;
   }
   
   public boolean isPaused() {
@@ -160,18 +152,20 @@ public class RenderingSystem {
   private Thread renderingthread;
   private DisplayMode mode;
   private Camera cam;
-  private MapRenderer renderer;
+  private MapData renderer;
   private GameMap map;
   private List<Updateable> updaters;
 
-  private RenderingSystem(DisplayMode mode) {
+  private GraphicsSystem(DisplayMode mode) {
+    super(GRAPHICSSYSTEM_NAME);
+    
     this.mode = mode;
     cam = new Camera();
     rendrunner = new Runner();
     updaters = new ArrayList<>();
     
     renderingthread = new Thread(rendrunner);
-    renderingthread.setName("Rendering System");
+    renderingthread.setName(GRAPHICSSYSTEM_NAME);
   }
   
   private void pumpUpdaters() {
@@ -195,17 +189,27 @@ public class RenderingSystem {
     //update the rendering info if needed
     ThreadingManager.getInstance().requestRead();
     try {
-      renderer.update(cam);
+      renderer.map.update(cam);
     } finally {
       ThreadingManager.getInstance().releaseRead();
     }
     
     //now draw the map
-    renderer.renderGrid(false);
-    renderer.render(cam);
+    renderer.map.renderGrid(false);
+    renderer.map.render(cam);
   }
   
-  private static RenderingSystem instance;
+  private static GraphicsSystem instance;
+
+  @Override
+  protected void resetObject() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  protected void stopSystem() {
+    rendrunner.pause = true;
+  }
   
   //inner class used for rendering thread.
   private class Runner implements Runnable {
@@ -235,15 +239,20 @@ public class RenderingSystem {
           try {
             wait(16);
           } catch (InterruptedException ex) {
-            Logger.getLogger(RenderingSystem.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GraphicsSystem.class.getName()).log(Level.SEVERE, null, ex);
           }
         }
       } catch (LWJGLException ex) {
-        Logger.getLogger(RenderingSystem.class.getName()).log(Level.SEVERE, StringManager.getLocalString("err_rendering_init"), ex);
+        Logger.getLogger(GraphicsSystem.class.getName()).log(Level.SEVERE, StringManager.getLocalString("err_rendering_init"), ex);
       } finally {
         Display.destroy();
         running = false;
       }
     }
+  }
+  
+  private class MapData {
+    SkyBoxRenderer sky;
+    MapRenderer map;
   }
 }

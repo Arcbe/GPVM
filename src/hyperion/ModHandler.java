@@ -7,7 +7,7 @@ package hyperion;
 import gpvm.input.InputSystem;
 import gpvm.input.KeyListener;
 import gpvm.modding.ModController;
-import gpvm.render.RenderingSystem;
+import gpvm.render.GraphicsSystem;
 import gpvm.util.Updateable;
 import gpvm.util.geometry.Quaternion;
 import gpvm.util.geometry.Vector;
@@ -26,7 +26,7 @@ public class ModHandler extends ModController {
   @Override
   public void load() {
     ViewUpdater updater = new ViewUpdater();
-    RenderingSystem.getInstance().addUpdater(updater);
+    GraphicsSystem.getInstance().addUpdater(updater);
     InputSystem.getInstance().addKeyListener(Keyboard.KEY_A, updater);
     InputSystem.getInstance().addKeyListener(Keyboard.KEY_D, updater);
     InputSystem.getInstance().addKeyListener(Keyboard.KEY_Q, updater);
@@ -87,9 +87,9 @@ public class ModHandler extends ModController {
       }
       
       Vector dir = current.getDirection();
-      RenderingSystem.getInstance().getCamera().direction = dir;
+      GraphicsSystem.getInstance().getCamera().direction = dir;
       
-      Vector pos = RenderingSystem.getInstance().getCamera().position;
+      Vector pos = GraphicsSystem.getInstance().getCamera().position;
       pos.x += dir.x * f;
       pos.y += dir.y * f;
       pos.z += dir.z * f;

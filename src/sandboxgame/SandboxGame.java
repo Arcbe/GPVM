@@ -14,7 +14,7 @@ import gpvm.io.YAMLLoader;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import gpvm.modding.ModManager;
-import gpvm.render.RenderingSystem;
+import gpvm.render.GraphicsSystem;
 import gpvm.util.StringManager;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -37,6 +37,9 @@ public class SandboxGame {
    * @throws LWJGLException
    */
   public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException {
+    System.setProperty("taiga.code.logging.text", "text");
+    System.setProperty("java.util.logging.config.file", "logging.properties");
+    
     StringManager.loadStringBundle("text");
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
