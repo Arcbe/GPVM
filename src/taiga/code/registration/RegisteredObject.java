@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * @author russell
  */
 public class RegisteredObject implements Iterable<RegisteredObject>{
-  public static final String SEPERATOR = ".";
+  public static final char SEPERATOR = '.';
   
   public final String name;
   private RegisteredObject parent;
@@ -68,7 +68,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    */
   public String getFullName() {
     if(parent == null) return name;
-    else return parent.getFullName().concat(SEPERATOR).concat(name);
+    else return parent.getFullName().concat("" + SEPERATOR).concat(name);
   }
   
   /**
@@ -139,6 +139,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     }
     
     log.log(Level.FINE, ADDED_CHILD, new Object[]{getFullName(), child.name});
+    child.parent = this;
     return child.id;
   }
   
@@ -156,7 +157,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     return children.remove(child);
   }
   
-  public void removeALlChildren() {
+  public void removeAllChildren() {
     if(children == null) return;
     
     children.clear();
@@ -169,6 +170,34 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     if(parent != null) parent.removeChild(this);
     
     parent = null;
+  }
+  
+  /**
+   * Retrieves the {@link RegisteredObject} with the given name. This name can
+   * be the full name of the object, or it can be relative.  For relative names
+   * it checks to see if it is relative to this object then passes it to its
+   * parent and so on until it reaches the root.
+   * 
+   * @param name The name of the {@link RegisteredObject} to retrieve.
+   * @return The object with the given name or null if no object can be found.
+   */
+  public RegisteredObject getObject(String name) {
+    //go through the children first.
+    for(RegisteredObject obj : this) {
+      if(obj == null) continue;
+      
+      if(name.equals(obj.name)) {
+        return obj;
+      } else if(name.startsWith(obj.name)) {
+        //cut off the first section and the seperator
+        return obj.getObject(name.substring(obj.name.length() + 1));
+      }
+    }
+    
+    if(parent != null)
+      return parent.getObject(name);
+    else
+      return null;
   }
 
   /**

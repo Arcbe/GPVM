@@ -12,7 +12,9 @@ import java.util.List;
 import taiga.code.registration.RegisteredSystem;
 
 import static gpvm.HardcodedValues.GAMEMANAGER_NAME;
+import taiga.code.io.DataFileManager;
 import taiga.code.util.SettingManager;
+import taiga.code.yaml.YAMLDataReader;
 
 /**
  * Controls the overall state of the game.  This class will initialize the
@@ -51,7 +53,13 @@ public class GameManager extends RegisteredSystem {
   private GameManager() {
     super(GAMEMANAGER_NAME);
     
-    addChild(new SettingManager());
+    addChild(new DataFileManager());
+    getObject(DataFileManager.DATAFILEMANAGER_NAME).addChild(new YAMLDataReader());
+    
+    SettingManager settings = new SettingManager();
+    addChild(settings);
+    
+    settings.loadSettings("settings.yml");
   }
   
   private static GameManager instance = new GameManager();

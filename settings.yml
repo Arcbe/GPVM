@@ -1,0 +1,7 @@
+## YAML Template.
+---
+
+graphics:
+    resolution:
+        height: 600
+        width: 800

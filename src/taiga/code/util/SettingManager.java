@@ -6,6 +6,11 @@
 
 package taiga.code.util;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import taiga.code.io.DataFileManager;
+import taiga.code.io.DataNode;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.registration.ReusableObject;
 
@@ -23,10 +28,54 @@ public class SettingManager extends ReusableObject {
   public SettingManager() {
     super(SETTINGMANAGER_NAME);
   }
+  
+  /**
+   * Loads settings from the {@link File} with the given path.
+   * 
+   * @param file The file to load {@link Setting}s from.
+   */
+  public void loadSettings(String file) {
+    RegisteredObject obj = getObject(DataFileManager.DATAFILEMANAGER_NAME);
+    if(obj == null || !(obj instanceof DataFileManager)) {
+      log.log(Level.WARNING, NO_DFMANAGER);
+      return;
+    }
+    
+    try {
+      DataNode node = ((DataFileManager)obj).readFile(file);
+      
+      for(RegisteredObject cur : node) {
+        if(cur == null || !(cur instanceof DataNode)) continue;
+        
+        addChild(addData((DataNode)cur));
+      }
+    } catch(IOException ex) {
+      log.log(Level.SEVERE, IO_EXCEPTION, ex);
+    }
+  }
 
   @Override
   protected void resetObject() {
-    removeALlChildren();
+    removeAllChildren();
   }
   
+  private Setting addData(DataNode node) {
+    Setting result = new Setting(node.name, node.data);
+    
+    for(RegisteredObject obj : node) {
+      if(obj != null && obj instanceof DataNode) {
+        Setting child = addData((DataNode) obj);
+        
+        result.addChild(child);
+      }
+    }
+    
+    return result;
+  }
+  
+  private static final String NO_DFMANAGER = SettingManager.class.getName().toLowerCase() + ".no_dfmanager";
+  private static final String IO_EXCEPTION = SettingManager.class.getName().toLowerCase() + ".io_exception";
+  
+  private static final Logger log = Logger.getLogger(SettingManager.class.getName(),
+    System.getProperty("taiga.code.logging.text"));
 }
