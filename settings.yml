@@ -2,6 +2,8 @@
 ---
 
 graphics:
+    fullscreen: false
+    vsync: false
     resolution:
         height: 600
         width: 800

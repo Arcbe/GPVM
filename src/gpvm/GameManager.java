@@ -6,13 +6,13 @@ package gpvm;
 
 import gpvm.map.Universe;
 import gpvm.modding.ModManager;
-import gpvm.render.GraphicsSystem;
 import gpvm.util.StringManager;
 import java.util.List;
 import taiga.code.registration.RegisteredSystem;
 
 import static gpvm.HardcodedValues.GAMEMANAGER_NAME;
 import taiga.code.io.DataFileManager;
+import taiga.code.opengl.GraphicsSystem;
 import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
 
@@ -30,15 +30,16 @@ public class GameManager extends RegisteredSystem {
   }
   
   public void startGame() {
-    GraphicsSystem.createSystem(StringManager.getDisplayMode());
+    start();
+    //GraphicsSystem.createSystem(StringManager.getDisplayMode());
     
     //first load the mods, the manager already knows what mods to load.
-    ModManager.getInstance().loadMods();
-    
-    List<String> names = ModManager.getInstance().getOverworlds();
-    String start = names.get(0);
-    
-    Universe.getInstance().setActiveWorld(start);
+//    ModManager.getInstance().loadMods();
+//    
+//    List<String> names = ModManager.getInstance().getOverworlds();
+//    String start = names.get(0);
+//    
+//    Universe.getInstance().setActiveWorld(start);
   }
 
   @Override
@@ -60,6 +61,8 @@ public class GameManager extends RegisteredSystem {
     addChild(settings);
     
     settings.loadSettings("settings.yml");
+    
+    addChild(new GraphicsSystem());
   }
   
   private static GameManager instance = new GameManager();

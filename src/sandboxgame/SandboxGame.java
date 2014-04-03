@@ -38,6 +38,7 @@ public class SandboxGame {
    */
   public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException {
     System.setProperty("taiga.code.logging.text", "text");
+    System.setProperty("taiga.code.text.localization", "text");
     System.setProperty("java.util.logging.config.file", "logging.properties");
     
     StringManager.loadStringBundle("text");

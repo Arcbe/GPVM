@@ -53,6 +53,20 @@ public class SettingManager extends ReusableObject {
       log.log(Level.SEVERE, IO_EXCEPTION, ex);
     }
   }
+  
+  /**
+   * Convenience method for getting a {@link Setting}.  If the {@link Setting}
+   * is missing then this will return null.
+   * 
+   * @param name The name of the {@link Setting}
+   * @return The {@link Setting} or null.
+   */
+  public Setting getSetting(String name) {
+    RegisteredObject set = getObject(name);
+    if(set == null || !(set instanceof Setting)) return null;
+    
+    return (Setting) set;
+  }
 
   @Override
   protected void resetObject() {
