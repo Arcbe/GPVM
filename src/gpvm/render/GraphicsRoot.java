@@ -18,7 +18,7 @@ import gpvm.util.StringManager;
 import gpvm.util.Updateable;
 import java.util.ArrayList;
 import java.util.List;
-import taiga.code.registration.RegisteredSystem;
+import taiga.code.opengl.GraphicsSystem;
 
 /**
  * Maintains a screen and controls the rendering for the entire game. 
@@ -28,45 +28,7 @@ import taiga.code.registration.RegisteredSystem;
  * 
  * @author russell
  */
-public class GraphicsSystem extends RegisteredSystem {
-  /**
-   * Creates a new Rendering system using the given mode.
-   * 
-   * @param mode The display mode for the window that will be created.
-   */
-  public static void createSystem(DisplayMode mode) {
-    if(instance != null) {
-      instance.destroy();
-    }
-    
-    instance = new GraphicsSystem(mode);
-    instance.start();
-  }
-  
-  /**
-   * Returns a reference to the current rendering system.  If no rendering
-   * system has been created then this will simply return null.
-   * 
-   * @return A instance of a rendering system or null
-   */
-  public static GraphicsSystem getInstance() {
-    return instance;
-  }
-  
-  /**
-   * Causes the rendering thread to start.  If the thread is already started
-   * then this function has no effect.  Once destroyed the rendering system
-   * cannot be restarted with this method.
-   */
-  @Override
-  public void startSystem() {
-    assert renderingthread != null;
-    assert rendrunner != null;
-    if(!renderingthread.isAlive())
-      renderingthread.start();
-    else
-      rendrunner.pause = false;
-  }
+public class GraphicsRoot extends GraphicsSystem {
   
   /**
    * causes the current thread to wait until the rendering system closes.
@@ -79,24 +41,6 @@ public class GraphicsSystem extends RegisteredSystem {
         //ignore interrupts
       }
     }
-  }
-  
-  /**
-   * Stops the rendering system and releases all assets stored within.
-   */
-  public void destroy() {
-    //signal the rendering thread to shutdown and wait for it to die.
-    rendrunner.running = false;
-    while(renderingthread.isAlive()) {
-      try {
-        renderingthread.join();
-      } catch (InterruptedException ex) {
-        //ignore interrupts
-      }
-    }
-    
-    rendrunner = null;
-    renderingthread = null;
   }
 
   /**
@@ -114,11 +58,6 @@ public class GraphicsSystem extends RegisteredSystem {
     renderer.map = rend;
   }
   
-  public void setSkyBox(SkyBoxRenderer sky) {
-    if(renderer == null) renderer = new MapData();
-    renderer.sky = sky;
-  }
-  
   /**
    * Sets the {@link Camera} that will be used to create the projection matrix
    * for rendering.
@@ -130,7 +69,7 @@ public class GraphicsSystem extends RegisteredSystem {
   }
   
   /**
-   * Returns the camera that is currently in use by the {@link GraphicsSystem}.
+   * Returns the camera that is currently in use by the {@link GraphicsRoot}.
    * 
    * @return The current {@link Camera}
    */
@@ -156,7 +95,7 @@ public class GraphicsSystem extends RegisteredSystem {
   private GameMap map;
   private List<Updateable> updaters;
 
-  private GraphicsSystem(DisplayMode mode) {
+  public GraphicsRoot() {
     super(GRAPHICSSYSTEM_NAME);
     
     this.mode = mode;
@@ -199,7 +138,7 @@ public class GraphicsSystem extends RegisteredSystem {
     renderer.map.render(cam);
   }
   
-  private static GraphicsSystem instance;
+  private static GraphicsRoot instance;
 
   @Override
   protected void resetObject() {
@@ -209,6 +148,11 @@ public class GraphicsSystem extends RegisteredSystem {
   @Override
   protected void stopSystem() {
     rendrunner.pause = true;
+  }
+
+  @Override
+  protected void renderScene() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
   
   //inner class used for rendering thread.
@@ -239,11 +183,11 @@ public class GraphicsSystem extends RegisteredSystem {
           try {
             wait(16);
           } catch (InterruptedException ex) {
-            Logger.getLogger(GraphicsSystem.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GraphicsRoot.class.getName()).log(Level.SEVERE, null, ex);
           }
         }
       } catch (LWJGLException ex) {
-        Logger.getLogger(GraphicsSystem.class.getName()).log(Level.SEVERE, StringManager.getLocalString("err_rendering_init"), ex);
+        Logger.getLogger(GraphicsRoot.class.getName()).log(Level.SEVERE, StringManager.getLocalString("err_rendering_init"), ex);
       } finally {
         Display.destroy();
         running = false;

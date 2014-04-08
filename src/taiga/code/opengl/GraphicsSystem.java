@@ -17,15 +17,15 @@ import taiga.code.util.SettingManager;
  * 
  * @author russell
  */
-public class GraphicsSystem extends RegisteredSystem implements Runnable {
+public abstract class GraphicsSystem extends RegisteredSystem implements Runnable {
   
   public static final boolean DEFAULT_VSYNC = false;
   public static final boolean DEFAULT_FULLSCREEN = false;
   public static final int DEFAULT_RES_HEIGHT = 600;
   public static final int DEFAULT_RES_WIDTH = 800;
 
-  public GraphicsSystem() {
-    super(NAME);
+  public GraphicsSystem(String name) {
+    super(name);
     
     res_x = DEFAULT_RES_WIDTH;
     res_y = DEFAULT_RES_HEIGHT;
@@ -96,10 +96,10 @@ public class GraphicsSystem extends RegisteredSystem implements Runnable {
           }
         }
         
-        //first update everything
-        update();
+        Display.update();
         
-        //then render
+        //abstract methods for the implementing class to hook into
+        update();
         renderScene();
         
       } while(running && !Display.isCloseRequested());
@@ -169,15 +169,13 @@ public class GraphicsSystem extends RegisteredSystem implements Runnable {
   }
   
   private void update() {
-    Display.update();
+    //todo update updateable thigns on the registered tree
   }
 
-  private void renderScene() {
-  }
+  protected abstract void renderScene();
   
   private static final String locprefix = GraphicsSystem.class.getName().toLowerCase();
   
-  public static final String NAME = TextLocalizer.localize(locprefix + ".name");
   public static final String RESOLUTION_HEIGHT = TextLocalizer.localize(locprefix + ".res_height");
   public static final String RESOLUTION_WIDTH = TextLocalizer.localize(locprefix + ".res_width");
   public static final String FULL_SCREEN = TextLocalizer.localize(locprefix + ".full_screen");

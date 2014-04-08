@@ -14,7 +14,7 @@ import gpvm.io.YAMLLoader;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import gpvm.modding.ModManager;
-import gpvm.render.GraphicsSystem;
+import gpvm.render.GraphicsRoot;
 import gpvm.util.StringManager;
 import java.net.URISyntaxException;
 import java.util.logging.Level;

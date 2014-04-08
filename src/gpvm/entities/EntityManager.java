@@ -6,13 +6,12 @@
 
 package gpvm.entities;
 
-import gpvm.render.GraphicsSystem;
+import gpvm.render.GraphicsRoot;
 import java.util.ArrayList;
 
 /**
  * This class keeps track of and updates all {@link Entity}s.  It also provides
- * a way to draw the {@link Entity}s for the {@link GraphicsSystem}
- * 
+ * a way to draw the {@link Entity}s for the {@link GrGraphicsRoot * 
  * @author russell
  */
 public class EntityManager {

@@ -11,6 +11,7 @@ import java.util.List;
 import taiga.code.registration.RegisteredSystem;
 
 import static gpvm.HardcodedValues.GAMEMANAGER_NAME;
+import gpvm.render.GraphicsRoot;
 import taiga.code.io.DataFileManager;
 import taiga.code.opengl.GraphicsSystem;
 import taiga.code.util.SettingManager;
@@ -62,7 +63,7 @@ public class GameManager extends RegisteredSystem {
     
     settings.loadSettings("settings.yml");
     
-    addChild(new GraphicsSystem());
+    addChild(new GraphicsRoot());
   }
   
   private static GameManager instance = new GameManager();

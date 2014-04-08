@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
  *
  * @author russell
  */
-public class ColoredSky implements SkyBoxRenderer {
+public class ColoredSky extends SkyBoxRenderer {
 
   public ColoredSky() {
     this.red = 0;
@@ -28,7 +28,7 @@ public class ColoredSky implements SkyBoxRenderer {
   }
 
   @Override
-  public void render() {
+  protected void renderSky() {
     GL11.glClearColor(red, green, blue, 1f);
     GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
   }
@@ -36,4 +36,9 @@ public class ColoredSky implements SkyBoxRenderer {
   private final float red;
   private final float green;
   private final float blue;
+
+  @Override
+  public void render() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 }

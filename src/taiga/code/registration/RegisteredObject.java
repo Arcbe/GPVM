@@ -28,6 +28,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   private int id;
   
   private List<RegisteredObject> children;
+  private List<ChildListener> childlist;
+  private List<ChildListener> parlist;
 
   /**
    * Creates a new {@link RegisteredObject} with the given name.  Each {@link
@@ -41,6 +43,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     assert !name.equals("");
     
     this.name = name;
+    childlist = new ArrayList<>();
+    parlist = new ArrayList<>();
     
     log.log(Level.FINER, CREATION, name);
   }
@@ -140,6 +144,13 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     
     log.log(Level.FINE, ADDED_CHILD, new Object[]{getFullName(), child.name});
     child.parent = this;
+    
+    //now notify the listeners
+    for(ChildListener list : childlist)
+      list.childAdded(this, child);
+    for(ChildListener list : child.parlist)
+      list.childRemoved(this, child);
+    
     return child.id;
   }
   

@@ -4,7 +4,7 @@
  */
 package gpvm.map;
 
-import gpvm.render.GraphicsSystem;
+import gpvm.render.GraphicsRoot;
 import gpvm.util.StringManager;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,7 +54,7 @@ public class Universe {
   public void setActiveWorld(String name) {
     GameMap map = getWorld(name);
     
-    GraphicsSystem.getInstance().setMap(map);
+    //GraphicsRoot.getInstance().setMap(map);
     
     activemap = map;
   }

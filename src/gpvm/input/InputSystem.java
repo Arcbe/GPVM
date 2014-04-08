@@ -1,6 +1,6 @@
 package gpvm.input;
 
-import gpvm.render.GraphicsSystem;
+import gpvm.render.GraphicsRoot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +27,7 @@ public class InputSystem {
   /**
    * Allows the {@link InputSystem} to process all events that are pending.
    * This method should be called each time the display is updated or the input
-   * is polled through some method.  The {@link GraphicsSystem} will handle
+   * is polled through some method.  The {@link GraphicsRoot} will handle
    * calls to this method in most cases.
    */
   public void pump() {
