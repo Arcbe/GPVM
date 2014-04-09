@@ -9,6 +9,7 @@ import gpvm.GameManager;
 import gpvm.modding.Mod;
 import gpvm.modding.Mod.ModIdentifier;
 import gpvm.modding.ModManager;
+import gpvm.render.renderers.ColoredSky;
 import gpvm.util.StringManager;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -23,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import taiga.code.registration.RegisteredObject;
 
 /**
  *
@@ -73,7 +75,9 @@ public class ModInformationPanel extends JPanel{
         assert current != null;
         
         ModManager.getInstance().setActiveMods(current.getIdentifier());
-        GameManager.getInstance().startGame();
+        GameManager man = GameManager.getInstance();
+        man.getObject("graphics").addChild(new ColoredSky(0, 1, 0));
+        man.start();
       }
     });
     

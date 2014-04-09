@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import taiga.code.graphics.Renderable;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.registration.RegisteredSystem;
 import taiga.code.text.TextLocalizer;
@@ -54,7 +55,6 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
 
   @Override
   protected void stopSystem() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
   @Override
@@ -96,11 +96,11 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
           }
         }
         
-        Display.update();
-        
         //abstract methods for the implementing class to hook into
         update();
-        renderScene();
+        render();
+        
+        Display.update();
         
       } while(running && !Display.isCloseRequested());
     } catch(LWJGLException ex) {
@@ -167,12 +167,39 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
     
     Display.create();
   }
+
+  /**
+   * Called before each frame between updating and rendering.
+   */
+  protected abstract void rendering();
   
   private void update() {
-    //todo update updateable thigns on the registered tree
+    for(RegisteredObject obj : this) {
+      if(obj != null && obj instanceof Renderable)
+        ((Renderable)obj).update();
+    }
   }
-
-  protected abstract void renderScene();
+  
+  private void render() {
+    rendering();
+    
+    //get the number of passes
+    int passes = 0;
+    for(RegisteredObject obj : this) {
+      if(obj != null && obj instanceof Renderable) {
+        int npasses = ((Renderable)obj).getNumberOfPasses();
+        if(passes < npasses) passes = npasses;
+      }
+    }
+    
+    //now do the passes
+    for(int i = 1; i <= passes; i++) {
+      for(RegisteredObject obj : this) {
+        if(obj != null && obj instanceof Renderable)
+          ((Renderable)obj).render(i);
+      }
+    }
+  }
   
   private static final String locprefix = GraphicsSystem.class.getName().toLowerCase();
   

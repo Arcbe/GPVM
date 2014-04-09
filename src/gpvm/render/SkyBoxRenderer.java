@@ -6,17 +6,28 @@
 
 package gpvm.render;
 
-import org.lwjgl.util.Renderable;
+import taiga.code.graphics.Renderable;
 
 /**
  * Base class for sky boxes.  There will be one sky box per world.
  * @author russell
  */
-public abstract class SkyBoxRenderer implements Renderable {
+public abstract class SkyBoxRenderer extends Renderable {
+
+  public SkyBoxRenderer(String name) {
+    super(name);
+    
+    setPasses(sky_pass);
+  }
   
   protected final void renderSelf(int pass) {
     if(pass == sky_pass) renderSky();
   }
+  
+  /**
+   * 
+   */
+  protected void updateSelf() {}
   
   /**
    * Renders the sky for a given world.
@@ -26,5 +37,5 @@ public abstract class SkyBoxRenderer implements Renderable {
   /**
    * This is the pass that the sky should be rendered on.  The default is 0.
    */
-  public static int sky_pass = 0;
+  public static int sky_pass = 1;
 }

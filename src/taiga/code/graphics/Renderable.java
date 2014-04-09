@@ -19,12 +19,12 @@ public abstract class Renderable extends RegisteredObject {
    * This will also stop any children from being rendered or updated if set to
    * false;
    */
-  public boolean enabled;
 
   public Renderable(String name) {
     super(name);
     
     enabled = true;
+    minpasses = 1;
   }
   
   /**
@@ -62,6 +62,23 @@ public abstract class Renderable extends RegisteredObject {
     }
   }
   
+  public int getNumberOfPasses() {
+    int passes = minpasses;
+    for(RegisteredObject obj : this) {
+      if(obj != null && obj instanceof Renderable) {
+        int newpasses = ((Renderable)obj).getNumberOfPasses();
+        if(newpasses > minpasses) minpasses = newpasses;
+      }
+    }
+    
+    return minpasses;
+  }
+  
+  public void setPasses(int passes) {
+    assert passes > 0;
+    minpasses = passes;
+  }
+  
   /**
    * Method that allows this {@link Renderable} to update itself.  This is called
    * before rendering to allow {@link Renderable}s to calculate any changes to
@@ -79,4 +96,7 @@ public abstract class Renderable extends RegisteredObject {
    * order.
    */
   protected abstract void renderSelf(int pass);
+  
+  private boolean enabled;
+  private int minpasses;
 }

@@ -29,19 +29,6 @@ public class GameManager extends RegisteredSystem {
   public static GameManager getInstance() {
     return instance;
   }
-  
-  public void startGame() {
-    start();
-    //GraphicsSystem.createSystem(StringManager.getDisplayMode());
-    
-    //first load the mods, the manager already knows what mods to load.
-//    ModManager.getInstance().loadMods();
-//    
-//    List<String> names = ModManager.getInstance().getOverworlds();
-//    String start = names.get(0);
-//    
-//    Universe.getInstance().setActiveWorld(start);
-  }
 
   @Override
   public void resetObject() {}

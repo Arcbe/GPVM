@@ -29,19 +29,6 @@ import taiga.code.opengl.GraphicsSystem;
  * @author russell
  */
 public class GraphicsRoot extends GraphicsSystem {
-  
-  /**
-   * causes the current thread to wait until the rendering system closes.
-   */
-  public void waitForClose() {
-    while(renderingthread.isAlive()) {
-      try {
-        renderingthread.join();
-      } catch (InterruptedException ex) {
-        //ignore interrupts
-      }
-    }
-  }
 
   /**
    * Sets the {@link GameMap} that the rendering system is currently
@@ -49,15 +36,15 @@ public class GraphicsRoot extends GraphicsSystem {
    * 
    * @param map The new {@link GameMap} for the rendering system.
    */
-  public void setMap(GameMap map) {
-    //TODO: this should not be hard coded.
-    if(renderer == null) renderer = new MapData();
-    MapRenderer rend = new MapRenderer(VertexArrayBatch.class);
-    rend.setMap(map);
-    this.map = map;
-    renderer.map = rend;
-  }
-  
+//  public void setMap(GameMap map) {
+//    //TODO: this should not be hard coded.
+//    if(renderer == null) renderer = new MapData();
+//    MapRenderer rend = new MapRenderer(VertexArrayBatch.class);
+//    rend.setMap(map);
+//    this.map = map;
+//    renderer.map = rend;
+//  }
+//  
   /**
    * Sets the {@link Camera} that will be used to create the projection matrix
    * for rendering.
@@ -77,21 +64,13 @@ public class GraphicsRoot extends GraphicsSystem {
     return cam;
   }
   
-  public boolean isPaused() {
-    assert rendrunner != null;
-    
-    return rendrunner.pause;
-  }
-  
   public void addUpdater(Updateable up) {
     updaters.add(up);
   }
   
-  private Runner rendrunner;
-  private Thread renderingthread;
   private DisplayMode mode;
   private Camera cam;
-  private MapData renderer;
+//  private MapData renderer;
   private GameMap map;
   private List<Updateable> updaters;
 
@@ -100,103 +79,47 @@ public class GraphicsRoot extends GraphicsSystem {
     
     this.mode = mode;
     cam = new Camera();
-    rendrunner = new Runner();
     updaters = new ArrayList<>();
-    
-    renderingthread = new Thread(rendrunner);
-    renderingthread.setName(GRAPHICSSYSTEM_NAME);
   }
   
   private void pumpUpdaters() {
     for(Updateable up : updaters)
       up.Update();
   }
-  
-  private void render() {
-    //if there is no map there is nothing to render.
-    if(renderer == null) return;
-    
-    //clear color is magenta to indicate a problem. The clear color should not
-    //be visible
-    GL11.glClearColor(1, 0, 1, 1);
-    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-    GL11.glEnable(GL11.GL_DEPTH_TEST);
-    
-    //setup the camera
-    cam.loadCamera();
-    
-    //update the rendering info if needed
-    ThreadingManager.getInstance().requestRead();
-    try {
-      renderer.map.update(cam);
-    } finally {
-      ThreadingManager.getInstance().releaseRead();
-    }
-    
-    //now draw the map
-    renderer.map.renderGrid(false);
-    renderer.map.render(cam);
-  }
+//  
+//  private void render() {
+//    //if there is no map there is nothing to render.
+//    if(renderer == null) return;
+//    
+//    //clear color is magenta to indicate a problem. The clear color should not
+//    //be visible
+//    GL11.glClearColor(1, 0, 1, 1);
+//    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+//    GL11.glEnable(GL11.GL_DEPTH_TEST);
+//    
+//    //setup the camera
+//    cam.loadCamera();
+//    
+//    //update the rendering info if needed
+//    ThreadingManager.getInstance().requestRead();
+//    try {
+//      renderer.map.update(cam);
+//    } finally {
+//      ThreadingManager.getInstance().releaseRead();
+//    }
+//    
+//    //now draw the map
+//    renderer.map.renderGrid(false);
+//    renderer.map.render(cam);
+//  }
   
   private static GraphicsRoot instance;
 
   @Override
   protected void resetObject() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
   @Override
-  protected void stopSystem() {
-    rendrunner.pause = true;
-  }
-
-  @Override
-  protected void renderScene() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-  
-  //inner class used for rendering thread.
-  private class Runner implements Runnable {
-    public boolean pause = false;
-    public boolean running = true;
-    
-    @Override
-    public synchronized void run() {
-      try {
-        //initialize the display
-        Display.setDisplayModeAndFullscreen(mode);
-        Display.setVSyncEnabled(true);
-        Display.create();
-        
-        //start doig the rendering
-        while(running && !Display.isCloseRequested()) {
-          if(!pause) {
-            InputSystem.getInstance().pump();
-            pumpUpdaters();
-            
-            render();
-          }
-          
-          
-          Display.update();
-          
-          try {
-            wait(16);
-          } catch (InterruptedException ex) {
-            Logger.getLogger(GraphicsRoot.class.getName()).log(Level.SEVERE, null, ex);
-          }
-        }
-      } catch (LWJGLException ex) {
-        Logger.getLogger(GraphicsRoot.class.getName()).log(Level.SEVERE, StringManager.getLocalString("err_rendering_init"), ex);
-      } finally {
-        Display.destroy();
-        running = false;
-      }
-    }
-  }
-  
-  private class MapData {
-    SkyBoxRenderer sky;
-    MapRenderer map;
+  protected void rendering() {
   }
 }

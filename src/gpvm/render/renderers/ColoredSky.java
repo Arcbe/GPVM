@@ -16,12 +16,16 @@ import org.lwjgl.opengl.GL11;
 public class ColoredSky extends SkyBoxRenderer {
 
   public ColoredSky() {
+    super(NAME);
+    
     this.red = 0;
     this.green = 0;
     this.blue = 0;
   }
 
   public ColoredSky(float red, float green, float blue) {
+    super(NAME);
+    
     this.red = red;
     this.green = green;
     this.blue = blue;
@@ -36,9 +40,6 @@ public class ColoredSky extends SkyBoxRenderer {
   private final float red;
   private final float green;
   private final float blue;
-
-  @Override
-  public void render() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
+  
+  private static final String NAME = "colored_sky";
 }
