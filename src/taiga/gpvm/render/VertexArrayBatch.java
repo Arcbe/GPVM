@@ -1,4 +1,4 @@
-package gpvm.render;
+package taiga.gpvm.render;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

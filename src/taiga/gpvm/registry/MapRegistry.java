@@ -4,12 +4,12 @@
  * and open the template in the editor.
  */
 
-package gpvm.registry;
+package taiga.gpvm.registry;
 
 /**
  *
  * @author russell
  */
-public class TileRegistry extends Registrar<TileEntry>{
+public class MapRegistry {
   
 }

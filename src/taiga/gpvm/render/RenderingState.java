@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gpvm.render;
+package taiga.gpvm.render;
 
 /**
  * Combined with a {@link RawBatch} this class allows for the use of more

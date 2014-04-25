@@ -9,12 +9,12 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.lwjgl.opengl.GL11;
-import gpvm.render.RawBatch;
-import gpvm.render.RenderInfo;
-import gpvm.render.StaticRenderer;
-import gpvm.render.TileInfo;
-import gpvm.render.TileRenderer;
-import gpvm.render.Vertex;
+import taiga.gpvm.render.RawBatch;
+import taiga.gpvm.render.RenderInfo;
+import taiga.gpvm.render.StaticRenderer;
+import taiga.gpvm.render.TileInfo;
+import taiga.gpvm.render.TileRenderer;
+import taiga.gpvm.render.Vertex;
 import gpvm.render.vertices.ColorVertex;
 import gpvm.util.geometry.Coordinate;
 

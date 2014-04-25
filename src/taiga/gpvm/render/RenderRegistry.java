@@ -1,4 +1,4 @@
-package gpvm.render;
+package taiga.gpvm.render;
 
 import gpvm.io.DataNode;
 import gpvm.util.StringManager;

@@ -5,8 +5,8 @@ import gpvm.editor.panels.TileRegistryPanel;
 import gpvm.map.TileDefinition;
 import gpvm.map.TileRegistry;
 import gpvm.map.TileRegistryListener;
-import gpvm.render.RenderRegistry;
-import gpvm.render.RenderRegistryListener;
+import taiga.gpvm.render.RenderRegistry;
+import taiga.gpvm.render.RenderRegistryListener;
 import gpvm.util.StringManager;
 
 /**

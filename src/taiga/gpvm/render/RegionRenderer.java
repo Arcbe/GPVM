@@ -1,4 +1,4 @@
-package gpvm.render;
+package taiga.gpvm.render;
 
 import gpvm.Registrar;
 import gpvm.map.GameMap;
@@ -6,14 +6,10 @@ import gpvm.map.Region;
 import gpvm.map.RegionListener;
 import gpvm.map.Tile;
 import gpvm.map.TileDefinition;
-import gpvm.map.TileRegistry;
 import gpvm.render.vertices.ByteColorVertex;
-import gpvm.render.vertices.ColorVertex;
-import gpvm.util.StringManager;
 import gpvm.util.geometry.Coordinate;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;

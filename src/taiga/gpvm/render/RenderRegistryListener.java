@@ -1,4 +1,4 @@
-package gpvm.render;
+package taiga.gpvm.render;
 
 import gpvm.map.Tile;
 

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package gpvm.render;
+package taiga.gpvm.render;
 
 import taiga.code.graphics.Renderable;
 

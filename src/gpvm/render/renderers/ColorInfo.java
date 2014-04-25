@@ -4,7 +4,7 @@
  */
 package gpvm.render.renderers;
 
-import gpvm.render.RenderInfo;
+import taiga.gpvm.render.RenderInfo;
 import gpvm.util.StringManager;
 import java.awt.Color;
 

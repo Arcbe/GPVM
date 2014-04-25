@@ -6,7 +6,7 @@
 
 package gpvm.render.renderers;
 
-import gpvm.render.SkyBoxRenderer;
+import taiga.gpvm.render.SkyBoxRenderer;
 import org.lwjgl.opengl.GL11;
 
 /**

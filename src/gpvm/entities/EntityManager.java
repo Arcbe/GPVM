@@ -6,7 +6,7 @@
 
 package gpvm.entities;
 
-import gpvm.render.GraphicsRoot;
+import taiga.gpvm.render.GraphicsRoot;
 import java.util.ArrayList;
 
 /**

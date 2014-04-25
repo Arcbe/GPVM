@@ -1,6 +1,6 @@
 package gpvm.map;
 
-import gpvm.render.TileRenderer;
+import taiga.gpvm.render.TileRenderer;
 
 /**
  *

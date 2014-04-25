@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gpvm.render;
+package taiga.gpvm.render;
 
 import gpvm.map.GameMap;
 import gpvm.map.Region;
@@ -11,19 +11,20 @@ import gpvm.util.geometry.Vector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector3f;
+import taiga.code.graphics.Renderable;
 
 /**
  * Handles the rendering of a GameMap.
  * 
  * @author russell
  */
-public final class MapRenderer {
-  public MapRenderer(Class<? extends RenderingBatch> renderer) {
+public final class MapRenderer extends Renderable {
+  public MapRenderer(String name) {
+    super(name);
+    
     rendgrid = false;
     drawlist = new ArrayList<>();
     renderers = new HashMap<>();
-    setRenderer(renderer);
   }
   
   public void setMap(GameMap map) {
@@ -129,6 +130,16 @@ public final class MapRenderer {
         }
       }
     }
+  }
+
+  @Override
+  protected void updateSelf() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  protected void renderSelf(int pass) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
   
   private enum Quad {

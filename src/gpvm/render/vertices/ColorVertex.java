@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import gpvm.render.Vertex;
+import taiga.gpvm.render.Vertex;
 import gpvm.util.FloatUtils;
 import gpvm.util.IntUtils;
 

@@ -7,7 +7,7 @@ package hyperion;
 import gpvm.input.InputSystem;
 import gpvm.input.KeyListener;
 import gpvm.modding.ModController;
-import gpvm.render.GraphicsRoot;
+import taiga.gpvm.render.GraphicsRoot;
 import gpvm.util.Updateable;
 import gpvm.util.geometry.Quaternion;
 import gpvm.util.geometry.Vector;

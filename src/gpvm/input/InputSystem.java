@@ -1,6 +1,6 @@
 package gpvm.input;
 
-import gpvm.render.GraphicsRoot;
+import taiga.gpvm.render.GraphicsRoot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

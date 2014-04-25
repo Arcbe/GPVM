@@ -4,12 +4,10 @@
  * and open the template in the editor.
  */
 
-package gpvm.registry;
-
 /**
  *
  * @author russell
  */
-public class MapRegistry {
+public class GameMain {
   
 }

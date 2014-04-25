@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package gpvm.registry;
+package taiga.gpvm.registry;
 
 /**
  * Contains the data for a tile of a given type.

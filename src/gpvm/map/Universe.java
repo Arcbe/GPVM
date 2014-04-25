@@ -4,7 +4,7 @@
  */
 package gpvm.map;
 
-import gpvm.render.GraphicsRoot;
+import taiga.gpvm.render.GraphicsRoot;
 import gpvm.util.StringManager;
 import java.util.Collection;
 import java.util.HashMap;

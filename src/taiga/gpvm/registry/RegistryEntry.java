@@ -4,22 +4,24 @@
  * and open the template in the editor.
  */
 
-package gpvm.registry;
+package taiga.gpvm.registry;
 
 /**
- *
+ * A name entry into a registry.
+ * 
  * @author russell
  */
-public abstract class RegisteredObject {
+public class RegistryEntry {
+  public final String name;
   protected int id;
-  
-  public void assignID(int id) {
-    this.id = id;
+
+  public RegistryEntry(String name) {
+    this.name = name;
+    
+    id = -1;
   }
   
   public int getID() {
     return id;
   }
-  
-  public abstract String getName();
 }

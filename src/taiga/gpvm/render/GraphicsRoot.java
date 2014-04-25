@@ -2,23 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gpvm.render;
+package taiga.gpvm.render;
 
 import static gpvm.HardcodedValues.GRAPHICSSYSTEM_NAME;
-import gpvm.ThreadingManager;
-import gpvm.input.InputSystem;
 import gpvm.map.GameMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
-import gpvm.util.StringManager;
 import gpvm.util.Updateable;
-import java.util.ArrayList;
 import java.util.List;
 import taiga.code.opengl.GraphicsSystem;
+import taiga.code.registration.ChildListener;
+import taiga.code.registration.RegisteredObject;
 
 /**
  * Maintains a screen and controls the rendering for the entire game. 
@@ -28,23 +21,7 @@ import taiga.code.opengl.GraphicsSystem;
  * 
  * @author russell
  */
-public class GraphicsRoot extends GraphicsSystem {
-
-  /**
-   * Sets the {@link GameMap} that the rendering system is currently
-   * rendering.
-   * 
-   * @param map The new {@link GameMap} for the rendering system.
-   */
-//  public void setMap(GameMap map) {
-//    //TODO: this should not be hard coded.
-//    if(renderer == null) renderer = new MapData();
-//    MapRenderer rend = new MapRenderer(VertexArrayBatch.class);
-//    rend.setMap(map);
-//    this.map = map;
-//    renderer.map = rend;
-//  }
-//  
+public class GraphicsRoot extends GraphicsSystem implements ChildListener {
   /**
    * Sets the {@link Camera} that will be used to create the projection matrix
    * for rendering.
@@ -64,10 +41,6 @@ public class GraphicsRoot extends GraphicsSystem {
     return cam;
   }
   
-  public void addUpdater(Updateable up) {
-    updaters.add(up);
-  }
-  
   private DisplayMode mode;
   private Camera cam;
 //  private MapData renderer;
@@ -79,12 +52,6 @@ public class GraphicsRoot extends GraphicsSystem {
     
     this.mode = mode;
     cam = new Camera();
-    updaters = new ArrayList<>();
-  }
-  
-  private void pumpUpdaters() {
-    for(Updateable up : updaters)
-      up.Update();
   }
 //  
 //  private void render() {
@@ -112,8 +79,6 @@ public class GraphicsRoot extends GraphicsSystem {
 //    renderer.map.renderGrid(false);
 //    renderer.map.render(cam);
 //  }
-  
-  private static GraphicsRoot instance;
 
   @Override
   protected void resetObject() {
@@ -121,5 +86,14 @@ public class GraphicsRoot extends GraphicsSystem {
 
   @Override
   protected void rendering() {
+  }
+
+  @Override
+  public void childAdded(RegisteredObject parent, RegisteredObject child) {
+  }
+
+  @Override
+  public void childRemoved(RegisteredObject parent, RegisteredObject child) {
+    
   }
 }
