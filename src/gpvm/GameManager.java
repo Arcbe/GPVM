@@ -4,18 +4,16 @@
  */
 package gpvm;
 
-import gpvm.map.Universe;
-import gpvm.modding.ModManager;
-import gpvm.util.StringManager;
-import java.util.List;
 import taiga.code.registration.RegisteredSystem;
 
 import static gpvm.HardcodedValues.GAMEMANAGER_NAME;
+import static gpvm.HardcodedValues.TILE_REGISTRY_NAME;
 import taiga.gpvm.render.GraphicsRoot;
 import taiga.code.io.DataFileManager;
-import taiga.code.opengl.GraphicsSystem;
 import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
+import taiga.gpvm.registry.Registry;
+import taiga.gpvm.registry.TileEntry;
 
 /**
  * Controls the overall state of the game.  This class will initialize the
@@ -47,6 +45,8 @@ public class GameManager extends RegisteredSystem {
     
     SettingManager settings = new SettingManager();
     addChild(settings);
+    
+    addChild(new Registry<TileEntry>(TILE_REGISTRY_NAME));
     
     settings.loadSettings("settings.yml");
     

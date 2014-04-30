@@ -20,7 +20,7 @@ import taiga.code.registration.RegisteredObject;
  * @author russell
  */
 public class DataFileManager extends RegisteredObject {
-  public static final String DATAFILEMANAGER_NAME = "dfio";
+  public static final String DATAFILEMANAGER_NAME = "fileio";
   public static final String DATANODE_ROOT_NAME = "root";
 
   public DataFileManager() {

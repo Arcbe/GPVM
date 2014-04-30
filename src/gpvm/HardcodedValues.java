@@ -13,4 +13,5 @@ package gpvm;
 public class HardcodedValues {
   public static final String GAMEMANAGER_NAME = "game";
   public static final String GRAPHICSSYSTEM_NAME = "graphics";
+  public static final String TILE_REGISTRY_NAME = "tiles";
 }

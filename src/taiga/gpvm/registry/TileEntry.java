@@ -11,7 +11,7 @@ package taiga.gpvm.registry;
  * 
  * @author russell
  */
-public class TileEntry extends RegisteredObject {
+public class TileEntry extends RegistryEntry {
   
   /**
    * The name of the mod that added this tile.
@@ -36,13 +36,13 @@ public class TileEntry extends RegisteredObject {
   public final boolean solid;
 
   public TileEntry(String modname, String name, boolean opaque, boolean solid) {
+    super(modname + "." + name);
     this.modname = modname;
     this.name = name;
     this.opaque = opaque;
     this.solid = solid;
   }
 
-  @Override
   public String getName() {
     StringBuilder builder = new StringBuilder();
     
@@ -51,6 +51,5 @@ public class TileEntry extends RegisteredObject {
     builder.append(name);
     
     return builder.toString();
-  }
-  
+  } 
 }
