@@ -11,7 +11,14 @@ package gpvm;
  * @author russell
  */
 public class HardcodedValues {
+  //internal system names
   public static final String GAMEMANAGER_NAME = "game";
   public static final String GRAPHICSSYSTEM_NAME = "graphics";
   public static final String TILE_REGISTRY_NAME = "tiles";
+  
+  //field names for Tile Registry entries
+  public static final String CANON_NAME_FIELD = "canonicalname";
+  public static final String SOLID_FIELD = "solid";
+  public static final String OPAQUE_FIELD = "opaque";
+  public static final String NAMESPACE_SEPERATOR = ".";
 }

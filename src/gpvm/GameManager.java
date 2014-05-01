@@ -14,6 +14,7 @@ import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
 import taiga.gpvm.registry.Registry;
 import taiga.gpvm.registry.TileEntry;
+import taiga.gpvm.registry.TileRegistry;
 
 /**
  * Controls the overall state of the game.  This class will initialize the
@@ -46,7 +47,7 @@ public class GameManager extends RegisteredSystem {
     SettingManager settings = new SettingManager();
     addChild(settings);
     
-    addChild(new Registry<TileEntry>(TILE_REGISTRY_NAME));
+    addChild(new TileRegistry());
     
     settings.loadSettings("settings.yml");
     
