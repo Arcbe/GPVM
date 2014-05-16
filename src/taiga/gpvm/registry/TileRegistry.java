@@ -8,7 +8,6 @@ package taiga.gpvm.registry;
 
 import gpvm.HardcodedValues;
 import static gpvm.HardcodedValues.CANON_NAME_FIELD;
-import static gpvm.HardcodedValues.NAMESPACE_SEPERATOR;
 import static gpvm.HardcodedValues.OPAQUE_FIELD;
 import static gpvm.HardcodedValues.SOLID_FIELD;
 import java.io.File;
@@ -18,13 +17,12 @@ import java.util.logging.Logger;
 import taiga.code.io.DataFileManager;
 import taiga.code.io.DataNode;
 import taiga.code.registration.RegisteredObject;
-import taiga.code.text.TextLocalizer;
 
 /**
  *
  * @author russell
  */
-public class TileRegistry extends Registry<TileEntry>{
+public class TileRegistry extends NetworkRegistry<TileEntry>{
 
   public TileRegistry() {
     super(HardcodedValues.TILE_REGISTRY_NAME);

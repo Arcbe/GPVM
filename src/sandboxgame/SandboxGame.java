@@ -4,6 +4,7 @@
  */
 package sandboxgame;
 
+import gpvm.GameManager;
 import gpvm.editor.panels.ModInformationPanel;
 import gpvm.editor.panels.RenderRegistryPanel;
 import gpvm.editor.panels.TileRegistryPanel;
@@ -25,6 +26,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Vector3f;
+import taiga.code.networking.LoopbackNetwork;
+import taiga.code.networking.NetworkManager;
 
 /**
  *
@@ -49,14 +52,14 @@ public class SandboxGame {
     }
     
     //set up the data loaders for the game
-    YAMLLoader loader = new YAMLLoader();
-    DataLoader.registerLoader(loader, "yml", "yaml");
+    //YAMLLoader loader = new YAMLLoader();
+    //DataLoader.registerLoader(loader, "yml", "yaml");
     
     //find the mods.
-    ModManager.getInstance().findMods();
+    //ModManager.getInstance().findMods();
     
     //set up launcher
-    launcherInit();
+    //launcherInit();
     
 //    DisplayMode mode = new DisplayMode(800, 600);
 //    
@@ -67,6 +70,11 @@ public class SandboxGame {
     
     moving = new Vector3f();
     direction = new Matrix3f();
+    
+    GameManager game = GameManager.getInstance();
+    NetworkManager net = new LoopbackNetwork("network");
+    game.addChild(net);
+    net.scanRegisteredObjects();
   }
   
   private static Vector3f moving;
