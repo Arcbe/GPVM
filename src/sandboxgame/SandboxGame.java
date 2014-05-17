@@ -75,6 +75,8 @@ public class SandboxGame {
     NetworkManager net = new LoopbackNetwork("network");
     game.addChild(net);
     net.scanRegisteredObjects();
+    
+    game.start();
   }
   
   private static Vector3f moving;

@@ -1,54 +1,32 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package taiga.gpvm.render;
 
 import gpvm.map.Tile;
-import gpvm.map.TileDefinition;
 import gpvm.util.geometry.Coordinate;
+import gpvm.util.geometry.Direction;
 
 /**
- * Contains data for rendering a tile.  This will contain information about
- * the relative and absolute position on the tile, any attached rendering info
- * and a list of adjacent tiles.
+ * A descriptor of basic information about a {@link Tile} for use in rendering.
  * 
  * @author russell
  */
 public class TileInfo {
   /**
-   * The absolute position of the tile in the map.  The origin for this is
-   * the same as the origin for the map.
+   * The position in the world of the {@link Tile} associated with this {@link TileInfo}.
+   * When being rendered however, the tile should be positioned relative to the
+   * origin of the chunk it is contained in.
    */
-  public Coordinate absolutepos;
+  public Coordinate absposition;
   
   /**
-   * The position that the tile should be rendered relative to the model's origin.
-   * Typically this will be the position within the region of the tile.
-   */
-  public Coordinate relativepos;
-  
-  /**
-   * Defines the various attributes of the tile.
-   */
-  public TileDefinition definition;
-  
-  /**
-   * A reference to the actual tile within the map.
+   * The {@link Tile} associated with this {@link TileInfo}
    */
   public Tile tile;
   
   /**
-   * Any additional information for rendering the tile.  This information
-   * will be supplied externally and will be of the same type as requested by the
-   * TileRenderer associated with the tile.  If this is null then there was no
-   * information associated with the tile.
+   * Adjacent {@link Tile}s to the associated {@link Tile}.  Some or all may be
+   * null indicating that the adjacent {@link Tile} is not currently known.  The
+   * order of {@link Tile}s in the array is the same as the value for elements
+   * of the {@link Direction} enumeration.
    */
-  public RenderInfo info;
-  
-  /**
-   * An array of tiles that are adjacent to the tile being rendered. The
-   * indices correspond to the indices in the Direction enum.
-   */
-  public Tile[] adjacenttiles = new Tile[6];
+  public Tile[] adjacent;
 }

@@ -11,14 +11,14 @@ package taiga.gpvm.registry;
  * 
  * @author russell
  */
-class MissingEntry extends RuntimeException {
+class MissingEntryException extends RuntimeException {
 
   /**
    * Constructs a new instances using the given name of the missing {@link RegistryEntry}.
    * 
    * @param name The name of the missing {@link RegistryEntry}
    */
-  public MissingEntry(String name) {
+  public MissingEntryException(String name) {
     super(name);
   }
 }

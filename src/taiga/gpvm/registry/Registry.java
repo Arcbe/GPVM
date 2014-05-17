@@ -56,7 +56,7 @@ public class Registry<T extends RegistryEntry> extends RegisteredSystem {
     
     for(String name : assignment.keySet()) {
       T entry = getEntry(name);
-      if(entry == null) throw new MissingEntry(name);
+      if(entry == null) throw new MissingEntryException(name);
       
       entries.put(assignment.get(name), entry);
     }
