@@ -4,19 +4,21 @@
  */
 package hyperion;
 
-import gpvm.Registrar;
-import gpvm.map.MapGenerator;
-import gpvm.map.Region;
-import gpvm.map.Tile;
+import gpvm.HardcodedValues;
+import taiga.gpvm.map.MapGenerator;
+import taiga.gpvm.map.Region;
+import taiga.gpvm.map.Tile;
 import gpvm.util.geometry.Coordinate;
+import taiga.gpvm.map.GameMap;
+import taiga.gpvm.registry.TileEntry;
 
 /**
  *
  * @author russell
  */
-public class Generator implements MapGenerator {
+public class Generator extends MapGenerator {
   @Override
-  public Region generateRegion(Coordinate coor, Region[] neighbors) {
+  public Region generateRegion(Coordinate coor) {
     initvariables();
     
     //create the ground
@@ -47,22 +49,18 @@ public class Generator implements MapGenerator {
       
     }
     
-    return new Region(data, coor);
+    return new Region(data, coor, (GameMap) getObject(HardcodedValues.GAME_MAP_NAME));
   }
   
   private void initvariables() {
     if(init) return;
     
     init = true;
-    grass = Registrar.getInstance().getTileRegistry().getTileID("hyperion-base.Grass");
-    stone = Registrar.getInstance().getTileRegistry().getTileID("hyperion-base.Stone");
-    water = Registrar.getInstance().getTileRegistry().getTileID("hyperion-base.Water");
-    lava = Registrar.getInstance().getTileRegistry().getTileID("hyperion-base.Lava");
   }
   
   private static boolean init = false;
-  private static long grass;
-  private static long lava;
-  private static long water;
-  private static long stone;
+  private static TileEntry grass;
+  private static TileEntry lava;
+  private static TileEntry water;
+  private static TileEntry stone;
 }

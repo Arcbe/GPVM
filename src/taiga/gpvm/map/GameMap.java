@@ -1,8 +1,12 @@
-package gpvm.map;
+package taiga.gpvm.map;
 
+import taiga.gpvm.map.Region;
+import taiga.gpvm.map.Tile;
 import gpvm.util.geometry.Coordinate;
 import gpvm.util.geometry.Direction;
 import java.util.HashMap;
+import taiga.code.networking.NetworkedObject;
+import taiga.code.networking.Packet;
 
 /**
  * Contains all of the data for a 3D map used by the game.  This class will
@@ -10,7 +14,7 @@ import java.util.HashMap;
  * 
  * @author russell
  */
-public class GameMap {
+public class GameMap extends NetworkedObject {
   /**
    * Various modes that determine how and when a region is loaded by the game
    * map.
@@ -33,11 +37,11 @@ public class GameMap {
   /**
    * Creates a new map for the game.
    * 
-   * @param gen The generator to use for loading new {@link Region}s of the map.
+   * @param name The unlocalized name of the map.
    */
-  public GameMap(MapGenerator gen) {
-    assert gen != null;
-    generator = gen;
+  public GameMap(String name) {
+    super(name);
+    
     lmode = LoadingMode.Immediate;
     loadedregions = new HashMap<>();
   }
@@ -194,12 +198,35 @@ public class GameMap {
     Coordinate coor = loc.getRegionCoordinate();
     
     //finally generate the region
-    Region newregion = generator.generateRegion(coor, getNeighborRegions(coor));
+    Region newregion = generator.generateRegion(coor);
     loadedregions.put(coor, newregion);
     return newregion;
+  }
+
+  @Override
+  protected void connected() {
+  }
+
+  @Override
+  protected void messageRecieved(Packet pack) {
+  }
+
+  @Override
+  protected void managerAttached() {
   }
   
   private LoadingMode lmode;
   private MapGenerator generator;
   private HashMap<Coordinate, Region> loadedregions;
+  
+  private enum PacketType {
+    LoadRegion((byte)0),
+    RegionData((byte)1);
+    
+    public final byte val;
+    
+    private PacketType(byte type) {
+      val = type;
+    }
+  }
 }

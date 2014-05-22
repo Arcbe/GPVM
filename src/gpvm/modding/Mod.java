@@ -7,8 +7,7 @@ package gpvm.modding;
 import gpvm.io.DataLoader;
 import gpvm.io.DataNode;
 import gpvm.io.InvalidDataFileException;
-import gpvm.io.RegistryDataReader;
-import gpvm.map.MapGenerator;
+import taiga.gpvm.map.MapGenerator;
 import gpvm.map.Universe;
 import gpvm.map.Universe.World;
 import gpvm.util.MPUClassLoader;
@@ -106,39 +105,39 @@ public final class Mod {
   }
   
   public void preload() {
-    //this is where the tiles will be added by the mod controller
-    for(String file : tdfiles) {
-      try {
-        URL res = getResource(file);
-        if(res == null) {
-          log.log(Level.SEVERE, StringManager.getLocalString("err_tile_def_not_found", file));
-          continue;
-        }
-        
-        RegistryDataReader.loadTileRegistryData(getResource(file), name);
-      } catch (URISyntaxException | FileNotFoundException | InvalidDataFileException ex) {
-        log.log(Level.SEVERE, StringManager.getLocalString("err_invalid_tile_def_file", file), ex);
-      }
-    }
-    
-    //load all of the rendering data
-    for(String file : rendfiles) {
-      try {
-        URL res = getResource(file);
-        if(res == null) {
-          log.log(Level.SEVERE, StringManager.getLocalString("err_rendering_file_not_found", file));
-          continue;
-        }
-        
-        RegistryDataReader.loadRenderRegistryData(res, name, loader);
-      } catch (URISyntaxException | FileNotFoundException | InvalidDataFileException | InstantiationException | IllegalAccessException | NoSuchFieldException | ClassNotFoundException ex) {
-        log.log(Level.SEVERE, StringManager.getLocalString("err_invalid_rendering_file", file), ex);
-      }
-    }
-    
-    if(controller != null) controller.preload();
-    
-    log.log(Level.INFO, StringManager.getLocalString("info_mod_preload", name));
+//    //this is where the tiles will be added by the mod controller
+//    for(String file : tdfiles) {
+//      try {
+//        URL res = getResource(file);
+//        if(res == null) {
+//          log.log(Level.SEVERE, StringManager.getLocalString("err_tile_def_not_found", file));
+//          continue;
+//        }
+//        
+//        RegistryDataReader.loadTileRegistryData(getResource(file), name);
+//      } catch (URISyntaxException | FileNotFoundException | InvalidDataFileException ex) {
+//        log.log(Level.SEVERE, StringManager.getLocalString("err_invalid_tile_def_file", file), ex);
+//      }
+//    }
+//    
+//    //load all of the rendering data
+//    for(String file : rendfiles) {
+//      try {
+//        URL res = getResource(file);
+//        if(res == null) {
+//          log.log(Level.SEVERE, StringManager.getLocalString("err_rendering_file_not_found", file));
+//          continue;
+//        }
+//        
+//        RegistryDataReader.loadRenderRegistryData(res, name, loader);
+//      } catch (URISyntaxException | FileNotFoundException | InvalidDataFileException | InstantiationException | IllegalAccessException | NoSuchFieldException | ClassNotFoundException ex) {
+//        log.log(Level.SEVERE, StringManager.getLocalString("err_invalid_rendering_file", file), ex);
+//      }
+//    }
+//    
+//    if(controller != null) controller.preload();
+//    
+//    log.log(Level.INFO, StringManager.getLocalString("info_mod_preload", name));
   }
   
   public void load() {

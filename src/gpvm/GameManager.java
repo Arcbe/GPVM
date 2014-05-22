@@ -10,9 +10,11 @@ import static gpvm.HardcodedValues.GAMEMANAGER_NAME;
 import static gpvm.HardcodedValues.TILE_REGISTRY_NAME;
 import taiga.gpvm.render.GraphicsRoot;
 import taiga.code.io.DataFileManager;
+import taiga.code.registration.RegisteredObject;
 import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
 import taiga.gpvm.registry.Registry;
+import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileEntry;
 import taiga.gpvm.registry.TileRegistry;
 
@@ -24,10 +26,7 @@ import taiga.gpvm.registry.TileRegistry;
  * 
  * @author russell
  */
-public class GameManager extends RegisteredSystem {
-  public static GameManager getInstance() {
-    return instance;
-  }
+public final class GameManager extends RegisteredSystem {
 
   @Override
   public void resetObject() {}
@@ -38,7 +37,7 @@ public class GameManager extends RegisteredSystem {
   @Override
   protected void stopSystem() {}
 
-  private GameManager() {
+  public GameManager(boolean server, boolean client) {
     super(GAMEMANAGER_NAME);
     
     addChild(new DataFileManager());
@@ -51,8 +50,23 @@ public class GameManager extends RegisteredSystem {
     
     settings.loadSettings("settings.yml");
     
-    addChild(new GraphicsRoot());
+    setServerMode(server);
+    setClientMoe(client);
   }
   
-  private static GameManager instance = new GameManager();
+  public void setServerMode(boolean server) {
+    if(server) {
+      
+    }
+  }
+  
+  public void setClientMoe(boolean client) {
+    RegisteredObject rendreg = getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    RegisteredObject graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+    
+    if(client) {
+      if(rendreg == null) addChild(new RenderingRegistry());
+      if(graphics == null) addChild(new GraphicsRoot());
+    }
+  }
 }

@@ -1,15 +1,16 @@
 package taiga.gpvm.render;
 
-import gpvm.map.Tile;
+import taiga.gpvm.map.Tile;
 import gpvm.util.geometry.Coordinate;
 import gpvm.util.geometry.Direction;
+import taiga.gpvm.registry.RenderingEntry;
 
 /**
  * A descriptor of basic information about a {@link Tile} for use in rendering.
  * 
  * @author russell
  */
-public class TileInfo {
+public final class TileInfo {
   /**
    * The position in the world of the {@link Tile} associated with this {@link TileInfo}.
    * When being rendered however, the tile should be positioned relative to the
@@ -29,4 +30,9 @@ public class TileInfo {
    * of the {@link Direction} enumeration.
    */
   public Tile[] adjacent;
+  
+  /**
+   * The {@link RenderingEntry} for the {@link Tile} described by this {@link TileInfo}.
+   */
+  public RenderingEntry rendentry;
 }

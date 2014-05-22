@@ -4,6 +4,8 @@
  */
 package gpvm.map;
 
+import taiga.gpvm.map.MapGenerator;
+import taiga.gpvm.map.GameMap;
 import taiga.gpvm.render.GraphicsRoot;
 import gpvm.util.StringManager;
 import java.util.Collection;
@@ -27,19 +29,19 @@ public class Universe {
   }
   
   public void addWorld(World world) {
-    MapGenerator gen;
-    
-    try {
-      gen = world.generator.newInstance();
-    } catch (InstantiationException | IllegalAccessException ex) {
-      log.log(Level.SEVERE, StringManager.getLocalString("err_create_world", world.name), ex);
-      return;
-    }
-    
-    GameMap nmap = new GameMap(gen);
-    worlds.put(world.name, nmap);
-    
-    log.log(Level.INFO, StringManager.getLocalString("info_world_added", world.name));
+//    MapGenerator gen;
+//    
+//    try {
+//      gen = world.generator.newInstance();
+//    } catch (InstantiationException | IllegalAccessException ex) {
+//      log.log(Level.SEVERE, StringManager.getLocalString("err_create_world", world.name), ex);
+//      return;
+//    }
+//    
+//    GameMap nmap = new GameMap(gen);
+//    worlds.put(world.name, nmap);
+//    
+//    log.log(Level.INFO, StringManager.getLocalString("info_world_added", world.name));
   }
   
   public void addWorlds(Collection<World> worlds) {

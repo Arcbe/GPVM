@@ -5,17 +5,7 @@
 package sandboxgame;
 
 import gpvm.GameManager;
-import gpvm.editor.panels.ModInformationPanel;
-import gpvm.editor.panels.RenderRegistryPanel;
-import gpvm.editor.panels.TileRegistryPanel;
-import gpvm.input.InputSystem;
-import gpvm.input.KeyListener;
-import gpvm.io.DataLoader;
-import gpvm.io.YAMLLoader;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
-import gpvm.modding.ModManager;
-import taiga.gpvm.render.GraphicsRoot;
 import gpvm.util.StringManager;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -71,7 +61,7 @@ public class SandboxGame {
     moving = new Vector3f();
     direction = new Matrix3f();
     
-    GameManager game = GameManager.getInstance();
+    GameManager game = new GameManager(true, true);
     NetworkManager net = new LoopbackNetwork("network");
     game.addChild(net);
     net.scanRegisteredObjects();
@@ -82,22 +72,22 @@ public class SandboxGame {
   private static Vector3f moving;
   private static Matrix3f direction;
   
-  public static void launcherInit() {
-    JFrame editorframe = new JFrame("Registrar");
-    JTabbedPane content = new JTabbedPane();
-    editorframe.add(content);
-    
-    TileRegistryPanel trpanel = new TileRegistryPanel();
-    content.add(trpanel);
-    
-    RenderRegistryPanel rendreg = new RenderRegistryPanel();
-    content.add(rendreg);
-    
-    ModInformationPanel mods = new ModInformationPanel();
-    content.add(mods);
-    
-    editorframe.setSize(800, 400);
-    editorframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    editorframe.setVisible(true);
-  }
+//  public static void launcherInit() {
+//    JFrame editorframe = new JFrame("Registrar");
+//    JTabbedPane content = new JTabbedPane();
+//    editorframe.add(content);
+//    
+//    TileRegistryPanel trpanel = new TileRegistryPanel();
+//    content.add(trpanel);
+//    
+//    RenderRegistryPanel rendreg = new RenderRegistryPanel();
+//    content.add(rendreg);
+//    
+//    ModInformationPanel mods = new ModInformationPanel();
+//    content.add(mods);
+//    
+//    editorframe.setSize(800, 400);
+//    editorframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//    editorframe.setVisible(true);
+//  }
 }

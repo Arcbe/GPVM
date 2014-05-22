@@ -4,7 +4,7 @@
  */
 package gpvm.util.geometry;
 
-import gpvm.map.Region;
+import taiga.gpvm.map.Region;
 
 /**
  * Represents the location of a tile in space.

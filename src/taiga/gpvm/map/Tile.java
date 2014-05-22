@@ -1,4 +1,7 @@
-package gpvm.map;
+package taiga.gpvm.map;
+
+import gpvm.map.TileData;
+import taiga.gpvm.registry.TileEntry;
 
 /**
  * Represents a single unit of the game map.  Each tile has some tile type
@@ -8,17 +11,16 @@ package gpvm.map;
  * @author russell
  */
 public final class Tile {
-  public static final long NULL = 0;
   /**
    * An instance of a Tile that only has function that can read its state and
    * not modify it.
    */
   public class ReadOnlyTile {
     /**
-     * Returns a long integer that is the tile id for this tile.
-     * @return The tile id.
+     * Returns a {@link TileEntry} for the definition of the type of this tittle.
+     * @return The {@link TileEntry} for this tiles type.
      */
-    public long getType() {
+    public TileEntry getType() {
       return type;
     }
     
@@ -42,10 +44,9 @@ public final class Tile {
   }
   
   /**
-   * The tile id for this {@link Tile}, an id of 0 indicates that the block is
-   * empty.
+   * The {@link TileEntry} that defines the type of this tile.
    */
-  public long type;
+  public TileEntry type;
   /**
    * The amount of damage that the block has taken.
    */

@@ -15,10 +15,17 @@ public class HardcodedValues {
   public static final String GAMEMANAGER_NAME = "game";
   public static final String GRAPHICSSYSTEM_NAME = "graphics";
   public static final String TILE_REGISTRY_NAME = "tiles";
+  public static final String RENDERING_REGISTRY_NAME = "renderinginfo";
+  public static final String MAP_GENERATOR_NAME = "generator";
+  public static final String GAME_MAP_NAME = "map";
   
   //field names for Tile Registry entries
   public static final String CANON_NAME_FIELD = "canonicalname";
   public static final String SOLID_FIELD = "solid";
   public static final String OPAQUE_FIELD = "opaque";
   public static final String NAMESPACE_SEPERATOR = ".";
+  
+  //field names for Rendering Registry
+  public static final String RENDERER_CLASS_FIELD = "renderer";
+  public static final String RENDERING_INFO_FIELD = "rendering-info";
 }

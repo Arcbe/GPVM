@@ -5,7 +5,7 @@
 package taiga.gpvm.render;
 
 import static gpvm.HardcodedValues.GRAPHICSSYSTEM_NAME;
-import gpvm.map.GameMap;
+import taiga.gpvm.map.GameMap;
 import org.lwjgl.opengl.DisplayMode;
 import gpvm.util.Updateable;
 import java.util.List;

@@ -2,8 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gpvm.map;
+package taiga.gpvm.map;
 
+import taiga.gpvm.map.RegionListener;
+import taiga.gpvm.map.Tile;
 import gpvm.util.geometry.Coordinate;
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,13 +21,16 @@ public final class Region {
    */
   public static final byte REGION_SIZE = 32;
   private final Coordinate location;
+  private final GameMap map;
   
   /**
    * Constructs a region with only empty {@link Tile}.
    * 
    * @param loc The location in the map where this region lies.
    */
-  public Region(Coordinate loc) {
+  public Region(Coordinate loc, GameMap parent) {
+    map = parent;
+    
     tiles = new Tile[REGION_SIZE * REGION_SIZE * REGION_SIZE];
     location = loc;
     
@@ -41,8 +46,10 @@ public final class Region {
    * @param data The data to use when creating the {@link Region}
    * @param loc The location of the region in the map.
    */
-  public Region(Tile[] data, Coordinate loc) {
+  public Region(Tile[] data, Coordinate loc, GameMap parent) {
+    map = parent;
     assert data.length == REGION_SIZE * REGION_SIZE * REGION_SIZE;
+    
     tiles = data;
     location = loc;
     listeners = new ConcurrentLinkedQueue<>();
@@ -65,6 +72,10 @@ public final class Region {
    */
   public Coordinate getLocation() {
     return location;
+  }
+  
+  public GameMap getGameMap() {
+    return map;
   }
   
   /**

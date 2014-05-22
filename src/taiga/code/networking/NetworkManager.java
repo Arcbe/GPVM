@@ -158,6 +158,8 @@ public abstract class NetworkManager extends RegisteredObject {
   }
   
   private enum PacketType {
+    //sends a packet composed of a single arbitrary string corresponding to a
+    //networked object in order to synchorize the ids across the network.
     sync(SYNC_VAL);
     
     private final byte value;
