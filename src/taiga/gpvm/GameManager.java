@@ -13,6 +13,7 @@ import taiga.code.io.DataFileManager;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
+import taiga.gpvm.map.Universe;
 import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.screens.GameScreen;
@@ -46,8 +47,7 @@ public final class GameManager extends RegisteredSystem {
     addChild(settings);
     
     addChild(new TileRegistry());
-    
-    settings.loadSettings("settings.yml");
+    addChild(new Universe());
     
     setServerMode(server);
     setClientMoe(client);

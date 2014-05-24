@@ -44,6 +44,12 @@ public class SettingManager extends ReusableObject {
     try {
       DataNode node = ((DataFileManager)obj).readFile(file);
       
+      if(node == null) {
+        log.log(Level.SEVERE, NO_DATA, file);
+        
+        return;
+      }
+      
       for(RegisteredObject cur : node) {
         if(cur == null || !(cur instanceof DataNode)) continue;
         
@@ -87,8 +93,11 @@ public class SettingManager extends ReusableObject {
     return result;
   }
   
-  private static final String NO_DFMANAGER = SettingManager.class.getName().toLowerCase() + ".no_dfmanager";
-  private static final String IO_EXCEPTION = SettingManager.class.getName().toLowerCase() + ".io_exception";
+  private static final String locprefix = SettingManager.class.getName().toLowerCase();
+  
+  private static final String NO_DFMANAGER = locprefix + ".no_dfmanager";
+  private static final String IO_EXCEPTION = locprefix + ".io_exception";
+  private static final String NO_DATA = locprefix + ".no_data";
   
   private static final Logger log = Logger.getLogger(SettingManager.class.getName(),
     System.getProperty("taiga.code.logging.text"));

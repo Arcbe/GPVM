@@ -7,6 +7,7 @@ package sandboxgame;
 import taiga.gpvm.GameManager;
 import org.lwjgl.LWJGLException;
 import gpvm.util.StringManager;
+import hyperion.Generator;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +19,8 @@ import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Vector3f;
 import taiga.code.networking.LoopbackNetwork;
 import taiga.code.networking.NetworkManager;
+import taiga.code.util.SettingManager;
+import taiga.gpvm.map.Universe;
 
 /**
  *
@@ -65,6 +68,9 @@ public class SandboxGame {
     NetworkManager net = new LoopbackNetwork("network");
     game.addChild(net);
     net.scanRegisteredObjects();
+    ((SettingManager)game.getObject("settings")).loadSettings("settings.yml");
+    
+    ((Universe)game.getObject("universe")).addWorld("test", new Generator());
     
     game.start();
   }

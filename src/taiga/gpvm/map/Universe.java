@@ -18,17 +18,11 @@ import taiga.code.networking.Packet;
  */
 public class Universe extends NetworkedObject {
   
-  public static class World {
-    public String name;
-    public Class<? extends MapGenerator> generator;
-  }
-  
-  public static Universe getInstance() {
-    return instance;
-  }
-  
   public void addWorld(String name, MapGenerator gen) {
-    World nworld = new World();
+    World nworld = new World(name);
+    nworld.addChild(gen);
+    
+    addChild(nworld);
   }
 
   @Override
@@ -45,10 +39,9 @@ public class Universe extends NetworkedObject {
   protected void managerAttached() {
   }
   
-  private Universe() {
+  public Universe() {
     super(HardcodedValues.UNIVERSE_NAME);
   }
   
-  private static final Universe instance = new Universe();
   private static final Logger log = Logger.getLogger(Universe.class.getName());
 }
