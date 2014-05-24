@@ -1,6 +1,6 @@
 package taiga.gpvm.render;
 
-import gpvm.HardcodedValues;
+import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.GameMap;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.RegionListener;

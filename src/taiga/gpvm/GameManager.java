@@ -2,21 +2,20 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gpvm;
+package taiga.gpvm;
 
+import taiga.gpvm.HardcodedValues;
 import taiga.code.registration.RegisteredSystem;
 
-import static gpvm.HardcodedValues.GAMEMANAGER_NAME;
-import static gpvm.HardcodedValues.TILE_REGISTRY_NAME;
+import static taiga.gpvm.HardcodedValues.GAMEMANAGER_NAME;
 import taiga.gpvm.render.GraphicsRoot;
 import taiga.code.io.DataFileManager;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
-import taiga.gpvm.registry.Registry;
 import taiga.gpvm.registry.RenderingRegistry;
-import taiga.gpvm.registry.TileEntry;
 import taiga.gpvm.registry.TileRegistry;
+import taiga.gpvm.screens.GameScreen;
 
 /**
  * Controls the overall state of the game.  This class will initialize the
@@ -63,10 +62,12 @@ public final class GameManager extends RegisteredSystem {
   public void setClientMoe(boolean client) {
     RegisteredObject rendreg = getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
     RegisteredObject graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+    RegisteredObject gamescreen = getObject(HardcodedValues.GAME_SCREEN_NAME);
     
     if(client) {
       if(rendreg == null) addChild(new RenderingRegistry());
       if(graphics == null) addChild(new GraphicsRoot());
+      if(gamescreen == null) addChild(new GameScreen());
     }
   }
 }

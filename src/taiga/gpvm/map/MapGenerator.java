@@ -4,7 +4,7 @@
  */
 package taiga.gpvm.map;
 
-import gpvm.HardcodedValues;
+import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Region;
 import gpvm.util.geometry.Coordinate;
 import taiga.code.registration.RegisteredObject;

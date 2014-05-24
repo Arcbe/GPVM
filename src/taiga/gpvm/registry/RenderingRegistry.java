@@ -1,9 +1,9 @@
 package taiga.gpvm.registry;
 
-import gpvm.HardcodedValues;
-import static gpvm.HardcodedValues.NAMESPACE_SEPERATOR;
-import static gpvm.HardcodedValues.RENDERER_CLASS_FIELD;
-import static gpvm.HardcodedValues.RENDERING_INFO_FIELD;
+import taiga.gpvm.HardcodedValues;
+import static taiga.gpvm.HardcodedValues.NAMESPACE_SEPERATOR;
+import static taiga.gpvm.HardcodedValues.RENDERER_CLASS_FIELD;
+import static taiga.gpvm.HardcodedValues.RENDERING_INFO_FIELD;
 import gpvm.ThreadingManager;
 import gpvm.io.DataLoader;
 import gpvm.io.DataNode;

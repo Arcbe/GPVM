@@ -6,10 +6,10 @@
 
 package taiga.gpvm.registry;
 
-import gpvm.HardcodedValues;
-import static gpvm.HardcodedValues.CANON_NAME_FIELD;
-import static gpvm.HardcodedValues.OPAQUE_FIELD;
-import static gpvm.HardcodedValues.SOLID_FIELD;
+import taiga.gpvm.HardcodedValues;
+import static taiga.gpvm.HardcodedValues.CANON_NAME_FIELD;
+import static taiga.gpvm.HardcodedValues.OPAQUE_FIELD;
+import static taiga.gpvm.HardcodedValues.SOLID_FIELD;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;

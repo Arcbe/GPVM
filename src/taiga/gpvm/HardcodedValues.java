@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package gpvm;
+package taiga.gpvm;
 
 /**
  * The various values that are hard coded into the game platform.
@@ -18,6 +18,8 @@ public class HardcodedValues {
   public static final String RENDERING_REGISTRY_NAME = "renderinginfo";
   public static final String MAP_GENERATOR_NAME = "generator";
   public static final String GAME_MAP_NAME = "map";
+  public static final String GAME_SCREEN_NAME = "gamescreen";
+  public static final String UNIVERSE_NAME = "universe";
   
   //field names for Tile Registry entries
   public static final String CANON_NAME_FIELD = "canonicalname";

@@ -4,7 +4,7 @@
  */
 package hyperion;
 
-import gpvm.HardcodedValues;
+import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.Tile;

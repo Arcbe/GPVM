@@ -4,7 +4,7 @@
  */
 package sandboxgame;
 
-import gpvm.GameManager;
+import taiga.gpvm.GameManager;
 import org.lwjgl.LWJGLException;
 import gpvm.util.StringManager;
 import java.net.URISyntaxException;
