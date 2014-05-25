@@ -4,8 +4,6 @@
  */
 package taiga.gpvm.map;
 
-import taiga.gpvm.map.RegionListener;
-import taiga.gpvm.map.Tile;
 import gpvm.util.geometry.Coordinate;
 import java.util.Collection;
 import java.util.Iterator;

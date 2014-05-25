@@ -7,6 +7,7 @@ package sandboxgame;
 import taiga.gpvm.GameManager;
 import org.lwjgl.LWJGLException;
 import gpvm.util.StringManager;
+import gpvm.util.geometry.Coordinate;
 import hyperion.Generator;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -21,6 +22,7 @@ import taiga.code.networking.LoopbackNetwork;
 import taiga.code.networking.NetworkManager;
 import taiga.code.util.SettingManager;
 import taiga.gpvm.map.Universe;
+import taiga.gpvm.map.World;
 
 /**
  *
@@ -67,12 +69,14 @@ public class SandboxGame {
     GameManager game = new GameManager(true, true);
     NetworkManager net = new LoopbackNetwork("network");
     game.addChild(net);
-    net.scanRegisteredObjects();
     ((SettingManager)game.getObject("settings")).loadSettings("settings.yml");
     
     ((Universe)game.getObject("universe")).addWorld("test", new Generator());
     
     game.start();
+    net.scanRegisteredObjects();
+    
+    ((World)game.getObject("universe.test")).loadRegion(new Coordinate());
   }
   
   private static Vector3f moving;
