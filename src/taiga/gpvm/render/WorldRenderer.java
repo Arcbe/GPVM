@@ -7,23 +7,27 @@ package taiga.gpvm.render;
 import gpvm.util.geometry.Coordinate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import org.lwjgl.opengl.GL11;
 import taiga.code.graphics.Renderable;
+import taiga.gpvm.map.Region;
 import taiga.gpvm.map.World;
+import taiga.gpvm.map.WorldListener;
 
 /**
  * Handles the rendering of a GameMap.
  * 
  * @author russell
  */
-public final class WorldRenderer extends Renderable {
+public final class WorldRenderer extends Renderable implements WorldListener {
   public WorldRenderer(World world) {
     super(world.name);
     
     map = world;
     rendgrid = false;
-    drawlist = new ArrayList<>();
-    renderers = new HashMap<>();
+    renderers = new ArrayList<>();
+    
+    world.addListener(this);
   }
   
   public void renderGrid(boolean grid) {
@@ -35,38 +39,36 @@ public final class WorldRenderer extends Renderable {
     //setup the matrices
     GL11.glMatrixMode(GL11.GL_MODELVIEW);
     
-    for(RegionRenderer reg : drawlist) {
-      Coordinate loc = reg.getLocation();
-      GL11.glLoadIdentity();
-      GL11.glTranslatef(loc.x, loc.y, loc.z);
-      
-      //eg.render(rendgrid);
-    }
+//    for(RegionRenderer reg : drawlist) {
+//      Coordinate loc = reg.getLocation();
+//      GL11.glLoadIdentity();
+//      GL11.glTranslatef(loc.x, loc.y, loc.z);
+//      
+//      //eg.render(rendgrid);
+//    }
   }
   
   private static int drawdistance = 4;
   
   private World map;
   private Camera camera;
-  private ArrayList<RegionRenderer> drawlist;
-  private HashMap<Coordinate, RegionRenderer> renderers;
-  private Class<? extends RenderingBatch> renderclass;
+  private List<RegionRenderer> renderers;
   private boolean rendgrid;
 
   @Override
   protected void updateSelf() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
   @Override
   protected void renderSelf(int pass) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
-  
-  private enum Quad {
-    PxPy,
-    PxNy,
-    NxPy,
-    NxNy
+
+  @Override
+  public void regionLoaded(Region reg) {
+    addChild(new RegionRenderer(reg));
+  }
+
+  @Override
+  public void regionUnloaded(Region reg) {
   }
 }

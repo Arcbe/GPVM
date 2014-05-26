@@ -66,8 +66,11 @@ public final class GameManager extends RegisteredSystem {
     
     if(client) {
       if(rendreg == null) addChild(new RenderingRegistry());
-      if(graphics == null) addChild(new GraphicsRoot());
-      if(gamescreen == null) addChild(new GameScreen());
+      if(graphics == null) {
+        addChild(new GraphicsRoot());
+        graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+      }
+      if(gamescreen == null) graphics.addChild(new GameScreen());
     }
   }
 }

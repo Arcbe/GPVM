@@ -23,7 +23,7 @@ import taiga.gpvm.registry.RenderingRegistry;
  * @author russell
  */
 public final class RegionRenderer extends Renderable implements RegionListener {
-  public static final String NAME_PREFIX = "region";
+  public static final String NAME_PREFIX = "region-";
   
   public boolean outline;
   
@@ -225,7 +225,7 @@ public final class RegionRenderer extends Renderable implements RegionListener {
 
   @Override
   protected void renderSelf(int pass) {
-    if(outline) {
+    if(true) {
       getGrid().draw();
     }
     
