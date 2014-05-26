@@ -21,7 +21,7 @@ package gpvm.modding;
  * @author russell
  */
 public class ModController {
-  protected Mod parent;
+  //protected Mod parent;
   
   /**
    * Initializes the mod.  At this point none of the assets for the mod should

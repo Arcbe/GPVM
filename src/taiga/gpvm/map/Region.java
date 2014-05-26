@@ -19,14 +19,14 @@ public final class Region {
    */
   public static final byte REGION_SIZE = 32;
   private final Coordinate location;
-  private final GameMap map;
+  private final World map;
   
   /**
    * Constructs a region with only empty {@link Tile}.
    * 
    * @param loc The location in the map where this region lies.
    */
-  public Region(Coordinate loc, GameMap parent) {
+  public Region(Coordinate loc, World parent) {
     map = parent;
     
     tiles = new Tile[REGION_SIZE * REGION_SIZE * REGION_SIZE];
@@ -44,7 +44,7 @@ public final class Region {
    * @param data The data to use when creating the {@link Region}
    * @param loc The location of the region in the map.
    */
-  public Region(Tile[] data, Coordinate loc, GameMap parent) {
+  public Region(Tile[] data, Coordinate loc, World parent) {
     map = parent;
     assert data.length == REGION_SIZE * REGION_SIZE * REGION_SIZE;
     
@@ -72,7 +72,7 @@ public final class Region {
     return location;
   }
   
-  public GameMap getGameMap() {
+  public World getWorld() {
     return map;
   }
   

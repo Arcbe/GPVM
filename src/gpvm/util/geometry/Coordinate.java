@@ -4,6 +4,7 @@
  */
 package gpvm.util.geometry;
 
+import java.text.MessageFormat;
 import taiga.gpvm.map.Region;
 
 /**
@@ -158,5 +159,10 @@ public class Coordinate {
       return false;
     }
     return true;
+  }
+  
+  @Override
+  public String toString() {
+    return MessageFormat.format("({0},{1},{2})", x, y, z);
   }
 }

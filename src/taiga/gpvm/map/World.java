@@ -7,6 +7,7 @@
 package taiga.gpvm.map;
 
 import gpvm.util.geometry.Coordinate;
+import gpvm.util.geometry.Direction;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,78 @@ public class World extends NetworkedObject {
     listeners = new ArrayList<>();
     regions = new HashMap<>();
     regionlock = new ReentrantReadWriteLock();
+  }
+  
+  /**
+   * Returns a region of the map. Depending on loading mode this method may
+   * return null if the region is not currently loaded.
+   * 
+   * @param coor The coordinate of a block inside the region
+   * @return The region of the map containing the given coordinate or null.
+   */
+  public Region getRegion(Coordinate coor) {
+    Coordinate rc = coor.getRegionCoordinate();
+    return regions.get(rc);
+  }
+  
+  /**
+   * Returns the {@link Tile} at the given coordinate.  If the tile is 
+   * no in a loaded chunk then this may return null depending on the loading mode.
+   * 
+   * @param coor The coordinate of the requested {@link Tile}
+   * @return The {@link Tile} at the given coordinate.
+   */
+  public Tile getTile(Coordinate coor) {
+    Region reg = getRegion(coor);
+    
+    if(reg == null) return null;
+    
+    byte x = (byte) (coor.x % Region.REGION_SIZE);
+    byte y = (byte) (coor.y % Region.REGION_SIZE);
+    byte z = (byte) (coor.z % Region.REGION_SIZE);
+    
+    //make sure that they are not negative
+    if(x < 0) x += Region.REGION_SIZE;
+    if(y < 0) y += Region.REGION_SIZE;
+    if(z < 0) z += Region.REGION_SIZE;
+    
+    return reg.getTile(x, y, z);
+  }
+  
+  /**
+   * Returns an array of all of the neighboring {@link Tile}s of a
+   * {@link Coordinate}.  The indices of the {@link Tile}s are the values from
+   * the {@link Direction} enum.
+   * 
+   * @param coor The coordinate to look up the neighbors for.
+   * @return The neighboring {@link Tile}s of the given coordinate.
+   * @see Direction#getIndex()
+   */
+  public Tile[] getNeighborTiles(Coordinate coor) {
+    Tile[] tiles = new Tile[6];
+    
+    coor.x += 1;
+    tiles[Direction.East.getIndex()] = getTile(coor);
+    
+    coor.x -= 2;
+    tiles[Direction.West.getIndex()] = getTile(coor);
+    
+    coor.x += 1;
+    coor.y += 1;
+    tiles[Direction.North.getIndex()] = getTile(coor);
+    
+    coor.y -= 2;
+    tiles[Direction.South.getIndex()] = getTile(coor);
+    
+    coor.y += 1;
+    coor.z += 1;
+    tiles[Direction.Up.getIndex()] = getTile(coor);
+    
+    coor.z -= 2;
+    tiles[Direction.Down.getIndex()] = getTile(coor);
+    coor.z += 1;
+    
+    return tiles;
   }
   
   public void addListener(WorldListener list) {

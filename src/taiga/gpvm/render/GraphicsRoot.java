@@ -5,7 +5,6 @@
 package taiga.gpvm.render;
 
 import static taiga.gpvm.HardcodedValues.GRAPHICSSYSTEM_NAME;
-import taiga.gpvm.map.GameMap;
 import org.lwjgl.opengl.DisplayMode;
 import gpvm.util.Updateable;
 import java.util.List;
@@ -43,8 +42,6 @@ public class GraphicsRoot extends GraphicsSystem implements ChildListener {
   
   private DisplayMode mode;
   private Camera cam;
-//  private MapData renderer;
-  private GameMap map;
   private List<Updateable> updaters;
 
   public GraphicsRoot() {

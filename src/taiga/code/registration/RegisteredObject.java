@@ -146,10 +146,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     child.parent = this;
     
     //now notify the listeners
-    for(ChildListener list : childlist)
-      list.childAdded(this, child);
-    for(ChildListener list : child.parlist)
-      list.childRemoved(this, child);
+    fireChildAdded(child);
     
     return child.id;
   }
@@ -165,13 +162,18 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     
     log.log(Level.FINE, REMOVED_CHILD, new Object[]{getFullName(), child.name});
     
-    return children.remove(child);
+    boolean result = children.remove(child);
+    
+    fireChildRemoved(child);
+    
+    return result;
   }
   
   public void removeAllChildren() {
     if(children == null) return;
     
-    children.clear();
+    for(RegisteredObject child : this)
+      removeChild(child);
   }
   
   /**
@@ -221,6 +223,23 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   @Override
   public Iterator<RegisteredObject> iterator() {
     return getChildren().listIterator();
+  }
+  
+  protected void attached(RegisteredObject parent) {}
+  protected void dettached(RegisteredObject parent) {}
+  
+  private void fireChildAdded(RegisteredObject child) {
+    for(ChildListener list : childlist)
+      list.childAdded(this, child);
+    
+    child.attached(this);
+  }
+  
+  private void fireChildRemoved(RegisteredObject child) {
+    for(ChildListener list : childlist)
+      list.childRemoved(this, child);
+    
+    child.dettached(this);
   }
   
   private static final String CREATION = RegisteredObject.class.getName().toLowerCase() + ".created";

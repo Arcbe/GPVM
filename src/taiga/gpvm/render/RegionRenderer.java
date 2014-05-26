@@ -1,7 +1,6 @@
 package taiga.gpvm.render;
 
 import taiga.gpvm.HardcodedValues;
-import taiga.gpvm.map.GameMap;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.RegionListener;
 import taiga.gpvm.map.Tile;
@@ -83,7 +82,7 @@ public final class RegionRenderer extends Renderable implements RegionListener {
     
     //now check if the tile is actually visible
     Coordinate loc = new Coordinate(x, y, z);
-    Tile[] ngbrs = reg.getGameMap().getNeighborTiles(loc);
+    Tile[] ngbrs = reg.getWorld().getNeighborTiles(loc);
     boolean visible = false;
     for(int i = 0; i < ngbrs.length; i++) {
       if(ngbrs[i] == null || ngbrs[i].type == null) {

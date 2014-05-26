@@ -9,7 +9,7 @@ import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.Tile;
 import gpvm.util.geometry.Coordinate;
-import taiga.gpvm.map.GameMap;
+import taiga.gpvm.map.World;
 import taiga.gpvm.registry.TileEntry;
 
 /**
@@ -49,7 +49,7 @@ public class Generator extends MapGenerator {
       
     }
     
-    return new Region(data, coor, (GameMap) getObject(HardcodedValues.GAME_MAP_NAME));
+    return new Region(data, coor, (World) getObject(HardcodedValues.GAME_MAP_NAME));
   }
   
   private void initvariables() {

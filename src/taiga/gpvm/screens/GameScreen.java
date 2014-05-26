@@ -6,15 +6,23 @@
 
 package taiga.gpvm.screens;
 
-import taiga.gpvm.HardcodedValues;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import taiga.code.graphics.RenderableSwitcher;
+import taiga.code.registration.ChildListener;
+import taiga.code.registration.RegisteredObject;
+import taiga.gpvm.HardcodedValues;
+import taiga.gpvm.map.Universe;
+import taiga.gpvm.map.UniverseListener;
+import taiga.gpvm.map.World;
+import taiga.gpvm.render.WorldRenderer;
 
 /**
  *
  * @author russell
  */
-public class GameScreen extends RenderableSwitcher {
-
+public class GameScreen extends RenderableSwitcher implements UniverseListener {
+  
   public GameScreen() {
     super(HardcodedValues.GAME_SCREEN_NAME);
   }
@@ -26,4 +34,34 @@ public class GameScreen extends RenderableSwitcher {
   @Override
   protected void renderSelf(int pass) {
   }
+
+  @Override
+  public void worldCreated(World world) {
+    addChild(new WorldRenderer(world));
+  }
+
+  @Override
+  protected void dettached(RegisteredObject parent) {
+    RegisteredObject obj = getObject(HardcodedValues.UNIVERSE_NAME);
+    if(obj instanceof Universe) {
+      ((Universe)obj).removeListener(this);
+    } else {
+      log.log(Level.WARNING, NO_UNIVERSE);
+    }
+  }
+
+  @Override
+  protected void attached(RegisteredObject parent) {
+    RegisteredObject obj = getObject(HardcodedValues.UNIVERSE_NAME);
+    if(obj instanceof Universe) {
+      ((Universe)obj).addListener(this);
+    }
+  }
+  
+  private static final String locpref = GameScreen.class.getName().toLowerCase();
+  
+  private static final String NO_UNIVERSE = locpref + ".no_universe";
+  
+  private static final Logger log = Logger.getLogger(locpref, 
+    System.getProperty("taiga.code.logging.text"));
 }

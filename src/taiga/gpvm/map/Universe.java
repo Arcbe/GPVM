@@ -4,9 +4,12 @@
  */
 package taiga.gpvm.map;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import taiga.gpvm.HardcodedValues;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import taiga.code.networking.NetworkedObject;
@@ -18,11 +21,33 @@ import taiga.code.networking.Packet;
  */
 public class Universe extends NetworkedObject {
   
+  public Universe() {
+    super(HardcodedValues.UNIVERSE_NAME);
+    
+    listeners = new ArrayList<>();
+  }
+  
   public void addWorld(String name, MapGenerator gen) {
+    
     World nworld = new World(name);
     nworld.addChild(gen);
     
     addChild(nworld);
+    
+    fireWorldCreated(nworld);
+  }
+  
+  public void addListener(UniverseListener list) {
+    listeners.add(new WeakReference<>(list));
+  }
+  
+  public void removeListener(UniverseListener list) {
+    for(WeakReference<UniverseListener> ref : listeners) {
+      if(ref.get() == list) {
+        listeners.remove(ref);
+        return;
+      }
+    }
   }
 
   @Override
@@ -39,9 +64,18 @@ public class Universe extends NetworkedObject {
   protected void managerAttached() {
   }
   
-  public Universe() {
-    super(HardcodedValues.UNIVERSE_NAME);
+  private void fireWorldCreated(World world) {
+    for(WeakReference<UniverseListener> ref : listeners) {
+      UniverseListener list = ref.get();
+      if(list == null) {
+        listeners.remove(ref);
+      } else {
+        list.worldCreated(world);
+      }
+    }
   }
+  
+  private List<WeakReference<UniverseListener>> listeners;
   
   private static final Logger log = Logger.getLogger(Universe.class.getName());
 }

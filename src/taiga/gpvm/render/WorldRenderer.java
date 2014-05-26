@@ -4,43 +4,34 @@
  */
 package taiga.gpvm.render;
 
-import taiga.gpvm.map.GameMap;
-import taiga.gpvm.map.Region;
 import gpvm.util.geometry.Coordinate;
-import gpvm.util.geometry.Vector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.lwjgl.opengl.GL11;
 import taiga.code.graphics.Renderable;
+import taiga.gpvm.map.World;
 
 /**
  * Handles the rendering of a GameMap.
  * 
  * @author russell
  */
-public final class MapRenderer extends Renderable {
-  public MapRenderer(String name) {
-    super(name);
+public final class WorldRenderer extends Renderable {
+  public WorldRenderer(World world) {
+    super(world.name);
     
+    map = world;
     rendgrid = false;
     drawlist = new ArrayList<>();
     renderers = new HashMap<>();
-  }
-  
-  public void setMap(GameMap map) {
-    this.map = map;
-    
-    //none of the renderers are correct if the map changes.
-    renderers.clear();
   }
   
   public void renderGrid(boolean grid) {
     rendgrid = grid;
   }
   
-  public void render(Camera cam) {
-    if(map == null) return;
-    
+  public void setCamera(Camera cam) {
+    camera = cam;
     //setup the matrices
     GL11.glMatrixMode(GL11.GL_MODELVIEW);
     
@@ -55,7 +46,8 @@ public final class MapRenderer extends Renderable {
   
   private static int drawdistance = 4;
   
-  private GameMap map;
+  private World map;
+  private Camera camera;
   private ArrayList<RegionRenderer> drawlist;
   private HashMap<Coordinate, RegionRenderer> renderers;
   private Class<? extends RenderingBatch> renderclass;
