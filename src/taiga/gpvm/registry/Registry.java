@@ -23,6 +23,7 @@ public class Registry<T extends RegistryEntry> extends RegisteredSystem {
     super(name);
     
     entries = new HashMap<>();
+    entrynames = new HashMap<>();
   }
   
   /**
@@ -102,17 +103,6 @@ public class Registry<T extends RegistryEntry> extends RegisteredSystem {
     
     log.log(Level.FINE, ENTRY_ADDED, ent.name);
   }
-  
-  private Map<String, T> entrynames;
-  private Map<Integer, T> entries;
-  
-  private static final String PREFIX = Registry.class.getName().toLowerCase();
-  
-  private static final String ENTRY_ADDED = PREFIX + ".added_entry";
-  private static final String ALREADY_RUNNING = PREFIX + ".already_running";
-  
-  private Logger log = Logger.getLogger(Registry.class.getName(), 
-    System.getProperty("taiga.logging.text"));
 
   @Override
   protected void startSystem() {}
@@ -125,4 +115,15 @@ public class Registry<T extends RegistryEntry> extends RegisteredSystem {
     entries = null;
     entrynames.clear();
   }
+  
+  private Map<String, T> entrynames;
+  private Map<Integer, T> entries;
+  
+  private static final String PREFIX = Registry.class.getName().toLowerCase();
+  
+  private static final String ENTRY_ADDED = PREFIX + ".added_entry";
+  private static final String ALREADY_RUNNING = PREFIX + ".already_running";
+  
+  private Logger log = Logger.getLogger(Registry.class.getName(), 
+    System.getProperty("taiga.code.logging.text"));
 }

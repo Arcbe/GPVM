@@ -36,6 +36,11 @@ public class DataFileManager extends RegisteredObject {
    * @throws IOException If there was an exception while reading from the file.
    */
   public DataNode readFile(File file) throws IOException {
+    if(!file.exists()) {
+      log.log(Level.WARNING, FILE_NOT_FOUND);
+      return null;
+    }
+    
     for(RegisteredObject obj : this) {
       if(obj != null && obj instanceof DataFileReader) {
         DataFileReader reader = (DataFileReader)obj;
@@ -62,8 +67,11 @@ public class DataFileManager extends RegisteredObject {
     return readFile(new File(fname));
   }
   
-  private static final String NO_READER = DataFileManager.class.getName().toLowerCase() + ".no_reader";
+  private static final String locprefix = DataFileManager.class.getName().toLowerCase();
   
-  private static final Logger log = Logger.getLogger(DataFileManager.class.getName(),
+  private static final String NO_READER = locprefix+ ".no_reader";
+  private static final String FILE_NOT_FOUND = locprefix + ".file_not_found";
+  
+  private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));
 }

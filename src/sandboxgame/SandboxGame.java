@@ -9,6 +9,8 @@ import org.lwjgl.LWJGLException;
 import gpvm.util.StringManager;
 import gpvm.util.geometry.Coordinate;
 import hyperion.Generator;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +25,7 @@ import taiga.code.networking.NetworkManager;
 import taiga.code.util.SettingManager;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.World;
+import taiga.gpvm.registry.TileRegistry;
 
 /**
  *
@@ -34,7 +37,7 @@ public class SandboxGame {
    * @param args the command line arguments
    * @throws LWJGLException
    */
-  public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException {
+  public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException, IOException {
     System.setProperty("taiga.code.logging.text", "text");
     System.setProperty("taiga.code.text.localization", "text");
     System.setProperty("java.util.logging.config.file", "logging.properties");
@@ -70,6 +73,7 @@ public class SandboxGame {
     NetworkManager net = new LoopbackNetwork("network");
     game.addChild(net);
     ((SettingManager)game.getObject("settings")).loadSettings("settings.yml");
+    ((TileRegistry)game.getObject("tiles")).loadFile(new File("src/mods/tiles.yml"), "test");
     
     ((Universe)game.getObject("universe")).addWorld("test", new Generator());
     

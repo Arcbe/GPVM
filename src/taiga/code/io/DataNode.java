@@ -6,6 +6,7 @@
 
 package taiga.code.io;
 
+import java.text.MessageFormat;
 import taiga.code.registration.RegisteredObject;
 
 /**
@@ -18,5 +19,9 @@ public class DataNode extends RegisteredObject {
 
   public DataNode(String name) {
     super(name);
+  }
+  
+  public String toString() {
+    return MessageFormat.format("{0}:{1}", name, data);
   }
 }

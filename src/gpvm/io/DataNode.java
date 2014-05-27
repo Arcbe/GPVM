@@ -2,6 +2,7 @@
 package gpvm.io;
 
 import gpvm.util.StringManager;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
@@ -78,6 +79,10 @@ public final class DataNode {
    */
   public Collection<String> getValues() {
     return values.keySet();
+  }
+  
+  public String toString() {
+    return values.toString();
   }
   
   private Map<String, Object> values;

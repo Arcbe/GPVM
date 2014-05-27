@@ -37,33 +37,25 @@ public class TileRegistry extends NetworkRegistry<TileEntry>{
     
     DataNode data = dfio.readFile(in);
     
+    if(data == null) return;
+    
     for(RegisteredObject val : data) {
       if(!(val instanceof DataNode)) continue;
       DataNode cur = (DataNode) val;
 
-      if(!(data.data instanceof DataNode)) {
+      if(cur.data != null) {
         log.log(Level.WARNING, INVALID_TILE_DATA, new Object[]{val, in});
         continue;
       }
 
-      String canonname = null;
       boolean opaque = true;
       boolean solid = true;
       
-      for(RegisteredObject obj : (RegisteredObject)data.data) {
+      for(RegisteredObject obj : data) {
         if(!(obj instanceof DataNode)) continue;
         DataNode field = (DataNode) obj;
         
         switch(field.name) {
-          //Tile name field
-          case CANON_NAME_FIELD:
-            if(!(field.data instanceof String)) {
-              log.log(Level.WARNING, INVALID_FIELD_VALUE, new Object[]{CANON_NAME_FIELD, field.data});
-              continue;
-            }
-            
-            canonname = (String) field.data;
-            break;
             
           //Tile solidity field
           case SOLID_FIELD:
@@ -87,13 +79,7 @@ public class TileRegistry extends NetworkRegistry<TileEntry>{
         }
       }
       
-      //All tiles must have a name.
-      if(canonname == null) {
-        log.log(Level.WARNING, NO_TILE_NAME, cur);
-        continue;
-      }
-      
-      TileEntry entry = new TileEntry(modname, name, opaque, solid);
+      TileEntry entry = new TileEntry(modname, cur.name, opaque, solid);
       addEntry(entry);
     }
   }
@@ -103,7 +89,6 @@ public class TileRegistry extends NetworkRegistry<TileEntry>{
   private static final String NO_DFIO = locprefix + ".no_datafile_manager";
   private static final String INVALID_TILE_DATA = locprefix + ".invalid_tile_data";
   private static final String INVALID_FIELD_VALUE = locprefix + ".invalid_field_value";
-  private static final String NO_TILE_NAME = locprefix + ".no_tile_name";
   
   private static final Logger log = Logger.getLogger(locprefix, System.getProperty("taiga.code.logging.text"));
 }
