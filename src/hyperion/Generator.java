@@ -9,8 +9,10 @@ import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.Tile;
 import gpvm.util.geometry.Coordinate;
+import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.map.World;
 import taiga.gpvm.registry.TileEntry;
+import taiga.gpvm.registry.TileRegistry;
 
 /**
  *
@@ -18,7 +20,7 @@ import taiga.gpvm.registry.TileEntry;
  */
 public class Generator extends MapGenerator {
   @Override
-  public Region generateRegion(Coordinate coor) {
+  public Region generateRegion(Coordinate coor, World parent) {
     initvariables();
     
     //create the ground
@@ -49,11 +51,20 @@ public class Generator extends MapGenerator {
       
     }
     
-    return new Region(data, coor, (World) getObject(HardcodedValues.GAME_MAP_NAME));
+    return new Region(data, coor, parent);
   }
   
   private void initvariables() {
     if(init) return;
+    
+    RegisteredObject obj = getObject(HardcodedValues.TILE_REGISTRY_NAME);
+    if(obj instanceof TileRegistry) {
+      TileRegistry tiles = (TileRegistry) obj;
+      grass = tiles.getEntry("test.Grass");
+      lava = tiles.getEntry("test.Lava");
+      stone = tiles.getEntry("test.Stone");
+      water = tiles.getEntry("test.Water");
+    }
     
     init = true;
   }

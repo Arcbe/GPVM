@@ -6,6 +6,9 @@
 
 package taiga.gpvm;
 
+import taiga.gpvm.render.ColorRenderer;
+import taiga.gpvm.render.Renderer;
+
 /**
  * The various values that are hard coded into the game platform.
  * @author russell
@@ -30,4 +33,5 @@ public class HardcodedValues {
   //field names for Rendering Registry
   public static final String RENDERER_CLASS_FIELD = "renderer";
   public static final String RENDERING_INFO_FIELD = "rendering-info";
+  public static final Class<? extends Renderer> DEFAULT_RENDERER = ColorRenderer.class;
 }

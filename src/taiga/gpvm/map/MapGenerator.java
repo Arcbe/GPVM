@@ -21,11 +21,11 @@ public abstract class MapGenerator extends RegisteredObject {
   }
   /**
    * Generates a single region.  The methods takes in a coordinate for the
-   * the bottom southwestmost tile of the region, and a list of adjacent regions.
+   * the bottom south-west most tile of the region, and a list of adjacent regions.
    * 
    * @param coor The coordinate of the region
-   * @param neighbors any neighboring regions, indexed by direction.
+   * @param parent The world that the generated {@link Region} should be a part of.
    * @return The generated region.
    */
-  public abstract Region generateRegion(Coordinate coor);
+  public abstract Region generateRegion(Coordinate coor, World parent);
 }

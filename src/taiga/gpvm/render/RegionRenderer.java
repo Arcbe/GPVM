@@ -104,14 +104,22 @@ public final class RegionRenderer extends Renderable implements RegionListener {
     info.absposition = reg.getLocation().add(x, y, z, new Coordinate());
     info.rendentry = rendreg.getEntry(tar.type);
     
-    List<TileInfo> ents = entries.get(info.rendentry.renderer);
+    //ues the asociated renderer if avalaible otherwise use the default one.
+    Class<? extends Renderer> renderer;
+    if(info.rendentry == null) {
+      renderer = HardcodedValues.DEFAULT_RENDERER;
+    } else {
+      renderer = info.rendentry.renderer;
+    }
+    
+    List<TileInfo> ents = entries.get(renderer);
     TileInfo oldent = rendindex.get(info.absposition);
-    Renderer newrend = instances.get(info.rendentry.renderer);
+    Renderer newrend = instances.get(renderer);
     
     // create the renderer if needed
     if(newrend == null) {
       try {
-        newrend = info.rendentry.renderer.newInstance();
+        newrend = renderer.newInstance();
       } catch (InstantiationException | IllegalAccessException ex) {
         log.log(Level.SEVERE, null, ex);
         assert false;
@@ -122,14 +130,23 @@ public final class RegionRenderer extends Renderable implements RegionListener {
     //create the list of tileinfo.
     if(ents == null) {
       ents = new ArrayList<>();
-      entries.put(info.rendentry.renderer, ents);
+      entries.put(renderer, ents);
     }
     
     // Update the previous renderer if needed
     if(oldent != null) {
-      Renderer oldrend = instances.get(oldent.rendentry.renderer);
+    
+      //ues the asociated renderer if avalaible otherwise use the default one.
+      Class<? extends Renderer> oldrendclass;
+      if(oldent.rendentry == null) {
+        oldrendclass = HardcodedValues.DEFAULT_RENDERER;
+      } else {
+        oldrendclass = oldent.rendentry.renderer;
+      }
+      
+      Renderer oldrend = instances.get(oldrendclass);
       if(oldrend != newrend){
-        List<TileInfo> oldents = entries.get(oldent.rendentry.renderer);
+        List<TileInfo> oldents = entries.get(oldrendclass);
 
         oldents.remove(oldent);
         oldrend.compile(oldents);

@@ -141,7 +141,7 @@ public class World extends NetworkedObject {
         return;
       }
       
-      Region nreg = ((MapGenerator)obj).generateRegion(coor);
+      Region nreg = ((MapGenerator)obj).generateRegion(coor, this);
       
       try {
         regionlock.writeLock().lock();
