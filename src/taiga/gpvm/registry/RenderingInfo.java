@@ -2,14 +2,6 @@ package taiga.gpvm.registry;
 
 import taiga.code.io.DataNode;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
-
 /**
  * Indicates that a class can be used to store rendering data for a specific
  * {@link Renderer}.  The implementing class must have a constructor that takes
@@ -19,5 +11,5 @@ import taiga.code.io.DataNode;
  * 
  * @author russell
  */
-public class RenderingInfo {
+public interface RenderingInfo {
 }

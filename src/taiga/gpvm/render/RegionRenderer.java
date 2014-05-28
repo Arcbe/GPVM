@@ -120,6 +120,7 @@ public final class RegionRenderer extends Renderable implements RegionListener {
     if(newrend == null) {
       try {
         newrend = renderer.newInstance();
+        instances.put(newrend.getClass(), newrend);
       } catch (InstantiationException | IllegalAccessException ex) {
         log.log(Level.SEVERE, null, ex);
         assert false;
@@ -163,6 +164,26 @@ public final class RegionRenderer extends Renderable implements RegionListener {
 
   @Override
   public void regionUpdated(Region reg) {
+  }
+
+  public Coordinate getLocation() {
+    return reg.getLocation();
+  }
+
+  @Override
+  protected void updateSelf() {    
+    if(dirty)
+      scanRegion();
+  }
+
+  @Override
+  protected void renderSelf(int pass) {
+    if(true) {
+      getGrid().draw();
+    }
+    
+    for(Renderer rend : instances.values())
+      rend.render();
   }
   
   private boolean dirty;
@@ -228,26 +249,6 @@ public final class RegionRenderer extends Renderable implements RegionListener {
     grid.compile(bat);
     
     return grid;
-  }
-
-  public Coordinate getLocation() {
-    return reg.getLocation();
-  }
-
-  @Override
-  protected void updateSelf() {    
-    if(dirty)
-      scanRegion();
-  }
-
-  @Override
-  protected void renderSelf(int pass) {
-    if(true) {
-      getGrid().draw();
-    }
-    
-    for(Renderer rend : instances.values())
-      rend.render();
   }
   
   private static final String locprefix = RegionRenderer.class.getName().toLowerCase();

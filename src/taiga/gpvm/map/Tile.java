@@ -1,6 +1,5 @@
 package taiga.gpvm.map;
 
-import gpvm.map.TileData;
 import taiga.gpvm.registry.TileEntry;
 
 /**
@@ -32,15 +31,15 @@ public final class Tile {
       return damage;
     }
     
-    /**
-     * Returns a read only instance of the tile data for this tile.  If
-     * there is no data then this method will return null.
-     * @return The {@link TileData} for this {@link Tile}
-     */
-    public TileData.ReadOnlyTileData getTileData() {
-      if(data == null) return null;
-      else return data.new ReadOnlyTileData();
-    }
+//    /**
+//     * Returns a read only instance of the tile data for this tile.  If
+//     * there is no data then this method will return null.
+//     * @return The {@link TileData} for this {@link Tile}
+//     */
+//    public TileData.ReadOnlyTileData getTileData() {
+//      if(data == null) return null;
+//      else return data.new ReadOnlyTileData();
+//    }
   }
   
   /**
@@ -54,5 +53,5 @@ public final class Tile {
   /**
    * Any data associated with this {@link Tile} or null if there is not any data.
    */
-  public TileData data;
+  //public TileData data;
 }

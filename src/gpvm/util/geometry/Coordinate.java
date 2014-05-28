@@ -130,6 +130,18 @@ public class Coordinate {
     
     return c;
   }
+  
+  public Coordinate getRelativeCoordinate() {
+    return getRelativeCoordinate(new Coordinate());
+  }
+  
+  public Coordinate getRelativeCoordinate(Coordinate c) {
+    c.x = x % Region.REGION_SIZE;
+    c.y = y % Region.REGION_SIZE;
+    c.z = z % Region.REGION_SIZE;
+    
+    return c;
+  }
 
   @Override
   public int hashCode() {
