@@ -43,6 +43,7 @@ public final class RegionRenderer extends Renderable implements RegionListener {
     entries = new HashMap<>();
     rendindex = new HashMap<>();
     instances = new HashMap<>();
+    dirtyents = new HashMap<>();
   }
   
   /**
@@ -150,12 +151,12 @@ public final class RegionRenderer extends Renderable implements RegionListener {
         List<TileInfo> oldents = entries.get(oldrendclass);
 
         oldents.remove(oldent);
-        oldrend.compile(oldents);
+        dirtyents.put(oldrendclass, true);
       }
     }
     
     ents.add(info);
-    newrend.compile(ents);
+    dirtyents.put(newrend.getClass(), true);
   }
 
   @Override
@@ -174,6 +175,16 @@ public final class RegionRenderer extends Renderable implements RegionListener {
   protected void updateSelf() {    
     if(dirty)
       scanRegion();
+    
+    for(Map.Entry<Class<? extends Renderer>, Boolean> ent : dirtyents.entrySet()) {
+      if(ent.getValue()) {
+        ent.setValue(false);
+        Renderer rend = instances.get(ent.getKey());
+        List<TileInfo> tiles = entries.get(ent.getKey());
+        
+        rend.compile(tiles);
+      }
+    }
   }
 
   @Override
@@ -192,6 +203,7 @@ public final class RegionRenderer extends Renderable implements RegionListener {
   //cached data for static rendering.
   private final Map<Coordinate, TileInfo> rendindex;
   private final Map<Class<? extends Renderer>, List<TileInfo>> entries;
+  private final Map<Class<? extends Renderer>, Boolean> dirtyents;
   private final Map<Class<? extends Renderer>, Renderer> instances;
   
   private static VertexArrayBatch grid;
