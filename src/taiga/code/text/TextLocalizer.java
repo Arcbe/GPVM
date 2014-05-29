@@ -6,6 +6,7 @@
 
 package taiga.code.text;
 
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +39,13 @@ public class TextLocalizer {
     
     log.log(Level.WARNING, NO_ENTRY, input);
     return input;
+  }
+  
+  public static String localize(String input, Object ... args) {
+    String local = localize(input);
+    
+    if(local == null) return null;
+    return MessageFormat.format(local, args);
   }
   
   private static ResourceBundle text;

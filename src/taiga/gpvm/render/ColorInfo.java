@@ -6,6 +6,8 @@
 
 package taiga.gpvm.render;
 
+import taiga.code.io.DataNode;
+import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.registry.RenderingInfo;
 
 /**
@@ -13,5 +15,12 @@ import taiga.gpvm.registry.RenderingInfo;
  * @author russell
  */
 public class ColorInfo implements RenderingInfo {
+  public static final String COLOR_FIELD = "color";
+  
   public int color;
+
+  public ColorInfo(DataNode data) {
+    data = (DataNode) data.getObject(COLOR_FIELD);
+    color = ((Number)data.data).intValue();
+  }
 }

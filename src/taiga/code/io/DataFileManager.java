@@ -7,10 +7,12 @@
 package taiga.code.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.registration.RegisteredObject;
+import taiga.code.text.TextLocalizer;
 
 /**
  * A manager for reading in data files.  This manager can read any file that it
@@ -37,8 +39,7 @@ public class DataFileManager extends RegisteredObject {
    */
   public DataNode readFile(File file) throws IOException {
     if(!file.exists()) {
-      log.log(Level.WARNING, FILE_NOT_FOUND);
-      return null;
+      throw new FileNotFoundException(TextLocalizer.localize(FILE_NOT_FOUND, file));
     }
     
     for(RegisteredObject obj : this) {

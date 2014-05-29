@@ -4,13 +4,16 @@
  */
 package sandboxgame;
 
+import gpvm.io.InvalidDataFileException;
 import taiga.gpvm.GameManager;
 import org.lwjgl.LWJGLException;
 import gpvm.util.StringManager;
 import gpvm.util.geometry.Coordinate;
 import hyperion.Generator;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,9 +25,11 @@ import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Vector3f;
 import taiga.code.networking.LoopbackNetwork;
 import taiga.code.networking.NetworkManager;
+import taiga.code.registration.MissingObjectException;
 import taiga.code.util.SettingManager;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.World;
+import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 
 /**
@@ -37,7 +42,7 @@ public class SandboxGame {
    * @param args the command line arguments
    * @throws LWJGLException
    */
-  public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException, IOException {
+  public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException, IOException, FileNotFoundException, InvalidDataFileException, InstantiationException, NoSuchFieldException, NoSuchMethodException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ReflectiveOperationException, MissingObjectException {
     System.setProperty("taiga.code.logging.text", "text");
     System.setProperty("taiga.code.text.localization", "text");
     System.setProperty("java.util.logging.config.file", "logging.properties");
@@ -74,6 +79,7 @@ public class SandboxGame {
     game.addChild(net);
     ((SettingManager)game.getObject("settings")).loadSettings("settings.yml");
     ((TileRegistry)game.getObject("tiles")).loadFile(new File("src/mods/tiles.yml"), "test");
+    ((RenderingRegistry)game.getObject("renderinginfo")).loadRenderRegistryData(new File("src/mods/renderer.yml"), "test", SandboxGame.class.getClassLoader());
     
     ((Universe)game.getObject("universe")).addWorld("test", new Generator());
     

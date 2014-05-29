@@ -1,19 +1,19 @@
 Grass:
-  rendering-class: gpvm.render.renderers.ColorRenderer
+  renderer: taiga.gpvm.render.ColorRenderer
   rendering-info:
     color: 0xFF00CC00
     
 Stone:
-  rendering-class: gpvm.render.renderers.ColorRenderer
+  renderer: taiga.gpvm.render.ColorRenderer
   rendering-info:
     color: 0xFF555555
 
 Water:
-  rendering-class: gpvm.render.renderers.ColorRenderer
+  renderer: taiga.gpvm.render.ColorRenderer
   rendering-info:
     color: 0xFF0000CC
     
 Lava:
-  rendering-class: gpvm.render.renderers.ColorRenderer
+  renderer: taiga.gpvm.render.ColorRenderer
   rendering-info:
     color: 0xFFCC0000
