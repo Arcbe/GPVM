@@ -4,22 +4,24 @@
  */
 package taiga.gpvm.render;
 
-import gpvm.util.geometry.Coordinate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import org.lwjgl.opengl.GL11;
 import taiga.code.graphics.Renderable;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.World;
 import taiga.gpvm.map.WorldListener;
 
 /**
- * Handles the rendering of a GameMap.
+ * Handles the rendering of a {@link World}.
  * 
  * @author russell
  */
 public final class WorldRenderer extends Renderable implements WorldListener {
+  /**
+   * Creates a new {@link WorldRenderer} that will render the given {@link World}.
+   * 
+   * @param world The {@link World} to render.
+   */
   public WorldRenderer(World world) {
     super(world.name);
     
@@ -30,28 +32,32 @@ public final class WorldRenderer extends Renderable implements WorldListener {
     world.addListener(this);
   }
   
+  /**
+   * Sets whether this {@link WorldRenderer} should also render a grid around the
+   * {@link Region} containing the {@link Camera}.
+   * @param grid 
+   */
   public void renderGrid(boolean grid) {
     rendgrid = grid;
   }
   
-  public void setCamera(Camera cam) {
-    camera = cam;
-    //setup the matrices
-    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    
-//    for(RegionRenderer reg : drawlist) {
-//      Coordinate loc = reg.getLocation();
-//      GL11.glLoadIdentity();
-//      GL11.glTranslatef(loc.x, loc.y, loc.z);
-//      
-//      //eg.render(rendgrid);
-//    }
-  }
+//  public void setCamera(Camera cam) {
+//    camera = cam;
+//    //setup the matrices
+//    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//    
+////    for(RegionRenderer reg : drawlist) {
+////      Coordinate loc = reg.getLocation();
+////      GL11.glLoadIdentity();
+////      GL11.glTranslatef(loc.x, loc.y, loc.z);
+////      
+////      //eg.render(rendgrid);
+////    }
+//  }
   
   private static int drawdistance = 4;
   
   private World map;
-  private Camera camera;
   private List<RegionRenderer> renderers;
   private boolean rendgrid;
 

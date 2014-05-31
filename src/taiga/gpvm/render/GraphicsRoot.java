@@ -6,7 +6,7 @@ package taiga.gpvm.render;
 
 import static taiga.gpvm.HardcodedValues.GRAPHICSSYSTEM_NAME;
 import org.lwjgl.opengl.DisplayMode;
-import gpvm.util.Updateable;
+import taiga.code.util.Updateable;
 import java.util.List;
 import taiga.code.opengl.GraphicsSystem;
 import taiga.code.registration.ChildListener;
@@ -21,34 +21,17 @@ import taiga.code.registration.RegisteredObject;
  * @author russell
  */
 public class GraphicsRoot extends GraphicsSystem implements ChildListener {
-  /**
-   * Sets the {@link Camera} that will be used to create the projection matrix
-   * for rendering.
-   * 
-   * @param camera The {@link Camera} for the rendering system to use.
-   */
-  public void setCamera(Camera camera) {
-    cam = camera;
-  }
-  
-  /**
-   * Returns the camera that is currently in use by the {@link GraphicsRoot}.
-   * 
-   * @return The current {@link Camera}
-   */
-  public Camera getCamera() {
-    return cam;
-  }
   
   private DisplayMode mode;
-  private Camera cam;
   private List<Updateable> updaters;
 
+  /**
+   * Creates a new {@link GraphicsRoot}.
+   */
   public GraphicsRoot() {
     super(GRAPHICSSYSTEM_NAME);
     
     this.mode = mode;
-    cam = new Camera();
   }
 //  
 //  private void render() {

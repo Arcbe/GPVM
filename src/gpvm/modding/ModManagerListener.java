@@ -5,12 +5,10 @@
 package gpvm.modding;
 
 /**
- *
+ * A listener for the adding and removing of {@link Mod}s to a {@link ModManager}
+ * 
  * @author russell
  */
-public class ModManagerListener {
-  public ModManagerListener() {
-    
-  }
+public interface ModManagerListener {
 }
 

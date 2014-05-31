@@ -21,15 +21,16 @@ import java.util.logging.Logger;
  * @author russell
  */
 public class RegisteredObject implements Iterable<RegisteredObject>{
-  public static final char SEPERATOR = '.';
+  /**
+   * The default name separator for names in a registration path.
+   */
+  public static final char SEPARATOR = '.';
   
+  /**
+   * The name for this {@link RegisteredObject}.  This will be used to identify
+   * this {@link RegisteredObject} within the registration tree.
+   */
   public final String name;
-  private RegisteredObject parent;
-  private int id;
-  
-  private List<RegisteredObject> children;
-  private List<ChildListener> childlist;
-  private List<ChildListener> parlist;
 
   /**
    * Creates a new {@link RegisteredObject} with the given name.  Each {@link
@@ -72,7 +73,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    */
   public String getFullName() {
     if(parent == null) return name;
-    else return parent.getFullName().concat("" + SEPERATOR).concat(name);
+    else return parent.getFullName().concat("" + SEPARATOR).concat(name);
   }
   
   /**
@@ -169,6 +170,10 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     return result;
   }
   
+  /**
+   * Removes all children from this {@link RegisteredObject}.  A child removed
+   * event will be generated for each child removed this way.
+   */
   public void removeAllChildren() {
     if(children == null) return;
     
@@ -225,8 +230,25 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     return getChildren().listIterator();
   }
   
+  /**
+   * Called when this {@link RegisteredObject} is attached to registration tree.
+   * 
+   * @param parent The parent of this {@link RegisteredObject} in the tree.
+   */
   protected void attached(RegisteredObject parent) {}
+  /**
+   * Called when this {@link RegisteredObject} is removed from its registration tree.
+   * 
+   * @param parent The {@link RegisteredObject} that was the parent of this one.
+   */
   protected void dettached(RegisteredObject parent) {}
+  
+  private RegisteredObject parent;
+  private int id;
+  
+  private List<RegisteredObject> children;
+  private List<ChildListener> childlist;
+  private List<ChildListener> parlist;
   
   private void fireChildAdded(RegisteredObject child) {
     for(ChildListener list : childlist)

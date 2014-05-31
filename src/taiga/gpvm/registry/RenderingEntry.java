@@ -34,6 +34,13 @@ public class RenderingEntry extends RegistryEntry {
    */
   public final TileEntry tile;
 
+  /**
+   * Creates a new {@link RenderingEntry} with the given attributes.
+   * 
+   * @param rend The class of the {@link Renderer} for this {@link RenderingEntry}.
+   * @param inf Any additional information for rendering, or null if there is none.
+   * @param t The {@link TileEntry} that this {@link RenderingEntry} is for.
+   */
   public RenderingEntry(Class<? extends Renderer> rend, RenderingInfo inf, TileEntry t) {
     super(t.getName());
     

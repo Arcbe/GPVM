@@ -17,10 +17,20 @@ import taiga.code.registration.RegisteredObject;
  * @author russell
  */
 public abstract class NetworkManager extends RegisteredObject {
-  
+  /**
+   * The charset that will be used to encode {@link Strings} into bytes.
+   */
   public static final String NETWORK_CHARSET = "UTF-16";
+  /**
+   * The id for all {@link NetworkManager}s when communicating between managers.
+   */
   public static final short NETWORK_MANAGER_ID = 0;
 
+  /**
+   * Creates a new {@link NetworkManager} with the given name.
+   * 
+   * @param name The name for the {@link Network}.
+   */
   public NetworkManager(String name) {
     super(name);
     
@@ -28,6 +38,11 @@ public abstract class NetworkManager extends RegisteredObject {
     history = new Packet[256];
   }
   
+  /**
+   * Scans the registration tree that this {@link NetworkManager} is a part of
+   * to find {@link NetworkedObject}s.  This method must be called in order for
+   * any of the {@link NetworkedObject} to be attached to the {@link NetworkManager}.
+   */
   public void scanRegisteredObjects() {
     ArrayList<NetworkedObject> rawobjs = new ArrayList<>();
     objects = new HashMap<>();
@@ -69,6 +84,13 @@ public abstract class NetworkManager extends RegisteredObject {
     
   }
   
+  /**
+   * Sends a {@link Packet} through this {@link NetworkManager} to the given 
+   * destination.
+   * 
+   * @param dest The {@link InetAddress} to send the {@link Packet} to.
+   * @param msg The {@link Packet} to send.
+   */
   public void sendMessage(InetAddress dest, Packet msg) {
     //make sure that there are nopackets with duplicate numbers.
     synchronized(this) {
@@ -80,12 +102,45 @@ public abstract class NetworkManager extends RegisteredObject {
     sendPacket(dest, msg);
   }
   
+  /**
+   * Returns whether this {@link NetworkManager} is acting as a server.  A
+   * {@link NetworkManager} may also act as a client regardless of whether its a
+   * server too.
+   * 
+   * @return Whether this {@link NetworkManager} is a server.
+   */
   public abstract boolean isServer();
+  
+  /**
+   * Returns whether this {@link NetworkManager} is acting as a client.  A
+   * {@link NetworkManager} may also act as a server regardless of whether its a
+   * client too.
+   * 
+   * @return Whether this {@link NetworkManager} is a server.
+   */
   public abstract boolean isClient();
+  
+  /**
+   * Checks whether this {@link NetworkManager} is connected to a network.  For
+   * a client this means that it is connected to a server, and for a server this
+   * mean that it is ready to accept clients.
+   * 
+   * @return Whether this {@link NetworkManager} is connected to a network.
+   */
   public abstract boolean isConnected();
   
+  /**
+   * Sends a packet to the given destination.
+   * 
+   * @param dest The destination for the packet.
+   * @param msg The packet to send.
+   */
   protected abstract void sendPacket(InetAddress dest, Packet msg);
   
+  /**
+   * Called when a {@link Packet} is received from the network.
+   * @param pack 
+   */
   protected void packetRecieved(Packet pack) {
     if(pack.target == 0) {
       switch(pack.data[0]) {

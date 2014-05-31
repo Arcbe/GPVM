@@ -19,6 +19,11 @@ import java.util.logging.Logger;
  */
 public abstract class RegisteredSystem extends ReusableObject {
 
+  /**
+   * Creates a new {@link RegisteredSystem} with the given name.
+   * 
+   * @param name The name for the new system.
+   */
   public RegisteredSystem(String name) {
     super(name);
     
@@ -79,7 +84,13 @@ public abstract class RegisteredSystem extends ReusableObject {
     return running;
   }
   
+  /**
+   * Called when this {@link RegisteredSystem} is supposed to start.
+   */
   protected abstract void startSystem();
+  /**
+   * Called when this {@link RegisteredSystem} is supposed to stop.
+   */
   protected abstract void stopSystem();
   
   private boolean running;

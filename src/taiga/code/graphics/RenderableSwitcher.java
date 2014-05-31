@@ -17,6 +17,11 @@ package taiga.code.graphics;
  */
 public class RenderableSwitcher extends Renderable {
 
+  /**
+   * Creates a new {@link RenderableSwitcher} with the given name.
+   * 
+   * @param name The name for the {@link RenderableSwitcher}
+   */
   public RenderableSwitcher(String name) {
     super(name);
   }

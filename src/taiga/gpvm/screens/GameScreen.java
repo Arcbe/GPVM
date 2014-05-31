@@ -18,11 +18,16 @@ import taiga.gpvm.map.World;
 import taiga.gpvm.render.WorldRenderer;
 
 /**
- *
+ * The main screen for the game.  This screen will render to the world the {@link Camera}
+ * is currently in, and an interface.
+ * 
  * @author russell
  */
 public class GameScreen extends RenderableSwitcher implements UniverseListener {
   
+  /**
+   * Creates a new {@link GameScreen}.
+   */
   public GameScreen() {
     super(HardcodedValues.GAME_SCREEN_NAME);
   }

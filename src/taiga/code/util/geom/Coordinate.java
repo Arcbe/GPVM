@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gpvm.util.geometry;
+package taiga.code.util.geom;
 
 import java.text.MessageFormat;
 import taiga.gpvm.map.Region;
@@ -131,10 +131,23 @@ public class Coordinate {
     return c;
   }
   
+  /**
+   * Returns a {@link Coordinate} of this location relative to the origin of
+   * the containing {@link Region}.
+   * 
+   * @return The {@link Coordinate} relative to the {@link Region}s origin.
+   */
   public Coordinate getRelativeCoordinate() {
     return getRelativeCoordinate(new Coordinate());
   }
   
+  /**
+   * Returns the given {@link Coordinate} with the location relative to the 
+   * origin of the {@link Region}.
+   * 
+   * @param c The {@link Coordinate} to store the location in.
+   * @return A reference to this given {@link Coordinate}
+   */
   public Coordinate getRelativeCoordinate(Coordinate c) {
     c.x = x % Region.REGION_SIZE;
     c.y = y % Region.REGION_SIZE;
@@ -143,6 +156,11 @@ public class Coordinate {
     return c;
   }
 
+  /**
+   * Returns a hash code of this {@link Coordinate}.
+   * 
+   * @return A has of this {@link Coordinate}.
+   */
   @Override
   public int hashCode() {
     int hash = 7;
@@ -152,6 +170,11 @@ public class Coordinate {
     return hash;
   }
 
+  /**
+   *
+   * @param obj
+   * @return
+   */
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {
@@ -173,6 +196,10 @@ public class Coordinate {
     return true;
   }
   
+  /**
+   *
+   * @return
+   */
   @Override
   public String toString() {
     return MessageFormat.format("({0},{1},{2})", x, y, z);

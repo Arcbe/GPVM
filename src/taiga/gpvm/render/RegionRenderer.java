@@ -4,8 +4,7 @@ import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.RegionListener;
 import taiga.gpvm.map.Tile;
-import gpvm.render.vertices.ByteColorVertex;
-import gpvm.util.geometry.Coordinate;
+import taiga.code.util.geom.Coordinate;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,15 +22,20 @@ import taiga.gpvm.registry.RenderingRegistry;
  * @author russell
  */
 public final class RegionRenderer extends Renderable implements RegionListener {
+  /**
+   * The prefix for the name of the {@link RegionRenderer}.
+   */
   public static final String NAME_PREFIX = "region-";
   
+  /**
+   * Flag that indicates whether a grid should be rendered around the {@link Region}.
+   */
   public boolean outline;
   
   /**
    * Creates a new {@link RegionRenderer} for the target region.
    * 
    * @param target The {@link Region} that will be rendered.
-   * @param gmap The {@link GameMap} that this region is a part of.
    */
   public RegionRenderer(Region target) {
     super(NAME_PREFIX + target.getLocation());
@@ -167,6 +171,12 @@ public final class RegionRenderer extends Renderable implements RegionListener {
   public void regionUpdated(Region reg) {
   }
 
+  /**
+   * Returns the {@link Coordinate} for the bottom souther western {@link Tile}
+   * of the {@link Region}.
+   * 
+   * @return The corner of the {@link Region}.
+   */
   public Coordinate getLocation() {
     return reg.getLocation();
   }
@@ -188,11 +198,7 @@ public final class RegionRenderer extends Renderable implements RegionListener {
   }
 
   @Override
-  protected void renderSelf(int pass) {
-    if(true) {
-      getGrid().draw();
-    }
-    
+  protected void renderSelf(int pass) {    
     for(Renderer rend : instances.values())
       rend.render();
   }
@@ -209,58 +215,59 @@ public final class RegionRenderer extends Renderable implements RegionListener {
   private static VertexArrayBatch grid;
   
   private static VertexArrayBatch getGrid() {
-    if(grid != null) return grid;
+//    if(grid != null) 
+      return grid;
     
-    //construct the vertices for the grid.
-    ArrayList<ByteColorVertex> vertices = new ArrayList<>();
-   
-    for(byte i = 0; i <= Region.REGION_SIZE; i++) {
-      //bottom
-      vertices.add(new ByteColorVertex(i, (byte)0, (byte)0, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, (byte)0, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex((byte)0, i, (byte)0, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, (byte)0, Color.GREEN.getRGB()));
-      
-      //top
-      vertices.add(new ByteColorVertex(i, (byte)0, Region.REGION_SIZE, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, Region.REGION_SIZE, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex((byte)0, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
-      
-      //front
-      vertices.add(new ByteColorVertex(i, (byte)0, (byte)0, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(i, (byte)0, Region.REGION_SIZE, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex((byte)0, (byte)0, i, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(Region.REGION_SIZE, (byte)0, i, Color.GREEN.getRGB()));
-      
-      //back
-      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, (byte)0, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, Region.REGION_SIZE, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex((byte)0, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(Region.REGION_SIZE, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
-      
-      //left
-      vertices.add(new ByteColorVertex((byte)0, i, (byte)0, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex((byte)0, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex((byte)0, (byte)0, i, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex((byte)0, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
-      
-      //right
-      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, (byte)0, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(Region.REGION_SIZE, (byte)0, i, Color.GREEN.getRGB()));
-      vertices.add(new ByteColorVertex(Region.REGION_SIZE, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
-    }
-    
-    RawBatch bat = new RawBatch();
-    bat.rendermode = GL11.GL_LINES;
-    bat.vertices = new ByteColorVertex[vertices.size()];
-    vertices.toArray(bat.vertices);
-    
-    grid = new VertexArrayBatch();
-    grid.compile(bat);
-    
-    return grid;
+//    //construct the vertices for the grid.
+//    ArrayList<ByteColorVertex> vertices = new ArrayList<>();
+//   
+//    for(byte i = 0; i <= Region.REGION_SIZE; i++) {
+//      //bottom
+//      vertices.add(new ByteColorVertex(i, (byte)0, (byte)0, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, (byte)0, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex((byte)0, i, (byte)0, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, (byte)0, Color.GREEN.getRGB()));
+//      
+//      //top
+//      vertices.add(new ByteColorVertex(i, (byte)0, Region.REGION_SIZE, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, Region.REGION_SIZE, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex((byte)0, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
+//      
+//      //front
+//      vertices.add(new ByteColorVertex(i, (byte)0, (byte)0, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(i, (byte)0, Region.REGION_SIZE, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex((byte)0, (byte)0, i, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, (byte)0, i, Color.GREEN.getRGB()));
+//      
+//      //back
+//      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, (byte)0, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, Region.REGION_SIZE, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex((byte)0, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
+//      
+//      //left
+//      vertices.add(new ByteColorVertex((byte)0, i, (byte)0, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex((byte)0, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex((byte)0, (byte)0, i, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex((byte)0, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
+//      
+//      //right
+//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, (byte)0, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, (byte)0, i, Color.GREEN.getRGB()));
+//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
+//    }
+//    
+//    RawBatch bat = new RawBatch();
+//    bat.rendermode = GL11.GL_LINES;
+//    bat.vertices = new ByteColorVertex[vertices.size()];
+//    vertices.toArray(bat.vertices);
+//    
+//    grid = new VertexArrayBatch();
+//    grid.compile(bat);
+//    
+//    return grid;
   }
   
   private static final String locprefix = RegionRenderer.class.getName().toLowerCase();

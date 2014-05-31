@@ -7,7 +7,6 @@
 package taiga.gpvm.registry;
 
 import taiga.gpvm.HardcodedValues;
-import static taiga.gpvm.HardcodedValues.CANON_NAME_FIELD;
 import static taiga.gpvm.HardcodedValues.OPAQUE_FIELD;
 import static taiga.gpvm.HardcodedValues.SOLID_FIELD;
 import java.io.File;
@@ -17,17 +16,30 @@ import java.util.logging.Logger;
 import taiga.code.io.DataFileManager;
 import taiga.code.io.DataNode;
 import taiga.code.registration.RegisteredObject;
+import taiga.gpvm.map.Tile;
 
 /**
- *
+ * A {@link Registry} containing data for {@link TileEntry}s that contain values
+ * for game logic with {@link Tile}.
+ * 
  * @author russell
  */
 public class TileRegistry extends NetworkRegistry<TileEntry>{
 
+  /**
+   * Creates a new empty {@link TileRegistry}.
+   */
   public TileRegistry() {
     super(HardcodedValues.TILE_REGISTRY_NAME);
   }
   
+  /**
+   * Loads a data {@link File} of {@link TileEntry}s into this {@link TileRegistry}.
+   * 
+   * @param in The {@link File} to read in.
+   * @param modname The name of the mod that this data file is loaded by.
+   * @throws IOException Thrown if the data file cannot be read.
+   */
   public void loadFile(File in, String modname) throws IOException {
     DataFileManager dfio = (DataFileManager) getObject(DataFileManager.DATAFILEMANAGER_NAME);
     if(dfio == null) {

@@ -41,10 +41,19 @@ public class TextLocalizer {
     return input;
   }
   
+  /**
+   * Attempts to localize a given string along with attempting to format it use
+   * the {@link MessageFormat} class.  
+   * 
+   * @param input The string to localize
+   * @param args The arguments to pass to the {@link MessageFormat#format(java.lang.String, java.lang.Object...) } method.
+   * @return The localized and formatted version of the given string, or the input
+   *  if no localization can be found.
+   */
   public static String localize(String input, Object ... args) {
     String local = localize(input);
     
-    if(local == null) return null;
+    if(local == null || local == input) return local;
     return MessageFormat.format(local, args);
   }
   

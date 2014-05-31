@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package taiga.gpvm.map;
 
-import gpvm.util.geometry.Coordinate;
+import taiga.code.util.geom.Coordinate;
 import gpvm.util.geometry.Direction;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -23,11 +17,18 @@ import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.HardcodedValues;
 
 /**
- *
+ * A uniform 3D grid of tiles.  This class can load and unloaded individual
+ * {@link Region}.
+ * 
  * @author russell
  */
 public class World extends NetworkedObject {
   
+  /**
+   * Creates a new {@link World} with the given name.
+   * 
+   * @param name The name of hte new {@link World}.
+   */
   public World(String name) {
     super(name);
     
@@ -108,10 +109,18 @@ public class World extends NetworkedObject {
     return tiles;
   }
   
+  /**
+   * Adds a {@link WorldListener} to this {@link World}.
+   * @param list The {@link WorldListener} to add.
+   */
   public void addListener(WorldListener list) {
     listeners.add(new WeakReference<>(list));
   }
   
+  /**
+   * Removes a previously added {@link WorldListener} from this {@link World}.
+   * @param list The {@link WorldListener} to remove.
+   */
   public void removeListener(WorldListener list) {
     for(WeakReference<WorldListener> listener : listeners)
       if(listener.get() == list) {
@@ -120,6 +129,11 @@ public class World extends NetworkedObject {
       }
   }
   
+  /**
+   * Loads the {@link Region} that contains the given {@link Coordinate}.
+   * 
+   * @param coor A {@link Coordinate} within the {@link Region} to load.
+   */
   public void loadRegion(Coordinate coor) {
     coor = coor.getRegionCoordinate();
     if(isLoaded(coor)) return;
@@ -157,6 +171,13 @@ public class World extends NetworkedObject {
     }
   }
   
+  /**
+   * Checks to see if the {@link Region} containing the given {@link Coordinate}
+   * is loaded.
+   * 
+   * @param coor The {@link Coordinate} to check.
+   * @return Whether the {@link Region} is loaded.
+   */
   public boolean isLoaded(Coordinate coor) {
     try {
       regionlock.readLock().lock();

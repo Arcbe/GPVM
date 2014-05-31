@@ -19,12 +19,18 @@ import taiga.code.io.DataFileReader;
 import taiga.code.io.DataNode;
 
 /**
- *
+ * A {@link DataFileReader} for .yml data files.
  * @author russell
  */
 public class YAMLDataReader extends DataFileReader {
+  /**
+   * Default name for a {@link YAMLDataReader}.
+   */
   public static final String YAMLREADER_NAME = "yaml";
 
+  /**
+   * Creates a new {@link YAMLDataReader}.
+   */
   public YAMLDataReader() {
     super(YAMLREADER_NAME);
     

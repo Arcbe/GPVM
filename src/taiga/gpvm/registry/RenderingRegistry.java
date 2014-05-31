@@ -4,7 +4,6 @@ import taiga.gpvm.HardcodedValues;
 import static taiga.gpvm.HardcodedValues.NAMESPACE_SEPERATOR;
 import static taiga.gpvm.HardcodedValues.RENDERER_CLASS_FIELD;
 import static taiga.gpvm.HardcodedValues.RENDERING_INFO_FIELD;
-import gpvm.io.InvalidDataFileException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -16,13 +15,20 @@ import taiga.code.io.DataFileManager;
 import taiga.code.io.DataNode;
 import taiga.code.registration.MissingObjectException;
 import taiga.code.registration.RegisteredObject;
+import taiga.gpvm.map.Tile;
 import taiga.gpvm.render.Renderer;
 
 /**
- *
+ * A {@link Registry} of information for rendering {@link Tile}s.  In additional
+ * to the index provided by the super class an index by the {@link
+ * TileEntry} for each {@link RenderingEntry} will also be maintained.
+ * 
  * @author russell
  */
 public class RenderingRegistry extends Registry<RenderingEntry>{
+  /**
+   * Creates a new empty {@link RenderingRegistry}.
+   */
   public RenderingRegistry() {
     super(HardcodedValues.RENDERING_REGISTRY_NAME);
     
@@ -36,11 +42,32 @@ public class RenderingRegistry extends Registry<RenderingEntry>{
     tileindex.put(ent.tile, ent);
   }
   
+  /**
+   * Provides a way to access {@link RenderingEntry} indexed by {@link TileEntry}
+   * instead of by id.
+   * 
+   * @param tile The {@link TileEntry} for the desired {@link RenderingEntry}
+   * @return The desired {@link RenderingEntry} or null if none are found.
+   */
   public RenderingEntry getEntry(TileEntry tile) {
     return tileindex.get(tile);
   }
   
-  public void loadRenderRegistryData(File in, String namespace, ClassLoader loader) throws IOException, InvalidDataFileException,  ReflectiveOperationException, MissingObjectException {
+  /**
+   * Loads a data file or {@link RenderingEntry}s into this {@link RenderingRegistry}.
+   * 
+   * @param in The {@link File} to read in.
+   * @param namespace The namespace that the {@link RenderingEntry} should be added to
+   *  to agree with the {@link TileRegistry} and prevent name conflicts.
+   * @param loader The {@link ClassLoader} to load the {@link Renderer} from.
+   * 
+   * @throws IOException Thrown if the file could not be read successfully.
+   * @throws ReflectiveOperationException Thrown if there is a problem loading the
+   *  {@link Class} for a {@link Renderer}.
+   * @throws MissingObjectException If there is no {@link DataFileManager} in the
+   *  registration tree or it could not be found.
+   */
+  public void loadRenderRegistryData(File in, String namespace, ClassLoader loader) throws IOException,  ReflectiveOperationException, MissingObjectException {
     DataFileManager dfio = (DataFileManager) getObject(DataFileManager.DATAFILEMANAGER_NAME);
     TileRegistry tiles = (TileRegistry) getObject(HardcodedValues.TILE_REGISTRY_NAME);
     

@@ -5,9 +5,8 @@
 package taiga.gpvm.map;
 
 import taiga.gpvm.HardcodedValues;
-import taiga.gpvm.map.Region;
-import gpvm.util.geometry.Coordinate;
 import taiga.code.registration.RegisteredObject;
+import taiga.code.util.geom.Coordinate;
 
 /**
  * An interface for classes that can generate Regions for the game map.
@@ -16,6 +15,9 @@ import taiga.code.registration.RegisteredObject;
  */
 public abstract class MapGenerator extends RegisteredObject {
 
+  /**
+   * Creates a new {@link MapGenerator}.
+   */
   public MapGenerator() {
     super(HardcodedValues.MAP_GENERATOR_NAME);
   }

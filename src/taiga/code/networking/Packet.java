@@ -36,6 +36,9 @@ public final class Packet {
    */
   public byte[] data;
 
+  /**
+   * Creates a new {@link Packet} without any data.
+   */
   public Packet() {
   }
   

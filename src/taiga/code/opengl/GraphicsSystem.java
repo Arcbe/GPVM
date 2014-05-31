@@ -19,12 +19,30 @@ import taiga.code.util.SettingManager;
  * @author russell
  */
 public abstract class GraphicsSystem extends RegisteredSystem implements Runnable {
-  
+  /**
+   * Default setting for vertical synchronization.
+   */
   public static final boolean DEFAULT_VSYNC = false;
+  
+  /**
+   * Default setting for full screen.
+   */
   public static final boolean DEFAULT_FULLSCREEN = false;
+  
+  /**
+   * Default vertical resolution.
+   */
   public static final int DEFAULT_RES_HEIGHT = 600;
+  /**
+   * Default horizontal resolution.
+   */
   public static final int DEFAULT_RES_WIDTH = 800;
 
+  /**
+   * Creates a new {@link GraphicsSystem} with the given name and default settings.
+   * 
+   * @param name The name for the new {@link GraphicsSystem}.
+   */
   public GraphicsSystem(String name) {
     super(name);
     
@@ -74,6 +92,9 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
     }
   }
 
+  /**
+   * Starting point for the graphics thread.
+   */
   @Override
   public void run() {
     //this will create the window and graphics context.
@@ -203,15 +224,26 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
   
   private static final String locprefix = GraphicsSystem.class.getName().toLowerCase();
   
+  /**
+   * Identifiers for the vertical resolution setting within the registration tree.
+   */
   public static final String RESOLUTION_HEIGHT = TextLocalizer.localize(locprefix + ".res_height");
+  /**
+   * Identifiers for the horizontal resolution setting within the registration tree.
+   */
   public static final String RESOLUTION_WIDTH = TextLocalizer.localize(locprefix + ".res_width");
+  /**
+   * Identifiers for the fullscreen setting within the registration tree.
+   */
   public static final String FULL_SCREEN = TextLocalizer.localize(locprefix + ".full_screen");
+  /**
+   * Identifiers for the vertical synchronization setting within the registration tree.
+   */
   public static final String VSYNC = TextLocalizer.localize(locprefix + ".vsync");
-  public static final String GRAPHICS_THREAD_DIED = TextLocalizer.localize(locprefix + ".graphics_thread_died");
-  public static final String ALREADY_STARTED = TextLocalizer.localize(locprefix + ".already_started");
-  public static final String STARTING = TextLocalizer.localize(locprefix + ".starting");
   
-  
+  private static final String GRAPHICS_THREAD_DIED = TextLocalizer.localize(locprefix + ".graphics_thread_died");
+  private static final String ALREADY_STARTED = TextLocalizer.localize(locprefix + ".already_started");
+  private static final String STARTING = TextLocalizer.localize(locprefix + ".starting");
   private static final String NO_SETTINGS = locprefix + ".no_settings";
   private static final String MISSING_SETTING = locprefix + ".missing_setting";
   private static final String WRONG_SETTING_TYPE = locprefix + ".wrong_setting_type";

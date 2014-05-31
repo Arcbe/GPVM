@@ -4,7 +4,6 @@
  */
 package taiga.gpvm;
 
-import taiga.gpvm.HardcodedValues;
 import taiga.code.registration.RegisteredSystem;
 
 import static taiga.gpvm.HardcodedValues.GAMEMANAGER_NAME;
@@ -37,6 +36,13 @@ public final class GameManager extends RegisteredSystem {
   @Override
   protected void stopSystem() {}
 
+  /**
+   * Creates a new {@link GameManager} with the given setting for being a server
+   * or client.
+   * 
+   * @param server Whether this {@link GameManager} will be a server.
+   * @param client Whether this {@link GameManager} will be a client.
+   */
   public GameManager(boolean server, boolean client) {
     super(GAMEMANAGER_NAME);
     
@@ -53,12 +59,22 @@ public final class GameManager extends RegisteredSystem {
     setClientMoe(client);
   }
   
+  /**
+   * Changes whether this {@link GameManager} is a sever or not.
+   * 
+   * @param server Whether this {@link GameManager} should be a server.
+   */
   public void setServerMode(boolean server) {
     if(server) {
       
     }
   }
   
+  /**
+   * Changes whether this {@link GameManager} is a client or not.
+   * 
+   * @param client Whether this {@link GameManager} should be a client.
+   */
   public void setClientMoe(boolean client) {
     RegisteredObject rendreg = getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
     RegisteredObject graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);

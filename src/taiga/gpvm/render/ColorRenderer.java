@@ -6,7 +6,7 @@
 
 package taiga.gpvm.render;
 
-import gpvm.util.geometry.Coordinate;
+import taiga.code.util.geom.Coordinate;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;

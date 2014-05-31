@@ -18,6 +18,10 @@ import taiga.code.registration.RegisteredObject;
  */
 public abstract class DataFileReader extends RegisteredObject {
 
+  /**
+   * Creates a new {@link DataFileReader}.
+   * @param name 
+   */
   public DataFileReader(String name) {
     super(name);
   }

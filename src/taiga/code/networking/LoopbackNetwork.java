@@ -12,6 +12,10 @@ import java.net.InetAddress;
  */
 public class LoopbackNetwork extends NetworkManager {
 
+  /**
+   * Creates a new {@link LoopbackNetwork} using the given name.
+   * @param name 
+   */
   public LoopbackNetwork(String name) {
     super(name);
   }

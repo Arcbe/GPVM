@@ -4,11 +4,9 @@
  */
 package sandboxgame;
 
-import gpvm.io.InvalidDataFileException;
 import taiga.gpvm.GameManager;
 import org.lwjgl.LWJGLException;
-import gpvm.util.StringManager;
-import gpvm.util.geometry.Coordinate;
+import taiga.code.util.geom.Coordinate;
 import hyperion.Generator;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,8 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.lwjgl.util.vector.Matrix3f;
@@ -41,35 +37,29 @@ public class SandboxGame {
   /**
    * @param args the command line arguments
    * @throws LWJGLException
+   * @throws java.lang.InterruptedException
+   * @throws java.net.URISyntaxException
+   * @throws java.io.IOException
+   * @throws java.lang.ReflectiveOperationException
+   * @throws taiga.code.registration.MissingObjectException
+   * @throws java.io.FileNotFoundException
+   * @throws java.lang.InstantiationException
+   * @throws java.lang.reflect.InvocationTargetException
+   * @throws java.lang.NoSuchMethodException
+   * @throws java.lang.NoSuchFieldException
+   * @throws java.lang.IllegalAccessException
+   * @throws java.lang.ClassNotFoundException
    */
-  public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException, IOException, FileNotFoundException, InvalidDataFileException, InstantiationException, NoSuchFieldException, NoSuchMethodException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ReflectiveOperationException, MissingObjectException {
+  public static void main(String[] args) throws LWJGLException, InterruptedException, URISyntaxException, IOException, FileNotFoundException, InstantiationException, NoSuchFieldException, NoSuchMethodException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ReflectiveOperationException, MissingObjectException {
     System.setProperty("taiga.code.logging.text", "text");
     System.setProperty("taiga.code.text.localization", "text");
     System.setProperty("java.util.logging.config.file", "logging.properties");
     
-    StringManager.loadStringBundle("text");
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
       Logger.getLogger(SandboxGame.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
-    //set up the data loaders for the game
-    //YAMLLoader loader = new YAMLLoader();
-    //DataLoader.registerLoader(loader, "yml", "yaml");
-    
-    //find the mods.
-    //ModManager.getInstance().findMods();
-    
-    //set up launcher
-    //launcherInit();
-    
-//    DisplayMode mode = new DisplayMode(800, 600);
-//    
-//    GameMap map = new GameMap(new Generator());
-//    
-//    RenderingSystem.createSystem(mode);
-//    RenderingSystem.getInstance().setMap(map);
     
     moving = new Vector3f();
     direction = new Matrix3f();

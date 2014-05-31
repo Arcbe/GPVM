@@ -17,23 +17,43 @@ import taiga.code.networking.NetworkManager;
 import taiga.code.networking.Packet;
 
 /**
- *
+ * An implementation of a {@link NetworkManager} that uses the {@link net.frozencode.jniolib.server}
+ * package as a network backend.
+ * 
  * @author russell
  */
 public class JNIORegisteredServer extends NetworkManager implements JNioEventListener {
 
+  /**
+   * Creates a new {@link JNIORegisteredServer}  with the given name.
+   * 
+   * @param name The name for the server.
+   */
   public JNIORegisteredServer(String name) {
     super(name);
   }
 
+  /**
+   *
+   * @param arg0
+   */
   @Override
   public void onClientConnected(JNioChannel arg0) {
   }
 
+  /**
+   *
+   * @param arg0
+   */
   @Override
   public void onDataRecieved(JNioChannel arg0) {
   }
 
+  /**
+   *
+   * @param arg0
+   * @param arg1
+   */
   @Override
   public void onClientDisconnected(JNioChannel arg0, boolean arg1) {
   }

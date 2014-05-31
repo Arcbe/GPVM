@@ -17,6 +17,11 @@ import java.util.logging.Logger;
  */
 public abstract class ReusableObject extends RegisteredObject {
 
+  /**
+   * Creates a new {@link ReusableObject} with the given name.
+   * 
+   * @param name The name for the new {@link ReusableObject}.
+   */
   public ReusableObject(String name) {
     super(name);
   }

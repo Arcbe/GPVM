@@ -14,6 +14,7 @@ import taiga.code.registration.RegisteredObject;
  * A single named value.
  * 
  * @author russell
+ * @param <T> The class for the value of this {@link Setting}
  */
 public class Setting<T> extends RegisteredObject {
   /**

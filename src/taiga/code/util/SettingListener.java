@@ -7,9 +7,14 @@
 package taiga.code.util;
 
 /**
- *
+ * A listener for changes to {@link Setting}s.
  * @author russell
  */
 public interface SettingListener {
+  /**
+   * Called when the {@link Setting} is changed.
+   * 
+   * @param set The {@link Setting} that was changed.
+   */
   public void settingChanged(Setting set);
 }

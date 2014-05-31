@@ -22,9 +22,19 @@ import taiga.code.text.TextLocalizer;
  * @author russell
  */
 public class DataFileManager extends RegisteredObject {
+  /**
+   * The name that {@link DataFileManager}s are registered with.
+   */
   public static final String DATAFILEMANAGER_NAME = "fileio";
+  
+  /**
+   * The name of the root {@link DataNode} for loading data files.
+   */
   public static final String DATANODE_ROOT_NAME = "root";
 
+  /**
+   * Creates a new {@link DataFileManager}.
+   */
   public DataFileManager() {
     super(DATAFILEMANAGER_NAME);
   }

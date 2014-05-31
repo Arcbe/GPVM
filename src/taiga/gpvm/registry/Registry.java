@@ -14,11 +14,21 @@ import taiga.code.registration.RegisteredSystem;
 import taiga.code.text.TextLocalizer;
 
 /**
- *
+ * This class maintains a list of {@link RegistryEntry}s and assigns IDS to them.
+ * Once an entry is added to the registry it cannot be modified, however it can be
+ * replaced.
+ * 
  * @author russell
+ * @param <T> The type of {@link RegistryEntry} that this {@link Registry} will
+ * store.
  */
 public class Registry<T extends RegistryEntry> extends RegisteredSystem {
 
+  /**
+   * Creates a new {@link Registry} with the given name.
+   * 
+   * @param name The name of the new {@link Registry}
+   */
   public Registry(String name) {
     super(name);
     

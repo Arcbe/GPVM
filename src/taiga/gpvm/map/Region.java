@@ -4,7 +4,7 @@
  */
 package taiga.gpvm.map;
 
-import gpvm.util.geometry.Coordinate;
+import taiga.code.util.geom.Coordinate;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -25,6 +25,7 @@ public final class Region {
    * Constructs a region with only empty {@link Tile}.
    * 
    * @param loc The location in the map where this region lies.
+   * @param parent The {@link World} that contains this {@link Region}.
    */
   public Region(Coordinate loc, World parent) {
     map = parent;
@@ -43,6 +44,7 @@ public final class Region {
    * 
    * @param data The data to use when creating the {@link Region}
    * @param loc The location of the region in the map.
+   * @param parent The {@link World} that contains this {@link Region}.
    */
   public Region(Tile[] data, Coordinate loc, World parent) {
     map = parent;
@@ -72,6 +74,11 @@ public final class Region {
     return location;
   }
   
+  /**
+   * Returns the parent {@link World} containing this {@link Region}.
+   * 
+   * @return The parent {@link World}.
+   */
   public World getWorld() {
     return map;
   }

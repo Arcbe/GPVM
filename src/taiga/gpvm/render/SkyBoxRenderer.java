@@ -14,6 +14,10 @@ import taiga.code.graphics.Renderable;
  */
 public abstract class SkyBoxRenderer extends Renderable {
 
+  /**
+   * Creates a new {@link SkyBoxRenderer} with the given name.
+   * @param name 
+   */
   public SkyBoxRenderer(String name) {
     super(name);
     
