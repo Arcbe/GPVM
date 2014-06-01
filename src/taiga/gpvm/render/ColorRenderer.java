@@ -70,7 +70,7 @@ public class ColorRenderer implements Renderer {
       vertices.add(corner.add(0, 1, 0, new Coordinate()));
       colors.add(color);
       
-      //south face
+      //top face
       vertices.add(corner.add(0, 0, 1, new Coordinate()));
       vertices.add(corner.add(1, 0, 1, new Coordinate()));
       vertices.add(corner.add(1, 1, 1, new Coordinate()));
@@ -106,6 +106,8 @@ public class ColorRenderer implements Renderer {
     GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
     GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
     
+    GL11.glEnable(GL11.GL_DEPTH_TEST);
+    
     //There are 3 elements to each vertex
     //stride is zero the vertices are tightly packed.
     GL11.glVertexPointer(3, 0, verts);
@@ -113,7 +115,7 @@ public class ColorRenderer implements Renderer {
     //4 elements in each color: alpha, red, green, and blue
     GL11.glColorPointer(4, true, 0, color);
     
-    GL11.glDrawArrays(GL11.GL_QUADS, 0, verts.limit() / 12);
+    GL11.glDrawArrays(GL11.GL_QUADS, 0, verts.limit() / 3);
   }
 
   @Override

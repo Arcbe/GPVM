@@ -19,6 +19,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Vector3f;
+import taiga.code.graphics.Camera;
 import taiga.code.networking.LoopbackNetwork;
 import taiga.code.networking.NetworkManager;
 import taiga.code.registration.MissingObjectException;
@@ -27,6 +28,8 @@ import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.World;
 import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
+import taiga.gpvm.render.StationaryCamera;
+import taiga.gpvm.render.WorldRenderer;
 
 /**
  *
@@ -77,6 +80,7 @@ public class SandboxGame {
     net.scanRegisteredObjects();
     
     ((World)game.getObject("universe.test")).loadRegion(new Coordinate());
+    ((WorldRenderer)game.getObject("graphics.gamescreen.test")).setCamera(new StationaryCamera(new Vector3f(0, 0, 1), new Vector3f(0, 1, 0), new Vector3f(16, -32, 16), 60, .1f, 1000f));
   }
   
   private static Vector3f moving;

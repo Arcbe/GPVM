@@ -5,15 +5,13 @@ import taiga.gpvm.map.Region;
 import taiga.gpvm.map.RegionListener;
 import taiga.gpvm.map.Tile;
 import taiga.code.util.geom.Coordinate;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.lwjgl.opengl.GL11;
-import taiga.code.graphics.Renderable;
+import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.registry.RenderingRegistry;
 
 /**
@@ -21,7 +19,7 @@ import taiga.gpvm.registry.RenderingRegistry;
  * 
  * @author russell
  */
-public final class RegionRenderer extends Renderable implements RegionListener {
+public final class RegionRenderer extends RegisteredObject implements RegionListener {
   /**
    * The prefix for the name of the {@link RegionRenderer}.
    */
@@ -181,8 +179,7 @@ public final class RegionRenderer extends Renderable implements RegionListener {
     return reg.getLocation();
   }
 
-  @Override
-  protected void updateSelf() {    
+  protected void update() {    
     if(dirty)
       scanRegion();
     
@@ -197,8 +194,7 @@ public final class RegionRenderer extends Renderable implements RegionListener {
     }
   }
 
-  @Override
-  protected void renderSelf(int pass) {    
+  protected void render(int pass) {    
     for(Renderer rend : instances.values())
       rend.render();
   }

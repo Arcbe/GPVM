@@ -6,7 +6,10 @@ package taiga.gpvm.render;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.lwjgl.opengl.GL11;
+import taiga.code.graphics.Camera;
 import taiga.code.graphics.Renderable;
+import taiga.code.util.geom.Coordinate;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.World;
 import taiga.gpvm.map.WorldListener;
@@ -26,52 +29,52 @@ public final class WorldRenderer extends Renderable implements WorldListener {
     super(world.name);
     
     map = world;
-    rendgrid = false;
     renderers = new ArrayList<>();
     
     world.addListener(this);
   }
   
-  /**
-   * Sets whether this {@link WorldRenderer} should also render a grid around the
-   * {@link Region} containing the {@link Camera}.
-   * @param grid 
-   */
-  public void renderGrid(boolean grid) {
-    rendgrid = grid;
+  public void setCamera(Camera cam) {
+    camera = cam;
   }
-  
-//  public void setCamera(Camera cam) {
-//    camera = cam;
-//    //setup the matrices
-//    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//    
-////    for(RegionRenderer reg : drawlist) {
-////      Coordinate loc = reg.getLocation();
-////      GL11.glLoadIdentity();
-////      GL11.glTranslatef(loc.x, loc.y, loc.z);
-////      
-////      //eg.render(rendgrid);
-////    }
-//  }
   
   private static int drawdistance = 4;
   
   private World map;
   private List<RegionRenderer> renderers;
-  private boolean rendgrid;
+  private Camera camera;
 
   @Override
   protected void updateSelf() {
+    for(RegionRenderer reg : renderers)
+      reg.update();
   }
 
   @Override
   protected void renderSelf(int pass) {
+    if(camera == null) return;
+    
+    camera.setupProjectioMatrix();
+    
+    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+    GL11.glPushMatrix();
+    
+    for(RegionRenderer reg : renderers) {
+      Coordinate coor = reg.getLocation();
+      GL11.glLoadIdentity();
+      GL11.glTranslatef(coor.x, coor.y, coor.z);
+      
+      reg.render(pass);
+    }
+    
+    GL11.glPopMatrix();
   }
 
   @Override
   public void regionLoaded(Region reg) {
-    addChild(new RegionRenderer(reg));
+    RegionRenderer region = new RegionRenderer(reg);
+    renderers.add(region);
+    addChild(region);
   }
 
   @Override
