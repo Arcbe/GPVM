@@ -4,15 +4,18 @@
  */
 package taiga.gpvm;
 
+import java.awt.event.WindowEvent;
 import taiga.code.registration.RegisteredSystem;
 
 import static taiga.gpvm.HardcodedValues.GAMEMANAGER_NAME;
 import taiga.gpvm.render.GraphicsRoot;
 import taiga.code.io.DataFileManager;
+import taiga.code.opengl.WindowListener;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
 import taiga.gpvm.map.Universe;
+import taiga.gpvm.map.WorldUpdater;
 import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.screens.GameScreen;
@@ -25,7 +28,7 @@ import taiga.gpvm.screens.GameScreen;
  * 
  * @author russell
  */
-public final class GameManager extends RegisteredSystem {
+public final class GameManager extends RegisteredSystem implements WindowListener {
 
   @Override
   public void resetObject() {}
@@ -54,6 +57,7 @@ public final class GameManager extends RegisteredSystem {
     
     addChild(new TileRegistry());
     addChild(new Universe());
+    addChild(new WorldUpdater());
     
     setServerMode(server);
     setClientMoe(client);
@@ -83,10 +87,21 @@ public final class GameManager extends RegisteredSystem {
     if(client) {
       if(rendreg == null) addChild(new RenderingRegistry());
       if(graphics == null) {
-        addChild(new GraphicsRoot());
-        graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+        graphics = new GraphicsRoot();
+        addChild(graphics);
       }
       if(gamescreen == null) graphics.addChild(new GameScreen());
+      
+      ((GraphicsRoot)graphics).addWindowListener(this);
     }
+  }
+
+  @Override
+  public void windowCreated() {
+  }
+
+  @Override
+  public void windowDestroyed() {
+    stop();
   }
 }

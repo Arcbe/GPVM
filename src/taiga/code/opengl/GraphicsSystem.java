@@ -1,5 +1,8 @@
 package taiga.code.opengl;
 
+import java.awt.Window;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
@@ -53,6 +56,28 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
     reset = true;
     running = false;
     gthread = null;
+    listeners = new HashSet<>();
+  }
+  
+  /**
+   * Adds a {@link WindowListener} to the parent {@link Window} of this
+   * {@link GraphicsSystem}.  Listeners will be preserved across changes to the
+   * parent {@link Window}.
+   * 
+   * @param list The {@link WindowListener} to add.
+   */
+  public void addWindowListener(WindowListener list) {
+    listeners.add(list);
+  }
+  
+  /**
+   * Removes a previously added {@link WindowListener} form the parent {@link Window}
+   * of this {@link GraphicsSystem}.
+   * 
+   * @param list The {@link WindowListener} to remove.
+   */
+  public void removeWindowListener(WindowListener list) {
+    listeners.remove(list);
   }
 
   @Override
@@ -129,8 +154,15 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
     } finally {
       running = false;
       Display.destroy();
+      
+      fireWindowClosed();
     }
   }
+
+  /**
+   * Called before each frame between updating and rendering.
+   */
+  protected abstract void rendering();
   
   private boolean fullscreen;
   private boolean vsync;
@@ -139,6 +171,7 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
   private volatile boolean reset;
   private volatile boolean running;
   private Thread gthread;
+  private Collection<WindowListener> listeners;
   
   private void updateSettings() {
     RegisteredObject set = getObject(SettingManager.SETTINGMANAGER_NAME);
@@ -187,12 +220,9 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
     Display.setDisplayMode(mode);
     
     Display.create();
+    
+    fireWindowCreated();
   }
-
-  /**
-   * Called before each frame between updating and rendering.
-   */
-  protected abstract void rendering();
   
   private void update() {
     for(RegisteredObject obj : this) {
@@ -220,6 +250,16 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
           ((Renderable)obj).render(i);
       }
     }
+  }
+  
+  private void fireWindowClosed() {
+    for(WindowListener list : listeners)
+      list.windowDestroyed();
+  }
+  
+  private void fireWindowCreated() {
+    for(WindowListener list : listeners)
+      list.windowCreated();
   }
   
   private static final String locprefix = GraphicsSystem.class.getName().toLowerCase();

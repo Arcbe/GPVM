@@ -9,6 +9,7 @@ package taiga.gpvm;
 import taiga.code.opengl.GraphicsSystem;
 import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Universe;
+import taiga.gpvm.map.WorldUpdater;
 import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.ColorRenderer;
@@ -56,6 +57,14 @@ public class HardcodedValues {
    * Name for {@link Universe}s
    */
   public static final String UNIVERSE_NAME = "universe";
+  /**
+   * Name for {@link WorldUpdater}.
+   */
+  public static final String WORLD_UPDATER_NAME = "updater";
+  /**
+   * Name for {@link WorldUpdater} networking.
+   */
+  public static final String WORLD_COMMS_NAME = "comms";
   //</editor-fold>
   
   //field names for Tile Registry entries
@@ -87,4 +96,8 @@ public class HardcodedValues {
    * cube.
    */
   public static final Class<? extends Renderer> DEFAULT_RENDERER = ColorRenderer.class;
+  /**
+   * The delay in milliseconds between updates of the world map.
+   */
+  public static final int UPDATE_DELAY = 100;
 }

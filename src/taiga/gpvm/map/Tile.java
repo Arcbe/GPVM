@@ -10,37 +10,6 @@ import taiga.gpvm.registry.TileEntry;
  * @author russell
  */
 public final class Tile {
-  /**
-   * An instance of a Tile that only has function that can read its state and
-   * not modify it.
-   */
-  public class ReadOnlyTile {
-    /**
-     * Returns a {@link TileEntry} for the definition of the type of this tittle.
-     * @return The {@link TileEntry} for this tiles type.
-     */
-    public TileEntry getType() {
-      return type;
-    }
-    
-    /**
-     * Returns the current damage value of the tile.
-     * @return The damage value
-     */
-    public long getDamage() {
-      return damage;
-    }
-    
-//    /**
-//     * Returns a read only instance of the tile data for this tile.  If
-//     * there is no data then this method will return null.
-//     * @return The {@link TileData} for this {@link Tile}
-//     */
-//    public TileData.ReadOnlyTileData getTileData() {
-//      if(data == null) return null;
-//      else return data.new ReadOnlyTileData();
-//    }
-  }
   
   /**
    * The {@link TileEntry} that defines the type of this tile.
@@ -53,5 +22,5 @@ public final class Tile {
   /**
    * Any data associated with this {@link Tile} or null if there is not any data.
    */
-  //public TileData data;
+  //private Map<Integer, Object> data;
 }
