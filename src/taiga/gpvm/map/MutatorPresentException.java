@@ -7,10 +7,12 @@
 package taiga.gpvm.map;
 
 /**
- *
+ * A {@link RuntimeException} thrown when a {@link WorldMutator} attempts to
+ * target a {@link World} that already has a {@link WorldMutator} targeting it.
+ * 
  * @author russell
  */
-class MutatorPresentException extends Exception {
+public class MutatorPresentException extends RuntimeException {
 
   public MutatorPresentException() {
   }

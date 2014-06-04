@@ -1,7 +1,7 @@
 package taiga.gpvm.render;
 
 import taiga.gpvm.map.Tile;
-import taiga.code.util.geom.Coordinate;
+import taiga.gpvm.util.geom.Coordinate;
 import gpvm.util.geometry.Direction;
 import taiga.gpvm.registry.RenderingEntry;
 

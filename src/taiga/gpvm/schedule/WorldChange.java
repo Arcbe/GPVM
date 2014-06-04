@@ -1,8 +1,9 @@
 package taiga.gpvm.schedule;
 
-import taiga.code.util.geom.Coordinate;
+import taiga.gpvm.util.geom.Coordinate;
 import taiga.gpvm.map.Tile;
 import taiga.gpvm.map.World;
+import taiga.gpvm.map.WorldMutator;
 import taiga.gpvm.registry.TileEntry;
 
 /**
@@ -85,6 +86,43 @@ public class WorldChange {
     this.data = new Object[] {entry};
     this.type = ChangeType.ChangeType;
     this.update = update;
+  }
+  
+  /**
+   * Checks whether this {@link WorldChange} will override the given one if they
+   * both applied.  If this {@link WorldChange} is compatible with the given one
+   * then this method will return false.
+   * 
+   * @param change The {@link WorldChange} to check.
+   * @return Whether this {@link WorldChange} overrides the given {@link WorldChange}
+   */
+  public boolean doesOverride(WorldChange change) {
+    if(type == ChangeType.ChangeType)
+      return true;
+    if(change.type == ChangeType.ChangeType)
+      return false;
+    if(type == ChangeType.SetDamage)
+      return true;
+    return false;
+  }
+  
+  /**
+   * Applies this {@link WorldChange} using the given {@link WorldMutator}.
+   * 
+   * @param mutator The {@link WorldMutator} to use to apply this change.
+   */
+  public void applyChange(WorldMutator mutator) {
+    switch(type) {
+      case SetDamage:
+        mutator.setDamageValue((Long)data[0], location);
+        break;
+      case Damage:
+        mutator.damageTile((Long)data[0], location);
+        break;
+      case ChangeType:
+        mutator.setTileEntry((TileEntry)data[0], location);
+        break;
+    }
   }
 
   /**

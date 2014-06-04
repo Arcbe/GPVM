@@ -9,7 +9,7 @@ package taiga.gpvm.map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.text.TextLocalizer;
-import taiga.code.util.geom.Coordinate;
+import taiga.gpvm.util.geom.Coordinate;
 import taiga.gpvm.registry.TileEntry;
 
 /**
@@ -29,20 +29,38 @@ public class WorldMutator {
    * @param loc The {@link Coordinate} of the {@link Tile} to change.
    */
   public void setTileEntry(TileEntry ent, Coordinate loc) {
-    if(target == null) {
-      log.log(Level.WARNING, NO_TARGET);
-      return;
-    }
-    
-    Tile t = target.getTile(loc);
-    if(t == null) {
-      log.log(Level.WARNING, TILE_NOT_LOADED, new Object[] {target.getFullName(), loc});
-      return;
-    }
+    Tile t = getTile(loc);
+    if(t == null) return;
     
     //set the type and reset the damage
     t.type = ent;
     t.damage = 0;
+  }
+  
+  /**
+   * Changes the damage value of the {@link Tile} at the given {@link Coordinate}.
+   * 
+   * @param damage The damage value to the set for the {@link Tile}.
+   * @param loc The {@link Coordinate} of the {@link Tile} to change.
+   */
+  public void setDamageValue(long damage, Coordinate loc) {
+    Tile t = getTile(loc);
+    if(t == null) return;
+    
+    t.damage = damage;
+  }
+  
+  /**
+   * Applies damage to the {@link Tile} at the given {@link Coordinate}.
+   * 
+   * @param damage The amount of damage to apply.
+   * @param loc The {@link Coordinate} of the {@link Tile} to change.
+   */
+  public void damageTile(long damage, Coordinate loc) {
+    Tile t = getTile(loc);
+    if(t == null) return;
+    
+    t.damage -= damage;
   }
   
   /**
@@ -63,11 +81,26 @@ public class WorldMutator {
     if(tar.mutator != null) throw new MutatorPresentException(
       TextLocalizer.localize(MUTATOR_PRESENT_EX, tar.getFullName()));
     
-    target.mutator = this;
+    tar.mutator = this;
     target = tar;
   }
   
   private World target;
+  
+  private Tile getTile(Coordinate loc) {
+    if(target == null) {
+      log.log(Level.WARNING, NO_TARGET);
+      return null;
+    }
+    
+    Tile t = target.getTile(loc);
+    if(t == null) {
+      log.log(Level.WARNING, TILE_NOT_LOADED, new Object[] {target.getFullName(), loc});
+      return null;
+    }
+    
+    return t;
+  }
   
   private static final String locprefix = WorldMutator.class.getName().toLowerCase();
   

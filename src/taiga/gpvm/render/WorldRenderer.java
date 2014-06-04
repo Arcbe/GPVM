@@ -9,7 +9,7 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 import taiga.code.graphics.Camera;
 import taiga.code.graphics.Renderable;
-import taiga.code.util.geom.Coordinate;
+import taiga.gpvm.util.geom.Coordinate;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.World;
 import taiga.gpvm.map.WorldListener;

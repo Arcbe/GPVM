@@ -8,7 +8,7 @@ import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.Tile;
-import taiga.code.util.geom.Coordinate;
+import taiga.gpvm.util.geom.Coordinate;
 import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.map.World;
 import taiga.gpvm.registry.TileEntry;

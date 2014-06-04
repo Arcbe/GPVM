@@ -4,7 +4,7 @@ import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.RegionListener;
 import taiga.gpvm.map.Tile;
-import taiga.code.util.geom.Coordinate;
+import taiga.gpvm.util.geom.Coordinate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

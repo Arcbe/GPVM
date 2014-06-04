@@ -4,7 +4,7 @@
  */
 package taiga.gpvm.map;
 
-import taiga.code.util.geom.Coordinate;
+import taiga.gpvm.util.geom.Coordinate;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -49,6 +49,11 @@ public final class Region {
   public Region(Tile[] data, Coordinate loc, World parent) {
     map = parent;
     assert data.length == REGION_SIZE * REGION_SIZE * REGION_SIZE;
+    
+    for(int i = 0; i < data.length; i++) {
+      if(data[i] == null)
+        data[i] = new Tile();
+    }
     
     tiles = data;
     location = loc;

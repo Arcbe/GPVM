@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package taiga.code.util.geom;
+package taiga.gpvm.util.geom;
 
 import java.text.MessageFormat;
 import taiga.gpvm.map.Region;
@@ -171,9 +171,11 @@ public class Coordinate {
   }
 
   /**
-   *
-   * @param obj
-   * @return
+   * Determines whether the given {@link Coordinate} indicates the same location
+   * as this {@link Coordinate}.
+   * 
+   * @param obj The {@link Coordinate} to check equivalence with.
+   * @return Whether the two {@link Coordinate}s are equal.
    */
   @Override
   public boolean equals(Object obj) {

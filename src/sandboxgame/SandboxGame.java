@@ -6,7 +6,7 @@ package sandboxgame;
 
 import taiga.gpvm.GameManager;
 import org.lwjgl.LWJGLException;
-import taiga.code.util.geom.Coordinate;
+import taiga.gpvm.util.geom.Coordinate;
 import hyperion.Generator;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,17 +19,20 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Vector3f;
-import taiga.code.graphics.Camera;
 import taiga.code.networking.LoopbackNetwork;
 import taiga.code.networking.NetworkManager;
 import taiga.code.registration.MissingObjectException;
 import taiga.code.util.SettingManager;
+import taiga.code.util.Updateable;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.World;
 import taiga.gpvm.registry.RenderingRegistry;
+import taiga.gpvm.registry.TileEntry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.StationaryCamera;
 import taiga.gpvm.render.WorldRenderer;
+import taiga.gpvm.schedule.WorldChange;
+import taiga.gpvm.schedule.WorldUpdater;
 
 /**
  *
@@ -64,9 +67,6 @@ public class SandboxGame {
       Logger.getLogger(SandboxGame.class.getName()).log(Level.SEVERE, null, ex);
     }
     
-    moving = new Vector3f();
-    direction = new Matrix3f();
-    
     GameManager game = new GameManager(true, true);
     NetworkManager net = new LoopbackNetwork("network");
     game.addChild(net);
@@ -79,29 +79,21 @@ public class SandboxGame {
     game.start();
     net.scanRegisteredObjects();
     
-    ((World)game.getObject("universe.test")).loadRegion(new Coordinate());
+    World test = (World)game.getObject("universe.test");
+    test.loadRegion(new Coordinate());
     ((WorldRenderer)game.getObject("graphics.gamescreen.test")).setCamera(new StationaryCamera(new Vector3f(0, 0, 1), new Vector3f(0, 1, 0), new Vector3f(16, -32, 16), 60, .1f, 1000f));
+    
+    TileEntry ent = ((TileRegistry)game.getObject("tiles")).getEntry("test.Grass");
+    WorldChange testchange = new WorldChange(test, new Coordinate(0, 10, 0), ent, 10);
+    ((WorldUpdater)game.getObject("updater")).submitTask(testchange);
   }
   
-  private static Vector3f moving;
-  private static Matrix3f direction;
-  
-//  public static void launcherInit() {
-//    JFrame editorframe = new JFrame("Registrar");
-//    JTabbedPane content = new JTabbedPane();
-//    editorframe.add(content);
-//    
-//    TileRegistryPanel trpanel = new TileRegistryPanel();
-//    content.add(trpanel);
-//    
-//    RenderRegistryPanel rendreg = new RenderRegistryPanel();
-//    content.add(rendreg);
-//    
-//    ModInformationPanel mods = new ModInformationPanel();
-//    content.add(mods);
-//    
-//    editorframe.setSize(800, 400);
-//    editorframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//    editorframe.setVisible(true);
-//  }
+  public static class testupdater implements Updateable {
+
+    @Override
+    public void Update() {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+  }
 }

@@ -1,6 +1,6 @@
 package taiga.gpvm.map;
 
-import taiga.code.util.geom.Coordinate;
+import taiga.gpvm.util.geom.Coordinate;
 import gpvm.util.geometry.Direction;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

@@ -6,7 +6,7 @@ package taiga.gpvm.map;
 
 import taiga.gpvm.HardcodedValues;
 import taiga.code.registration.RegisteredObject;
-import taiga.code.util.geom.Coordinate;
+import taiga.gpvm.util.geom.Coordinate;
 
 /**
  * An interface for classes that can generate Regions for the game map.
