@@ -9,7 +9,7 @@ package taiga.gpvm;
 import taiga.code.opengl.GraphicsSystem;
 import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Universe;
-import taiga.gpvm.map.WorldUpdater;
+import taiga.gpvm.schedule.WorldUpdater;
 import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.ColorRenderer;

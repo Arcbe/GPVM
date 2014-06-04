@@ -22,7 +22,7 @@ import taiga.gpvm.HardcodedValues;
  * 
  * @author russell
  */
-public class World extends NetworkedObject {
+public final class World extends NetworkedObject {
   
   /**
    * Creates a new {@link World} with the given name.
@@ -186,6 +186,8 @@ public class World extends NetworkedObject {
       regionlock.readLock().unlock();
     }
   }
+  
+  protected WorldMutator mutator;
 
   @Override
   protected void connected() {

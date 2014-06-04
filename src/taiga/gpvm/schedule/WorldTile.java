@@ -4,8 +4,10 @@
  * and open the template in the editor.
  */
 
-package taiga.gpvm.map;
+package taiga.gpvm.schedule;
 
+import taiga.gpvm.map.Tile;
+import taiga.gpvm.map.World;
 import taiga.gpvm.registry.TileEntry;
 
 /**

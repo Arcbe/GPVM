@@ -4,10 +4,13 @@
  * and open the template in the editor.
  */
 
-package taiga.gpvm.map;
+package taiga.gpvm.schedule;
 
+import java.util.PriorityQueue;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.networking.NetworkedObject;
@@ -22,19 +25,29 @@ import taiga.gpvm.HardcodedValues;
  */
 public class WorldUpdater extends RegisteredSystem {
 
+  /**
+   * Creates a new {@link WorldUpdater}
+   */
   public WorldUpdater() {
     super(HardcodedValues.WORLD_UPDATER_NAME);
     
     addChild(new WorldComms());
+    
+    changes = new PriorityQueue<>();
   }
 
   @Override
   protected void startSystem() {
+    //make sure that there are no old junk in the way.
     if(updatetask != null) {
       updatetask.cancel();
-    } else if(timer == null) {
+    }
+    
+    if(timer == null) {
       timer = new Timer(getFullName());
     }
+    
+    createTaskMaster();
     
     updatetask = new TimerTask() {
       @Override
@@ -66,14 +79,26 @@ public class WorldUpdater extends RegisteredSystem {
     stopSystem();
   }
   
+  public void submitTask(WorldChange change) {
+    changes.add(change);
+  }
+  
   private Timer timer;
   private TimerTask updatetask;
   private long updatecount;
+  private ExecutorService taskmaster;
+  private PriorityQueue<WorldChange> changes;
   
   private void update() {
+    
+    
     updatecount++;
+  }
+  
+  private void createTaskMaster() {
+    if(taskmaster != null) return;
     
-    
+    taskmaster = Executors.newCachedThreadPool();
   }
   
   private static final String locprefix = WorldUpdater.class.getName().toLowerCase();

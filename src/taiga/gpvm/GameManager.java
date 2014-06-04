@@ -15,7 +15,7 @@ import taiga.code.registration.RegisteredObject;
 import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
 import taiga.gpvm.map.Universe;
-import taiga.gpvm.map.WorldUpdater;
+import taiga.gpvm.schedule.WorldUpdater;
 import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.screens.GameScreen;
