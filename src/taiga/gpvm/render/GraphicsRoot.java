@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package taiga.gpvm.render;
 
 import static taiga.gpvm.HardcodedValues.GRAPHICSSYSTEM_NAME;
@@ -30,8 +26,6 @@ public class GraphicsRoot extends GraphicsSystem implements ChildListener {
    */
   public GraphicsRoot() {
     super(GRAPHICSSYSTEM_NAME);
-    
-    this.mode = mode;
   }
 //  
 //  private void render() {

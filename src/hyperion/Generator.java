@@ -31,13 +31,13 @@ public class Generator extends MapGenerator {
           Tile t = new Tile();
           switch((i + j) % 4) {
             case 0:
-              t.type = grass;
+              //t.type = grass;
               break;
             case 1:
               t.type = stone;
               break;
             case 2:
-              t.type = water;
+              //t.type = water;
               break;
             case 3:
               t.type = lava;

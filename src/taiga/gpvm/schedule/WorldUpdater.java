@@ -14,13 +14,10 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.networking.NetworkedObject;
 import taiga.code.networking.Packet;
-import taiga.code.registration.RegisteredObject;
 import taiga.code.registration.RegisteredSystem;
 import taiga.code.util.Updateable;
 import taiga.gpvm.util.geom.Coordinate;
@@ -49,6 +46,7 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
     changes = new PriorityQueue<>();
     ups = new ArrayList<>();
     mutators = new HashMap<>();
+    listeners = new ArrayList<>();
   }
 
   @Override
@@ -61,8 +59,6 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
     if(timer == null) {
       timer = new Timer(getFullName());
     }
-    
-    createTaskMaster();
     
     updatetask = new TimerTask() {
       @Override
@@ -134,30 +130,21 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
     struct.up = up;
   }
   
-  @Override
-  protected void attached(RegisteredObject parent) {
-    Universe uni = (Universe) getObject(HardcodedValues.UNIVERSE_NAME);
-    
-    if(uni == null) {
-      log.log(Level.WARNING, NO_UNIVERSE_FOUND);
-      return;
-    }
-    
-    uni.addListener(this);
+  public void addWorldChangeListener(WorldChangeListener list) {
+    listeners.add(list);
   }
   
-  @Override
-  protected void dettached(RegisteredObject parent) {
-    
+  public void removeWorldChangeListener(WorldChangeListener list) {
+    listeners.remove(list);
   }
   
   private Timer timer;
   private TimerTask updatetask;
   private long updatecount;
-  private ExecutorService taskmaster;
   private final PriorityQueue<WorldChange> changes;
   private final Collection<UpdateStruct> ups;
   private final Map<World, WorldMutator> mutators;
+  private final Collection<WorldChangeListener> listeners;
   
   private void update() {
     List<WorldChange> pending = getPendingChanges();
@@ -167,8 +154,10 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
       !cur.isEmpty();
       cur = getConflictingChanges(pending)) {
       for(int i = 0; i < cur.size(); i++) {
+        if(cur.get(i) == null) continue;
+        
         for(int j = 0; j < cur.size(); j++) {
-          if(i == j) continue;
+          if(i == j || cur.get(j) == null) continue;
           
           if(cur.get(i).doesOverride(cur.get(j))) 
             cur.set(j, null);
@@ -180,19 +169,25 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
           ready.add(change);
     }
     
-    applyChanges(ready);
+    List<Object> old = applyChanges(ready);
     
-    fireEvents(ready);
+    fireEvents(ready, old);
     processUpdateables();
     
     updatecount++;
   }
   
-  private void fireEvents(Collection<WorldChange> chs) {
-    
+  private void fireEvents(List<WorldChange> chs, List<Object> prev) {
+    for(int i = 0; i < chs.size(); i++) {
+      for(WorldChangeListener list : listeners) {
+        list.worldChanged(chs.get(i), prev.get(i));
+      }
+    }
   }
   
-  private void applyChanges(Collection<WorldChange> chs) {
+  private List<Object> applyChanges(List<WorldChange> chs) {
+    List<Object> result = new ArrayList<>();
+    
     for(WorldChange change : chs) {
       WorldMutator mutator = mutators.get(change.world);
       
@@ -201,8 +196,10 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
         continue;
       }
       
-      change.applyChange(mutator);
+      result.add(change.applyChange(mutator));
     }
+    
+    return result;
   }
   
   private void processUpdateables() {
@@ -246,12 +243,6 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
     }
     
     return result;
-  }
-  
-  private void createTaskMaster() {
-    if(taskmaster != null) return;
-    
-    taskmaster = Executors.newCachedThreadPool();
   }
   
   private static final String locprefix = WorldUpdater.class.getName().toLowerCase();

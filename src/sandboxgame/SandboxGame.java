@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Vector3f;
 import taiga.code.networking.LoopbackNetwork;
 import taiga.code.networking.NetworkManager;
@@ -85,6 +84,10 @@ public class SandboxGame {
     
     TileEntry ent = ((TileRegistry)game.getObject("tiles")).getEntry("test.Grass");
     WorldChange testchange = new WorldChange(test, new Coordinate(0, 10, 0), ent, 10);
+    ((WorldUpdater)game.getObject("updater")).submitTask(testchange);
+    testchange = new WorldChange(test, new Coordinate(10, 0, 0), ent, 10);
+    ((WorldUpdater)game.getObject("updater")).submitTask(testchange);
+    testchange = new WorldChange(test, new Coordinate(0, 0, 10), ent, 10);
     ((WorldUpdater)game.getObject("updater")).submitTask(testchange);
   }
   

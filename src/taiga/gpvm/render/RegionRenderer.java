@@ -70,6 +70,17 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
   }
   
   /**
+   * Update the rendering information for a single tile in the {@link Region}.
+   * 
+   * @param coor The {@link Coordinate} or the {@link Tile} to update.
+   */
+  public void updateTile(Coordinate coor) {
+    coor = coor.getRelativeCoordinate();
+    
+    updateTile(coor.x, coor.y, coor.z);
+  }
+  
+  /**
    * Updates rendering information for a single tile in the {@link Region}.
    * 
    * @param x The x coordinate of the {@link Tile} in the {@link Region}.

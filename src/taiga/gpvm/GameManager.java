@@ -14,10 +14,12 @@ import taiga.code.opengl.WindowListener;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
+import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.schedule.WorldUpdater;
 import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
+import taiga.gpvm.schedule.WorldChangeListener;
 import taiga.gpvm.screens.GameScreen;
 
 /**
@@ -55,9 +57,19 @@ public final class GameManager extends RegisteredSystem implements WindowListene
     SettingManager settings = new SettingManager();
     addChild(settings);
     
-    addChild(new TileRegistry());
-    addChild(new Universe());
-    addChild(new WorldUpdater());
+    
+    TileRegistry tiles = new TileRegistry();
+    Universe uni = new Universe();
+    WorldUpdater updater = new WorldUpdater();
+    MapEventManager events = new MapEventManager();
+    
+    addChild(tiles);
+    addChild(uni);
+    addChild(updater);
+    addChild(events);
+    
+    uni.addListener(updater);
+    updater.addWorldChangeListener(events);
     
     setServerMode(server);
     setClientMoe(client);
@@ -83,6 +95,8 @@ public final class GameManager extends RegisteredSystem implements WindowListene
     RegisteredObject rendreg = getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
     RegisteredObject graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
     RegisteredObject gamescreen = getObject(HardcodedValues.GAME_SCREEN_NAME);
+    RegisteredObject uni = getObject(HardcodedValues.UNIVERSE_NAME);
+    RegisteredObject updater = getObject(HardcodedValues.WORLD_UPDATER_NAME);
     
     if(client) {
       if(rendreg == null) addChild(new RenderingRegistry());
@@ -90,9 +104,14 @@ public final class GameManager extends RegisteredSystem implements WindowListene
         graphics = new GraphicsRoot();
         addChild(graphics);
       }
-      if(gamescreen == null) graphics.addChild(new GameScreen());
+      if(gamescreen == null) {
+        gamescreen = new GameScreen();
+        graphics.addChild(gamescreen);
+      }
       
       ((GraphicsRoot)graphics).addWindowListener(this);
+      ((Universe)uni).addListener((GameScreen)gamescreen);
+      ((WorldUpdater)updater).addWorldChangeListener((WorldChangeListener) gamescreen);
     }
   }
 

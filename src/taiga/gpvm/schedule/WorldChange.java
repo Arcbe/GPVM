@@ -11,7 +11,7 @@ import taiga.gpvm.registry.TileEntry;
  * {@link TileEntry}, damage, or change of a metadata for a {@link Tile}.
  * @author russell
  */
-public class WorldChange {
+public class WorldChange implements Comparable<WorldChange>{
   /**
    * The {@link World} that this {@link WorldChange} will change.
    */
@@ -110,19 +110,24 @@ public class WorldChange {
    * Applies this {@link WorldChange} using the given {@link WorldMutator}.
    * 
    * @param mutator The {@link WorldMutator} to use to apply this change.
+   * @return The previous value for the value that changed.
    */
-  public void applyChange(WorldMutator mutator) {
+  public Object applyChange(WorldMutator mutator) {
     switch(type) {
       case SetDamage:
-        mutator.setDamageValue((Long)data[0], location);
-        break;
+        return mutator.setDamageValue((Long)data[0], location);
       case Damage:
-        mutator.damageTile((Long)data[0], location);
-        break;
+        return mutator.damageTile((Long)data[0], location);
       case ChangeType:
-        mutator.setTileEntry((TileEntry)data[0], location);
-        break;
+        return mutator.setTileEntry((TileEntry)data[0], location);
     }
+    
+    return null;
+  }
+
+  @Override
+  public int compareTo(WorldChange o) {
+    return (int) (update - o.update);
   }
 
   /**

@@ -28,13 +28,17 @@ public class WorldMutator {
    * @param ent The {@link TileEntry} to change to or null.
    * @param loc The {@link Coordinate} of the {@link Tile} to change.
    */
-  public void setTileEntry(TileEntry ent, Coordinate loc) {
+  public TileEntry setTileEntry(TileEntry ent, Coordinate loc) {
     Tile t = getTile(loc);
-    if(t == null) return;
+    if(t == null) return null;
+    
     
     //set the type and reset the damage
+    TileEntry old = t.type;
     t.type = ent;
     t.damage = 0;
+    
+    return old;
   }
   
   /**
@@ -43,11 +47,14 @@ public class WorldMutator {
    * @param damage The damage value to the set for the {@link Tile}.
    * @param loc The {@link Coordinate} of the {@link Tile} to change.
    */
-  public void setDamageValue(long damage, Coordinate loc) {
+  public Long setDamageValue(long damage, Coordinate loc) {
     Tile t = getTile(loc);
-    if(t == null) return;
+    if(t == null) return null;
     
+    long old = t.damage;
     t.damage = damage;
+    
+    return old;
   }
   
   /**
@@ -56,11 +63,14 @@ public class WorldMutator {
    * @param damage The amount of damage to apply.
    * @param loc The {@link Coordinate} of the {@link Tile} to change.
    */
-  public void damageTile(long damage, Coordinate loc) {
+  public Long damageTile(long damage, Coordinate loc) {
     Tile t = getTile(loc);
-    if(t == null) return;
+    if(t == null) return null;
     
+    long old = t.damage;
     t.damage -= damage;
+    
+    return old;
   }
   
   /**

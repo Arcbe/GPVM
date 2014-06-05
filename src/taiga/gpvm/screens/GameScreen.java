@@ -6,16 +6,16 @@
 
 package taiga.gpvm.screens;
 
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Logger;
 import taiga.code.graphics.RenderableSwitcher;
-import taiga.code.registration.ChildListener;
-import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.HardcodedValues;
-import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.UniverseListener;
 import taiga.gpvm.map.World;
 import taiga.gpvm.render.WorldRenderer;
+import taiga.gpvm.schedule.WorldChange;
+import taiga.gpvm.schedule.WorldChangeListener;
 
 /**
  * The main screen for the game.  This screen will render to the world the {@link Camera}
@@ -23,13 +23,15 @@ import taiga.gpvm.render.WorldRenderer;
  * 
  * @author russell
  */
-public class GameScreen extends RenderableSwitcher implements UniverseListener {
+public class GameScreen extends RenderableSwitcher implements UniverseListener, WorldChangeListener {
   
   /**
    * Creates a new {@link GameScreen}.
    */
   public GameScreen() {
     super(HardcodedValues.GAME_SCREEN_NAME);
+    
+    listchildren = new ArrayList<>();
   }
 
   @Override
@@ -42,26 +44,19 @@ public class GameScreen extends RenderableSwitcher implements UniverseListener {
 
   @Override
   public void worldCreated(World world) {
-    addChild(new WorldRenderer(world));
+    WorldRenderer rend = new WorldRenderer(world);
+    
+    addChild(rend);
+    listchildren.add(rend);
   }
-
+  
   @Override
-  protected void dettached(RegisteredObject parent) {
-    RegisteredObject obj = getObject(HardcodedValues.UNIVERSE_NAME);
-    if(obj instanceof Universe) {
-      ((Universe)obj).removeListener(this);
-    } else {
-      log.log(Level.WARNING, NO_UNIVERSE);
-    }
+  public void worldChanged(WorldChange change, Object prev) {
+    for(WorldChangeListener list : listchildren)
+      list.worldChanged(change, prev);
   }
-
-  @Override
-  protected void attached(RegisteredObject parent) {
-    RegisteredObject obj = getObject(HardcodedValues.UNIVERSE_NAME);
-    if(obj instanceof Universe) {
-      ((Universe)obj).addListener(this);
-    }
-  }
+  
+  private Collection<WorldChangeListener> listchildren;
   
   private static final String locpref = GameScreen.class.getName().toLowerCase();
   

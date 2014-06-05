@@ -7,6 +7,7 @@
 package taiga.gpvm;
 
 import taiga.code.opengl.GraphicsSystem;
+import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.schedule.WorldUpdater;
@@ -65,6 +66,10 @@ public class HardcodedValues {
    * Name for {@link WorldUpdater} networking.
    */
   public static final String WORLD_COMMS_NAME = "comms";
+  /**
+   * Name for {@link MapEventManager}.
+   */
+  public static final String MAP_EVENT_MANAGER_NAME = "mapevents";
   //</editor-fold>
   
   //field names for Tile Registry entries
