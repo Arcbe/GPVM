@@ -78,24 +78,35 @@ public class SandboxGame {
     game.start();
     net.scanRegisteredObjects();
     
-    World test = (World)game.getObject("universe.test");
-    test.loadRegion(new Coordinate());
+    World testworld = (World)game.getObject("universe.test");
+    WorldUpdater updater = (WorldUpdater)game.getObject("updater");
+    testworld.loadRegion(new Coordinate());
     ((WorldRenderer)game.getObject("graphics.gamescreen.test")).setCamera(new StationaryCamera(new Vector3f(0, 0, 1), new Vector3f(0, 1, 0), new Vector3f(16, -32, 16), 60, .1f, 1000f));
     
     TileEntry ent = ((TileRegistry)game.getObject("tiles")).getEntry("test.Grass");
-    WorldChange testchange = new WorldChange(test, new Coordinate(0, 10, 0), ent, 1);
-    ((WorldUpdater)game.getObject("updater")).submitTask(testchange);
-    testchange = new WorldChange(test, new Coordinate(10, 0, 0), ent, 1);
-    ((WorldUpdater)game.getObject("updater")).submitTask(testchange);
-    testchange = new WorldChange(test, new Coordinate(0, 0, 10), ent, 1);
-    ((WorldUpdater)game.getObject("updater")).submitTask(testchange);
+    testupdater test = new testupdater();
+    test.ent = ent;
+    test.updater = updater;
+    test.world = testworld;
+    
+    updater.addUpdateable(test, 0, 1);
   }
   
   public static class testupdater implements Updateable {
 
+    private int count;
+    private TileEntry ent;
+    private World world;
+    private WorldUpdater updater;
+    
     @Override
     public void Update() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      Coordinate coor = new Coordinate(count % 32, (count / 32) % 32, (count / 1024) % 32);
+      
+      WorldChange change = new WorldChange(world, coor, ent, count + 100);
+      updater.submitTask(change);
+      
+      count++;
     }
     
   }

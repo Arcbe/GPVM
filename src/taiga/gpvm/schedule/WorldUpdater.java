@@ -128,6 +128,8 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
     struct.next = updatecount + delay;
     struct.period = period;
     struct.up = up;
+    
+    ups.add(struct);
   }
   
   public void addWorldChangeListener(WorldChangeListener list) {
