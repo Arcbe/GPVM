@@ -1,3 +1,11 @@
 /build/
 /dist/
 /nbproject/private/
+/src/gpvm/
+/src/taiga/td/
+/src/hyperion/
+/src/mods/
+/src/sandboxgame/
+/test/
+/lib/
+/nbproject/
