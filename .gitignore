@@ -7,5 +7,10 @@
 /src/mods/
 /src/sandboxgame/
 /test/
-/lib/
+/lib/doc/
+/lib/junit/
+/lib/junit_4/
+/lib/CopyLibs/
+/lib/nblibraries.properties
 /nbproject/
+*.mf
