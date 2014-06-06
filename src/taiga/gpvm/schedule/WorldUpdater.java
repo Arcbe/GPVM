@@ -223,7 +223,7 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
         world = change.world;
         result.add(change);
       //grab all changes in teh same location.
-      } else if(world == change.world) {
+      } else if(world == change.world && coor.equals(change.location)) {
         result.add(change);
       }
     }

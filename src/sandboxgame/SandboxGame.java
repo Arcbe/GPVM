@@ -83,11 +83,11 @@ public class SandboxGame {
     ((WorldRenderer)game.getObject("graphics.gamescreen.test")).setCamera(new StationaryCamera(new Vector3f(0, 0, 1), new Vector3f(0, 1, 0), new Vector3f(16, -32, 16), 60, .1f, 1000f));
     
     TileEntry ent = ((TileRegistry)game.getObject("tiles")).getEntry("test.Grass");
-    WorldChange testchange = new WorldChange(test, new Coordinate(0, 10, 0), ent, 10);
+    WorldChange testchange = new WorldChange(test, new Coordinate(0, 10, 0), ent, 1);
     ((WorldUpdater)game.getObject("updater")).submitTask(testchange);
-    testchange = new WorldChange(test, new Coordinate(10, 0, 0), ent, 10);
+    testchange = new WorldChange(test, new Coordinate(10, 0, 0), ent, 1);
     ((WorldUpdater)game.getObject("updater")).submitTask(testchange);
-    testchange = new WorldChange(test, new Coordinate(0, 0, 10), ent, 10);
+    testchange = new WorldChange(test, new Coordinate(0, 0, 10), ent, 1);
     ((WorldUpdater)game.getObject("updater")).submitTask(testchange);
   }
   
