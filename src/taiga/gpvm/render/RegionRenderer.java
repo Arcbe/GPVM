@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.registration.RegisteredObject;
@@ -44,7 +46,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     
     entries = new HashMap<>();
     rendindex = new HashMap<>();
-    instances = new HashMap<>();
+    instances = new ConcurrentHashMap<>();
     dirtyents = new HashMap<>();
   }
   
@@ -144,7 +146,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     
     //create the list of tileinfo.
     if(ents == null) {
-      ents = new ArrayList<>();
+      ents = new CopyOnWriteArrayList<>();
       entries.put(renderer, ents);
     }
     

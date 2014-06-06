@@ -104,5 +104,5 @@ public class HardcodedValues {
   /**
    * The delay in milliseconds between updates of the world map.
    */
-  public static final int UPDATE_DELAY = 20;
+  public static final int UPDATE_DELAY = 5;
 }
