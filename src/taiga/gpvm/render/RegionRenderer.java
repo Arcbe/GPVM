@@ -5,7 +5,6 @@ import taiga.gpvm.map.Region;
 import taiga.gpvm.map.RegionListener;
 import taiga.gpvm.map.Tile;
 import taiga.gpvm.util.geom.Coordinate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,6 +147,8 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     if(ents == null) {
       ents = new CopyOnWriteArrayList<>();
       entries.put(renderer, ents);
+    } else {
+      ents.remove(oldent);
     }
     
     // Update the previous renderer if needed
@@ -171,6 +172,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     }
     
     ents.add(info);
+    rendindex.put(info.absposition, info);
     dirtyents.put(newrend.getClass(), true);
   }
 
