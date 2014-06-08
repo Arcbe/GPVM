@@ -234,6 +234,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     int i = 0;
     while(token.hasMoreTokens()) {
       path[i] = token.nextToken();
+      i++;
     }
     
     return getObject(path);
@@ -256,11 +257,32 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     
     RegisteredObject obj =  getObject(path, 0);
     
-    if(obj == null && parent != null) return parent.getObject(path);
-    else return obj;
+    if(obj != null) return obj;
+    else if(parent != null) return parent.getObject(path);
+    else if(path[0].equals(name)) return getObject(path, 1);
+    else return null;
   }
   
-  
+  public Object executeMethod(String name, Object ... params) throws
+    NoSuchMethodException,
+    IllegalAccessException,
+    IllegalArgumentException,
+    InvocationTargetException {
+    
+    StringTokenizer token = new StringTokenizer(name, 
+      new String(new char[] {SEPARATOR}),
+      false);
+    
+    String[] path = new String[token.countTokens()];
+    
+    int i = 0;
+    while(token.hasMoreTokens()) {
+      path[i] = token.nextToken();
+      i++;
+    }
+    
+    return executeMethod(path, params);
+  }
   
   public Object executeMethod(String[] path, Object ... params) throws 
     NoSuchMethodException, 
@@ -304,6 +326,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     int i = 0;
     while(token.hasMoreTokens()) {
       path[i] = token.nextToken();
+      i++;
     }
     
     return getMethod(path, paramtypes);
@@ -371,16 +394,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   private List<ChildListener> parlist;
   
   private RegisteredObject getObject(String[] path, int index) {
-    if(path.length <= index) return null;
-    RegisteredObject obj = null;
-    
-    //if the beginning of this path is the name of this object then try this without
-    //it first.
-    if(index == 0 && path[0].equals(name)) {
-      obj = getObject(path, index + 1);
-      
-      if(obj != null) return obj;
-    }
+    if(path.length <= index || children == null) return null;
+    RegisteredObject obj;
     
     obj = children.get(path[index]);
     if(obj == null) return null;
