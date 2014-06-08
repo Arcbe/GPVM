@@ -354,9 +354,30 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     if(obj == null) return null;
     
     try {
+      //look for a method with the exact signature.
       Method meth = obj.getClass().getMethod(path[path.length - 1], paramtypes);
       return new RegisteredObjectMethod(meth, obj);
+      
     } catch(NoSuchMethodException ex) {
+      //look for methods that use super types of the given parameters.
+      for(Method meth : obj.getClass().getMethods()) {
+        Class<?>[] pts = meth.getParameterTypes();
+        if(pts.length != paramtypes.length) continue;
+        
+        boolean works = true;
+        for(int i = 0; i < pts.length; i++) {
+          if(!pts[i].isAssignableFrom(paramtypes[i])) {
+            works = false;
+            break;
+          }
+        }
+        
+        if(works) {
+          return new RegisteredObjectMethod(meth, obj);
+        }
+      }
+      
+      //nothing was found.
       return null;
     }
   }
