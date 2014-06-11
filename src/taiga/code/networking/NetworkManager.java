@@ -277,6 +277,8 @@ public abstract class NetworkManager extends RegisteredObject {
     
     log.log(Level.FINE, ID_ASSIGNED, new Object[] {obj.getFullName(), id});
     
+    obj.connected();
+    
     synced = index.size() == objects.size();
     if(synced) synchronized(this) {this.notifyAll();}
   }

@@ -6,6 +6,8 @@
 
 package taiga.code.registration;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +30,7 @@ public abstract class RegisteredSystem extends ReusableObject {
     super(name);
     
     running = false;
+    listeners = new HashSet<>();
   }
   
   /**
@@ -85,6 +88,24 @@ public abstract class RegisteredSystem extends ReusableObject {
   }
   
   /**
+   * Adds the given {@link SystemListener} to this {@link RegisteredSystem}.
+   * 
+   * @param list The {@link SystemListener} to add.
+   */
+  public void addSystemListener(SystemListener list) {
+    listeners.add(list);
+  }
+  
+  /**
+   * Removes the given {@link SystemListener} to this {@link RegisteredSystem}.
+   * 
+   * @param list  The {@link SystemListener} to remove.
+   */
+  public void removeSystemListener(SystemListener list) {
+    listeners.remove(list);
+  }
+  
+  /**
    * Called when this {@link RegisteredSystem} is supposed to start.
    */
   protected abstract void startSystem();
@@ -94,6 +115,17 @@ public abstract class RegisteredSystem extends ReusableObject {
   protected abstract void stopSystem();
   
   private boolean running;
+  private Collection<SystemListener> listeners;
+  
+  private void fireSystemStarted() {
+    for(SystemListener list : listeners)
+      list.systemStarted(this);
+  }
+  
+  private void fireSystemStopped() {
+    for(SystemListener list : listeners)
+      list.systemStopped(this);
+  }
   
   private static final String STARTED = RegisteredSystem.class.getName().toLowerCase() + ".started";
   private static final String STOPPED = RegisteredSystem.class.getName().toLowerCase() + ".stopped";

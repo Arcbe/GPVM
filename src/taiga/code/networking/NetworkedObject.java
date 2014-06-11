@@ -80,7 +80,8 @@ public abstract class NetworkedObject extends RegisteredObject {
   
   /**
    * Called when the {@link NetworkManager} for this {@link NetworkedObject} has
-   * successfully connected itself.
+   * successfully connected to a remote {@link NetworkManager} and been given an
+   * id for this {@link NetworkedObject}.
    */
   protected abstract void connected();
   
@@ -92,7 +93,8 @@ public abstract class NetworkedObject extends RegisteredObject {
   protected abstract void messageRecieved(Packet pack);
   
   /**
-   * Called when a {@link NetworkManager} has been attached to this {@link NetworkedObject}.
+   * Called when a {@link NetworkManager} has discovered and attached to this
+   * {@link NetworkedObject}.
    */
   protected abstract void managerAttached();
   
