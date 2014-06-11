@@ -30,6 +30,7 @@ public class HardcodedValues {
   
   //internal system names
   //<editor-fold>
+  public static final String REGION_MANAGER_NAME = "region-manager";
   /**
    * Name for the {@link GameManager}.
    */
@@ -45,7 +46,7 @@ public class HardcodedValues {
   /**
    * Name for the {@link RenderingRegistry}.
    */
-  public static final String RENDERING_REGISTRY_NAME = "renderinginfo";
+  public static final String RENDERING_REGISTRY_NAME = "rendering-info";
   /**
    * Name for {@link MapGenerator}s.
    */
@@ -53,7 +54,7 @@ public class HardcodedValues {
   /**
    * Name for the {@link GameScreen}
    */
-  public static final String GAME_SCREEN_NAME = "gamescreen";
+  public static final String GAME_SCREEN_NAME = "game-screen";
   /**
    * Name for {@link Universe}s
    */
@@ -69,7 +70,7 @@ public class HardcodedValues {
   /**
    * Name for {@link MapEventManager}.
    */
-  public static final String MAP_EVENT_MANAGER_NAME = "mapevents";
+  public static final String MAP_EVENT_MANAGER_NAME = "map-events";
   //</editor-fold>
   
   //field names for Tile Registry entries

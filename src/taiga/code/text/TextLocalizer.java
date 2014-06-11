@@ -24,15 +24,8 @@ public class TextLocalizer {
    * @return 
    */
   public static String localize(String input) {
-    //get the resource bundle if need.
     if(text == null) {
-      if(System.getProperty("taiga.code.text.localization") == null) {
-        log.log(Level.WARNING, NO_LOCALIZATION);
-        
-        return input;
-      }
-      
-      text = ResourceBundle.getBundle(System.getProperty("taiga.code.text.localization"));
+      return input;
     }
     
     if(text.containsKey(input)) return text.getString(input);
@@ -59,9 +52,18 @@ public class TextLocalizer {
   
   private static ResourceBundle text;
   
-  private static final String NO_LOCALIZATION = TextLocalizer.class.getName().toLowerCase() + ".no_localization";
-  private static final String NO_ENTRY = TextLocalizer.class.getName().toLowerCase() + ".no_entry";
+  private static final String locprefix = TextLocalizer.class.getName().toLowerCase();
   
-  private static final Logger log = Logger.getLogger(TextLocalizer.class.getName(), 
+  private static final String NO_ENTRY = locprefix + ".no_entry";
+  
+  private static final Logger log = Logger.getLogger(locprefix, 
     System.getProperty("taiga.code.logging.text"));
+  
+  static {
+    try {
+      text = ResourceBundle.getBundle(System.getProperty("taiga.code.logging.text"));
+    } catch (Exception ex) {
+      log.log(Level.WARNING, "Could not load resource bundle.", ex);
+    }
+  }
 }
