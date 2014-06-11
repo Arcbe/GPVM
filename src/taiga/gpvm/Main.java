@@ -2,6 +2,7 @@ package taiga.gpvm;
 
 import taiga.code.util.SettingManager;
 import taiga.gpvm.map.Universe;
+import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 
 public class Main {
@@ -18,10 +19,13 @@ public class Main {
     Universe universe = (Universe) game.getObject(HardcodedValues.UNIVERSE_NAME);
     SettingManager settings = (SettingManager) game.getObject(HardcodedValues.SETTING_MANAGER_NAME);
     TileRegistry tiles = (TileRegistry) game.getObject(HardcodedValues.TILE_REGISTRY_NAME);
+    RenderingRegistry rendreg = (RenderingRegistry) game.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
     
     //load the settings file
     settings.loadSettings("settings.yml");
     //load tile definitions
     tiles.loadFile("tiles.yml", "default");
+    //load rendering information
+    rendreg.loadRenderingRegistryData("renderer.yml", "default");
   }
 }
