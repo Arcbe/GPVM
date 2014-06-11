@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package placeholder.util.geometry;
+package taiga.gpvm.util.geom;
 
 /**
  * Indicates a direction in the map.  Positive and negative x are west and 

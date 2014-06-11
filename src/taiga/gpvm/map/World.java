@@ -1,7 +1,6 @@
 package taiga.gpvm.map;
 
 import taiga.gpvm.util.geom.Coordinate;
-import gpvm.util.geometry.Direction;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +14,7 @@ import taiga.code.networking.NetworkedObject;
 import taiga.code.networking.Packet;
 import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.HardcodedValues;
+import taiga.gpvm.util.geom.Direction;
 
 /**
  * A uniform 3D grid of tiles.  This class can load and unloaded individual
@@ -208,7 +208,7 @@ public final class World extends NetworkedObject {
   }
 
   private void sendRegionRequest(Coordinate coor) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
   }
   
   private void fireRegionLoaded(Region reg) {
@@ -237,6 +237,9 @@ public final class World extends NetworkedObject {
   
   private Map<Coordinate, Region> regions;
   private ReadWriteLock regionlock;
+  
+  //packet id for request for region data.  A single encoded coordainte is sent in the packet.
+  private static byte REG_REQ = 0;
   
   private static final String locprefix = World.class.getName().toLowerCase();
   
