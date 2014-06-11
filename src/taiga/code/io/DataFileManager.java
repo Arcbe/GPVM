@@ -9,6 +9,9 @@ package taiga.code.io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.registration.RegisteredObject;
@@ -67,15 +70,36 @@ public class DataFileManager extends RegisteredObject {
   }
   
   /**
-   * Convenience method for reading files.  This simply calls {@link DataFileManager#readFile(java.io.File) }
-   * with the {@link File} constructed from the given name.
+   * This method will try to find a {@link File} in the classpath before trying the working directory.
+   * If a {@link File} is found then this will load it into a {@link DataNode}.
    * 
-   * @param fname
-   * @return
-   * @throws IOException 
+   * @param fname The name of the file.
+   * @return A {@link DataNode} for the data within the {@link File} or null.
+   * @throws IOException Thrown if there is a problem loading the file.
    */
   public DataNode readFile(String fname) throws IOException {
+    URL loc = getClass().getClassLoader().getResource(fname);
+    
+    if(loc != null) {
+      try {
+        URI loci = loc.toURI();
+        return readFile(loci);
+      } catch(URISyntaxException ex) {}
+    }
+    
     return readFile(new File(fname));
+  }
+  
+  /**
+   * Attempts to read the given file using one of the attached {@link DataFileReader}.
+   * If none can read the file this method will simply return null.
+   * 
+   * @param file A {@link URI} for the {@link File} to load.
+   * @return The data read from the file or null.
+   * @throws IOException If there was an exception while reading from the file.
+   */
+  public DataNode readFile(URI file) throws IOException, URISyntaxException {
+    return readFile(new File(file));
   }
   
   private static final String locprefix = DataFileManager.class.getName().toLowerCase();

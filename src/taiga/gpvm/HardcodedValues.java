@@ -7,8 +7,10 @@
 package taiga.gpvm;
 
 import taiga.code.opengl.GraphicsSystem;
+import taiga.code.util.SettingManager;
 import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.MapGenerator;
+import taiga.gpvm.map.RegionManager;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.schedule.WorldUpdater;
 import taiga.gpvm.registry.RenderingRegistry;
@@ -30,6 +32,13 @@ public class HardcodedValues {
   
   //internal system names
   //<editor-fold>
+  /**
+   * The name for the {@link SettingManager}.  This is the same as {@link SettingManager#SETTINGMANAGER_NAME}
+   */
+  public static final String SETTING_MANAGER_NAME = SettingManager.SETTINGMANAGER_NAME;
+  /**
+   * The name for the {@link RegionManager}.
+   */
   public static final String REGION_MANAGER_NAME = "region-manager";
   /**
    * Name for the {@link GameManager}.

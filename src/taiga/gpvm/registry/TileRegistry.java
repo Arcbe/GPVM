@@ -34,9 +34,29 @@ public class TileRegistry extends NetworkRegistry<TileEntry>{
   }
   
   /**
-   * Loads a data {@link File} of {@link TileEntry}s into this {@link TileRegistry}.
+   * Loads a {@link File} of {@link TileEntry}s into this {@link TileRegistry}.
    * 
-   * @param in The {@link File} to read in.
+   * @param in The name of the {@link File} containing the tile definitions.
+   * @param modname The name of the mod that this data file is loaded by.
+   * @throws IOException Thrown if the data file cannot be read.
+   */
+  public void loadFile(String in, String modname) throws IOException {
+    DataFileManager dfio = (DataFileManager) getObject(DataFileManager.DATAFILEMANAGER_NAME);
+    if(dfio == null) {
+      log.log(Level.WARNING, NO_DFIO);
+      return;
+    }
+    
+    DataNode data = dfio.readFile(in);
+    loadData(data, modname);
+    
+    log.log(Level.INFO, LOADED_FILE, in);
+  }
+  
+  /**
+   * Loads a {@link File} of {@link TileEntry}s into this {@link TileRegistry}.
+   * 
+   * @param in The {@link File} containing the tile definitions.
    * @param modname The name of the mod that this data file is loaded by.
    * @throws IOException Thrown if the data file cannot be read.
    */
@@ -48,6 +68,18 @@ public class TileRegistry extends NetworkRegistry<TileEntry>{
     }
     
     DataNode data = dfio.readFile(in);
+    loadData(data, modname);
+    
+    log.log(Level.INFO, LOADED_FILE, in);
+  }
+  
+  /**
+   * Loads a {@link DataNode} of {@link TileEntry}s into this {@link TileRegistry}.
+   * 
+   * @param data The {@link DataNode} containing the tile definitions.
+   * @param modname The name of the mod that this data file is loaded by.
+   */
+  public void loadData(DataNode data, String modname){
     
     if(data == null) return;
     
@@ -56,7 +88,7 @@ public class TileRegistry extends NetworkRegistry<TileEntry>{
       DataNode cur = (DataNode) val;
 
       if(cur.data != null) {
-        log.log(Level.WARNING, INVALID_TILE_DATA, new Object[]{val, in});
+        log.log(Level.WARNING, INVALID_TILE_DATA, new Object[]{val});
         continue;
       }
 
@@ -98,6 +130,7 @@ public class TileRegistry extends NetworkRegistry<TileEntry>{
   
   private static final String locprefix = TileRegistry.class.getName().toLowerCase();
   
+  private static final String LOADED_FILE = locprefix + ".loaded_file";
   private static final String NO_DFIO = locprefix + ".no_datafile_manager";
   private static final String INVALID_TILE_DATA = locprefix + ".invalid_tile_data";
   private static final String INVALID_FIELD_VALUE = locprefix + ".invalid_field_value";
