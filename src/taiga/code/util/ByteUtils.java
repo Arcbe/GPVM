@@ -62,7 +62,7 @@ public class ByteUtils {
     short result;
     
     result = b[offset];
-    result &= (short)(b[offset + 1]) << 8;
+    result |= (short)(b[offset + 1]) << 8;
     
     return result;
   }

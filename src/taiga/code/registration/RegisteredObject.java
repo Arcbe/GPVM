@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package taiga.code.registration;
 
 import java.lang.reflect.InvocationTargetException;
@@ -137,7 +131,6 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * by this method.
    * 
    * @param child The child to add.
-   * @return The id of the child within this {@link RegisteredObject}.
    * @throws NullPointerException Thrown if the child is null.
    */
   public void addChild(RegisteredObject child) {
