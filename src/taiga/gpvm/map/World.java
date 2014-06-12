@@ -138,9 +138,9 @@ public final class World extends NetworkedObject {
     coor = coor.getRegionCoordinate();
     if(isLoaded(coor)) return;
     
-    if(getManager() != null &&
-      (getManager().isServer() ||
-      !getManager().isConnected())) {
+    if(getNetworkManager() == null ||
+      (getNetworkManager().isServer() ||
+      !getNetworkManager().isConnected())) {
       //try loading from a file first.
       if(loadRegionFile(coor)) {
         log.log(Level.FINE, REGION_FILE_LOADED, new Object[]{getFullName(), coor});

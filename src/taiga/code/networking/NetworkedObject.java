@@ -64,7 +64,7 @@ public abstract class NetworkedObject extends RegisteredObject {
    * 
    * @return The attached {@link NetworkManager}.
    */
-  public final NetworkManager getManager() {
+  public final NetworkManager getNetworkManager() {
     return manager;
   }
   

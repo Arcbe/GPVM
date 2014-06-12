@@ -1,9 +1,20 @@
 package taiga.gpvm;
 
+import org.lwjgl.util.vector.Vector3f;
+import taiga.code.registration.RegisteredObject;
 import taiga.code.util.SettingManager;
+import taiga.gpvm.map.FixedSizeManager;
+import taiga.gpvm.map.FlatWorldGenerator;
 import taiga.gpvm.map.Universe;
+import taiga.gpvm.map.World;
 import taiga.gpvm.registry.RenderingRegistry;
+import taiga.gpvm.registry.TileEntry;
 import taiga.gpvm.registry.TileRegistry;
+import taiga.gpvm.render.GraphicsRoot;
+import taiga.gpvm.render.StationaryCamera;
+import taiga.gpvm.render.WorldRenderer;
+import taiga.gpvm.screens.GameScreen;
+import taiga.gpvm.util.geom.Coordinate;
 
 public class Main {
   public static final void main(String[] args) throws Exception{
@@ -20,6 +31,8 @@ public class Main {
     SettingManager settings = (SettingManager) game.getObject(HardcodedValues.SETTING_MANAGER_NAME);
     TileRegistry tiles = (TileRegistry) game.getObject(HardcodedValues.TILE_REGISTRY_NAME);
     RenderingRegistry rendreg = (RenderingRegistry) game.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    GraphicsRoot graphics = (GraphicsRoot) game.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+    GameScreen screen = (GameScreen) graphics.getObject(HardcodedValues.GAME_SCREEN_NAME);
     
     //load the settings file
     settings.loadSettings("settings.yml");
@@ -27,5 +40,21 @@ public class Main {
     tiles.loadFile("tiles.yml", "default");
     //load rendering information
     rendreg.loadRenderingRegistryData("renderer.yml", "default");
+    
+    //create a new world.
+    TileEntry ent = tiles.getEntry("default.Grass");
+    universe.addWorld("test-world", new FlatWorldGenerator(ent, 2));
+    World testworld = (World) universe.getObject("test-world");
+    //add a region manager to load the map
+    testworld.addChild(new FixedSizeManager(new Coordinate(), 128, 128, 32));
+    
+    //create the camera for the game screen
+    WorldRenderer worldview = (WorldRenderer) screen.getObject("test-world");
+    worldview.setCamera(new StationaryCamera(new Vector3f(0,0,1),
+      new Vector3f(1, 1, -.2f), 
+      new Vector3f(-5, -5, 5), 
+      60, 1, 100));
+    
+    game.start();
   }
 }
