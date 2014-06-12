@@ -53,6 +53,8 @@ public abstract class RegisteredSystem extends ReusableObject {
     
     running = true;
     log.log(Level.INFO, STARTED, getFullName());
+    
+    fireSystemStarted();
   }
   
   /**
@@ -76,6 +78,8 @@ public abstract class RegisteredSystem extends ReusableObject {
     
     running = false;
     log.log(Level.INFO, STOPPED, getFullName());
+    
+    fireSystemStopped();
   }
   
   /**

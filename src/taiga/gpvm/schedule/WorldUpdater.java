@@ -271,12 +271,10 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
 
     @Override
     protected void connected() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     protected void messageRecieved(Packet pack) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

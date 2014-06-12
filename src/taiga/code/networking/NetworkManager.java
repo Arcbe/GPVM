@@ -43,6 +43,8 @@ public abstract class NetworkManager extends RegisteredObject {
     
     current = 0;
     history = new Packet[256];
+    index = new HashMap<>();
+    objects = new HashMap<>();
   }
   
   /**
@@ -56,8 +58,7 @@ public abstract class NetworkManager extends RegisteredObject {
    */
   public void scanRegisteredObjects() throws TimeoutException {
     ArrayList<NetworkedObject> rawobjs = new ArrayList<>();
-    objects = new HashMap<>();
-    index = new HashMap<>();
+    objects.clear();
     
     RegisteredObject root = this;
     while(root.getParent() != null)
@@ -179,11 +180,11 @@ public abstract class NetworkManager extends RegisteredObject {
     syncIDs();
   }
   
-  private Map<String, NetworkedObject> objects;
-  private Map<Short, NetworkedObject> index;
+  private final Map<String, NetworkedObject> objects;
+  private final Map<Short, NetworkedObject> index;
   private boolean synced;
   
-  private Packet[] history;
+  private final Packet[] history;
   private byte current;
   
   private void generateIDs() {
@@ -201,6 +202,8 @@ public abstract class NetworkManager extends RegisteredObject {
   }
   
   private void syncIDs() throws TimeoutException {
+    if(!isConnected() || !isClient() || objects.isEmpty()) return;
+    
     index.clear();
 
     for(NetworkedObject obj : objects.values()) {
@@ -260,11 +263,11 @@ public abstract class NetworkManager extends RegisteredObject {
   }
   
   private void receiveSyncResponse(Packet pack) {
-    NetworkedObject obj = null;
-    String name = null;
+    NetworkedObject obj;
+    String oname;
     try {
-      name = new String(pack.data, 3, pack.data.length - 3, NETWORK_CHARSET);
-      obj = objects.get(name);
+      oname = new String(pack.data, 3, pack.data.length - 3, NETWORK_CHARSET);
+      obj = objects.get(oname);
     } catch (UnsupportedEncodingException ex) { 
       log.log(Level.SEVERE, ENCODING_ERR, ex);
       
@@ -284,16 +287,16 @@ public abstract class NetworkManager extends RegisteredObject {
   }
   
   private void receiveSyncRequest(Packet pack) {
-    String name;
+    String oname;
     try {
-      name = new String(pack.data, 1, pack.data.length - 1, NETWORK_CHARSET);
+      oname = new String(pack.data, 1, pack.data.length - 1, NETWORK_CHARSET);
     } catch (UnsupportedEncodingException ex) {
       log.log(Level.SEVERE, ENCODING_ERR, ex);
       
       return;
     }
     
-    short id = objects.get(name).id;
+    short id = objects.get(oname).id;
     
     Packet response = new Packet();
     

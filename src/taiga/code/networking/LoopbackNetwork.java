@@ -2,6 +2,7 @@ package taiga.code.networking;
 
 import java.net.InetAddress;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
@@ -26,8 +27,6 @@ public class LoopbackNetwork extends NetworkManager {
     
     this.client = client;
     this.server = server;
-    
-    exe = Executors.newSingleThreadExecutor();
   }
   
   /**
@@ -39,6 +38,9 @@ public class LoopbackNetwork extends NetworkManager {
   public void connect(LoopbackNetwork other) throws TimeoutException {
     connection = other;
     other.connection = this;
+    
+    exe = Executors.newSingleThreadExecutor();
+    other.exe = Executors.newSingleThreadExecutor();
     
     if(client)
       connected();
@@ -73,8 +75,23 @@ public class LoopbackNetwork extends NetworkManager {
     });
   }
   
+  /**
+   * Stops the {@link Executor} thread and disconnects this {@link LoopbackNetwork}.
+   */
+  public void stop() {
+    if(exe == null) return;
+    
+    exe.shutdown();
+    exe = null;
+    
+    if(connection != null)
+      connection.stop();
+    
+    connection = null;
+  }
+  
   private boolean server;
   private boolean client;
   private LoopbackNetwork connection;
-  private Executor exe;
+  private ExecutorService exe;
 }
