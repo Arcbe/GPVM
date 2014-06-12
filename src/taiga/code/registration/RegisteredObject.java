@@ -214,10 +214,11 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * parent and so on until it reaches the root. An empty {@link String} will
    * return this {@link RegisteredObject}.
    * 
+   * @param <T> The type of {@link RegisteredObject} to return.
    * @param name The name of the {@link RegisteredObject} to retrieve.
    * @return The object with the given name or null if no object can be found.
    */
-  public RegisteredObject getObject(String name) {
+  public <T extends RegisteredObject> T getObject(String name) {
     StringTokenizer token = new StringTokenizer(name, 
       new String(new char[] {SEPARATOR}),
       false);
@@ -242,17 +243,18 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * and so on in this fashion.  An empty array will simply return this
    * {@link RegisteredObject}.
    * 
+   * @param <T> The type of the {@link RegisteredObject} to return.
    * @param path A array of names for the path to the desired object.
    * @return 
    */
-  public RegisteredObject getObject(String[] path) {
-    if(path.length == 0) return this;
+  public <T extends RegisteredObject> T getObject(String[] path) {
+    if(path.length == 0) return (T) this;
     
-    RegisteredObject obj =  getObject(path, 0);
+    T obj =  (T) getObject(path, 0);
     
     if(obj != null) return obj;
     else if(parent != null) return parent.getObject(path);
-    else if(path[0].equals(name)) return getObject(path, 1);
+    else if(path[0].equals(name)) return (T) getObject(path, 1);
     else return null;
   }
   

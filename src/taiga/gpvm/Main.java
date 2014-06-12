@@ -1,7 +1,6 @@
 package taiga.gpvm;
 
 import org.lwjgl.util.vector.Vector3f;
-import taiga.code.registration.RegisteredObject;
 import taiga.code.util.SettingManager;
 import taiga.gpvm.map.FixedSizeManager;
 import taiga.gpvm.map.FlatWorldGenerator;
@@ -27,12 +26,12 @@ public class Main {
     
     //create a new game and retreive the systems from it
     GameManager game = new GameManager(true, true);
-    Universe universe = (Universe) game.getObject(HardcodedValues.UNIVERSE_NAME);
-    SettingManager settings = (SettingManager) game.getObject(HardcodedValues.SETTING_MANAGER_NAME);
-    TileRegistry tiles = (TileRegistry) game.getObject(HardcodedValues.TILE_REGISTRY_NAME);
-    RenderingRegistry rendreg = (RenderingRegistry) game.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
-    GraphicsRoot graphics = (GraphicsRoot) game.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
-    GameScreen screen = (GameScreen) graphics.getObject(HardcodedValues.GAME_SCREEN_NAME);
+    Universe universe = game.getObject(HardcodedValues.UNIVERSE_NAME);
+    SettingManager settings = game.getObject(HardcodedValues.SETTING_MANAGER_NAME);
+    TileRegistry tiles = game.getObject(HardcodedValues.TILE_REGISTRY_NAME);
+    RenderingRegistry rendreg = game.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    GraphicsRoot graphics = game.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+    GameScreen screen = graphics.getObject(HardcodedValues.GAME_SCREEN_NAME);
     
     //load the settings file
     settings.loadSettings("settings.yml");
@@ -44,12 +43,12 @@ public class Main {
     //create a new world.
     TileEntry ent = tiles.getEntry("default.Grass");
     universe.addWorld("test-world", new FlatWorldGenerator(ent, 2));
-    World testworld = (World) universe.getObject("test-world");
+    World testworld = universe.getObject("test-world");
     //add a region manager to load the map
     testworld.addChild(new FixedSizeManager(new Coordinate(), 128, 128, 32));
     
     //create the camera for the game screen
-    WorldRenderer worldview = (WorldRenderer) screen.getObject("test-world");
+    WorldRenderer worldview = screen.getObject("test-world");
     worldview.setCamera(new StationaryCamera(new Vector3f(0,0,1),
       new Vector3f(1, 1, -.2f), 
       new Vector3f(-5, -5, 5), 
