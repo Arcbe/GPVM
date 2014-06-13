@@ -34,7 +34,9 @@ public abstract class NetworkedObject extends RegisteredObject {
    * @param pack The {@link Packet} to send.
    */
   public void sendMessage(Packet pack) {
+    pack.target = getID();
     
+    manager.sendMessage(null, pack);
   }
   
   /**
@@ -45,7 +47,9 @@ public abstract class NetworkedObject extends RegisteredObject {
    * @param dest The {@link InetAddress} of the destination.
    */
   public void sendMessage(Packet pack, InetAddress dest) {
+    pack.target = getID();
     
+    manager.sendMessage(dest, pack);
   }
   
   /**
@@ -54,7 +58,7 @@ public abstract class NetworkedObject extends RegisteredObject {
    * 
    * @return The id of this {@link NetworkedObject}
    */
-  public final int getID() {
+  public final short getID() {
     return id;
   }
   

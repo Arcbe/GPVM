@@ -63,6 +63,9 @@ public class Main {
     server.addChild(servernet);
     servernet.scanRegisteredObjects();
     
+    //start the server.
+    server.start();
+    
     //add the clients network and set it up
     game.addChild(clientnet);
     clientnet.connect(servernet);

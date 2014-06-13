@@ -6,6 +6,7 @@
 
 package taiga.gpvm.registry;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -44,10 +45,11 @@ public class Registry<T extends RegistryEntry> extends RegisteredSystem {
     
     int curid = 0;
     
-    entries = new HashMap<>();
+    entries.clear();
     
     for(T ent : entrynames.values()) {
       entries.put(curid, ent);
+      ent.id = curid;
       
       curid++;
     }
@@ -113,9 +115,15 @@ public class Registry<T extends RegistryEntry> extends RegisteredSystem {
     
     log.log(Level.FINE, ENTRY_ADDED, ent.name);
   }
+  
+  public Collection<T> getEntries() {
+    return entrynames.values();
+  }
 
   @Override
-  protected void startSystem() {}
+  protected void startSystem() {
+    generateIDs();
+  }
 
   @Override
   protected void stopSystem() {}
@@ -127,13 +135,13 @@ public class Registry<T extends RegistryEntry> extends RegisteredSystem {
   }
   
   private Map<String, T> entrynames;
-  private Map<Integer, T> entries;
+  protected Map<Integer, T> entries;
   
-  private static final String PREFIX = Registry.class.getName().toLowerCase();
+  private static final String locprefix = Registry.class.getName().toLowerCase();
   
-  private static final String ENTRY_ADDED = PREFIX + ".added_entry";
-  private static final String ALREADY_RUNNING = PREFIX + ".already_running";
+  private static final String ENTRY_ADDED = locprefix + ".added_entry";
+  private static final String ALREADY_RUNNING = locprefix + ".already_running";
   
-  private Logger log = Logger.getLogger(Registry.class.getName(), 
+  private Logger log = Logger.getLogger(locprefix, 
     System.getProperty("taiga.code.logging.text"));
 }

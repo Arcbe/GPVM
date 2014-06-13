@@ -164,6 +164,11 @@ public abstract class NetworkManager extends RegisteredObject {
     
     NetworkedObject obj = index.get(pack.target);
     
+    if(obj == null) {
+      log.log(Level.SEVERE, UNKNOWN_PACKET_ID, pack.target);
+      return;
+    }
+    
     obj.messageRecieved(pack);
     
     //TODO: add packet resend code.
@@ -277,6 +282,7 @@ public abstract class NetworkManager extends RegisteredObject {
     short id = ByteUtils.toShort(pack.data, 1);
     
     index.put(id, obj);
+    obj.id = id;
     
     log.log(Level.FINE, ID_ASSIGNED, new Object[] {obj.getFullName(), id});
     
@@ -326,6 +332,7 @@ public abstract class NetworkManager extends RegisteredObject {
   private static final String ID_ASSIGNED = locprefix + ".id_assigned";
   private static final String IDS_SYNCHRONIZED = locprefix + ".ids_synchronized";
   private static final String SYNC_TIMEOUT_EX = locprefix + ".sync_timeout_ex";
+  private static final String UNKNOWN_PACKET_ID = locprefix + ".unknown_packet_id";
   
   private static final Logger log = Logger.getLogger(locprefix, 
     System.getProperty("taiga.code.logging.text"));
