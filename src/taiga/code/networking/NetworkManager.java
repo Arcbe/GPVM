@@ -81,6 +81,7 @@ public abstract class NetworkManager extends RegisteredObject {
       generateIDs();
     } else if(isConnected()) {
       syncIDs();
+      fireConnected();
     }
   }
   
@@ -183,14 +184,9 @@ public abstract class NetworkManager extends RegisteredObject {
    */
   protected void connected() throws TimeoutException {
     syncIDs();
+    
+    fireConnected();
   }
-  
-  private final Map<String, NetworkedObject> objects;
-  private final Map<Short, NetworkedObject> index;
-  private boolean synced;
-  
-  private final Packet[] history;
-  private byte current;
   
   private void generateIDs() {
     short curid = 1;
@@ -286,8 +282,6 @@ public abstract class NetworkManager extends RegisteredObject {
     
     log.log(Level.FINE, ID_ASSIGNED, new Object[] {obj.getFullName(), id});
     
-    obj.connected();
-    
     synced = index.size() == objects.size();
     if(synced) synchronized(this) {this.notifyAll();}
   }
@@ -318,6 +312,18 @@ public abstract class NetworkManager extends RegisteredObject {
     
     sendPacket(pack.source, response);
   }
+  
+  private void fireConnected() {
+    for(NetworkedObject obj : objects.values())
+      obj.connected();
+  }
+  
+  private final Map<String, NetworkedObject> objects;
+  private final Map<Short, NetworkedObject> index;
+  private boolean synced;
+  
+  private final Packet[] history;
+  private byte current;
   
   // id for a sync request, this packet has a single string encoded as bytes.
   private static final byte SYNC_REQ = 0;

@@ -134,7 +134,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * @throws NullPointerException Thrown if the child is null.
    */
   public void addChild(RegisteredObject child) {
-    if(child == null) throw new NullPointerException();
+    if(child == null) return;
     
     //check to make sure that this child does not already have a parent. kidnapping is
     //not allowed
@@ -149,7 +149,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
       children.put(child.name, child);
     } else {
       //make sure that the child is not already added.  No cloning either.
-      if(children.containsKey(child.name)) {
+      if(children.get(child.name) != null) {
         log.log(Level.WARNING, ALREADY_ADDED, new Object[]{getFullName(), child.name});
         
         return;
@@ -179,7 +179,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     boolean result = children.containsKey(child.name);
     
     if(result) {
-      children.put(child.name, null);
+      if(child == children.put(child.name, null))
+        child.parent = null;
 
       fireChildRemoved(child);
     }
@@ -375,6 +376,10 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
       //nothing was found.
       return null;
     }
+  }
+  
+  public String toString() {
+    return getFullName();
   }
 
   /**

@@ -266,7 +266,7 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
   private class WorldComms extends NetworkedObject {
 
     public WorldComms() {
-      super(HardcodedValues.WORLD_COMMS_NAME);
+      super(HardcodedValues.COMMS_NAME);
     }
 
     @Override

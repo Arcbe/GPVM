@@ -55,6 +55,10 @@ public class Main {
     //load rendering information
     rendreg.loadRenderingRegistryData("renderer.yml", "default");
     
+    //create a new world.
+    TileEntry ent = stiles.getEntry("default.Grass");
+    suniverse.addWorld("test-world", new FlatWorldGenerator(ent, 2));
+    
     //connect the client and server.
     final LoopbackNetwork servernet = new LoopbackNetwork("network", true, false);
     LoopbackNetwork clientnet = new LoopbackNetwork("network", false, true);
@@ -71,10 +75,6 @@ public class Main {
     clientnet.connect(servernet);
     clientnet.scanRegisteredObjects();
     
-    //create a new world.
-    TileEntry ent = stiles.getEntry("default.Grass");
-    suniverse.addWorld("test-world", new FlatWorldGenerator(ent, 2));
-    
     //add a region manager to load the map
     universe.addListener(new UniverseListener() {
 
@@ -87,11 +87,11 @@ public class Main {
     //create the camera for the game screen
 //    WorldRenderer worldview = screen.getObject("test-world");
 //    worldview.setCamera(new StationaryCamera(new Vector3f(0,0,1),
-//      new Vector3f(1, 1, -.2f), 
+//      new Vector3f(1, 1, -.2f), `
 //      new Vector3f(-5, -5, 5), 
 //      60, 1, 100));
     
-    //create a shutdown hook fro the server
+    //create a shutdown hook for the server
     game.addSystemListener(new SystemListener() {
 
       @Override

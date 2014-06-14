@@ -75,7 +75,7 @@ public class HardcodedValues {
   /**
    * Name for {@link WorldUpdater} networking.
    */
-  public static final String WORLD_COMMS_NAME = "comms";
+  public static final String COMMS_NAME = "comms";
   /**
    * Name for {@link MapEventManager}.
    */
