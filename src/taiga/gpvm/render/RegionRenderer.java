@@ -99,13 +99,12 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     Coordinate loc = new Coordinate(x, y, z);
     Tile[] ngbrs = reg.getWorld().getNeighborTiles(loc);
     boolean visible = false;
-    for(int i = 0; i < ngbrs.length; i++) {
-      if(ngbrs[i] == null || ngbrs[i].type == null) {
+    for (Tile ngbr : ngbrs) {
+      if (ngbr == null || ngbr.type == null) {
         visible = true;
         break;
       }
-      
-      if(!ngbrs[i].type.opaque) {
+      if (!ngbr.type.opaque) {
         visible = true;
         break;
       }

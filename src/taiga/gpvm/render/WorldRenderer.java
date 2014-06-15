@@ -46,7 +46,7 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
   
   private World map;
   private Map<Coordinate, RegionRenderer> renderers;
-  private Camera camera;
+  private volatile Camera camera;
 
   @Override
   protected void updateSelf() {

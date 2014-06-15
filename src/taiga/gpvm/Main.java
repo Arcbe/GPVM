@@ -66,11 +66,9 @@ public class Main {
     //create the camera for the game screen
     WorldRenderer worldview = screen.getObject("test-world");
     worldview.setCamera(new StationaryCamera(new Vector3f(0,0,1),
-      new Vector3f(1, 1, -.2f),
+      new Vector3f(1, 1, -1f),
       new Vector3f(-5, -5, 5), 
-      60, 1, 100));
-    
-    game.start();
+      100, 1, 100));
   }
   
   public static GameManager createGame() throws Exception {
@@ -96,6 +94,8 @@ public class Main {
     TileEntry ent = tiles.getEntry("default.Grass");
     World test = universe.addWorld("test-world", new FlatWorldGenerator(ent, 2));
     
+    
+    game.start();
     return game;
   }
   

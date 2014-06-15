@@ -79,7 +79,7 @@ public class ColorRenderer implements Renderer {
     }
     
     verts = BufferUtils.createIntBuffer(3 * vertices.size());
-    color = BufferUtils.createByteBuffer(16 * colors.size());
+    color = BufferUtils.createByteBuffer(48 * colors.size());
     IntBuffer tcolor = color.asIntBuffer();
     
     for(Coordinate coor : vertices) {
