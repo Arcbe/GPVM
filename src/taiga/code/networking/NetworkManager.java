@@ -98,7 +98,7 @@ public abstract class NetworkManager extends RegisteredObject {
       msg.number = current++;
     }
     
-    history[msg.number + 128] = msg;
+    history[msg.number] = msg;
     
     sendPacket(dest, msg);
   }

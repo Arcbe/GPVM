@@ -2,16 +2,18 @@ package taiga.gpvm.map;
 
 import taiga.gpvm.util.geom.Coordinate;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import taiga.code.networking.Packet;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.registration.ReusableObject;
+import taiga.code.util.ByteUtils;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.util.geom.Direction;
 
@@ -31,7 +33,7 @@ public final class World extends ReusableObject {
   public World(String name) {
     super(name);
     
-    listeners = new ArrayList<>();
+    listeners = new HashSet<>();
     regions = new HashMap<>();
     regionlock = new ReentrantReadWriteLock();
   }
@@ -113,7 +115,7 @@ public final class World extends ReusableObject {
    * @param list The {@link WorldListener} to add.
    */
   public void addListener(WorldListener list) {
-    listeners.add(new WeakReference<>(list));
+    listeners.add(list);
   }
   
   /**
@@ -121,11 +123,7 @@ public final class World extends ReusableObject {
    * @param list The {@link WorldListener} to remove.
    */
   public void removeListener(WorldListener list) {
-    for(WeakReference<WorldListener> listener : listeners)
-      if(listener.get() == list) {
-        listeners.remove(listener);
-        return;
-      }
+    listeners.remove(list);
   }
   
   /**
@@ -217,44 +215,42 @@ public final class World extends ReusableObject {
   }
 
   private void sendRegionRequest(Coordinate coor) {
+    Packet pack = new Packet();
     
+    pack.data = new byte[15];
+    pack.data[0] = Universe.Comms.REG_REQ;
+    
+    ByteUtils.toBytes(coor.x, 1, pack.data);
+    ByteUtils.toBytes(coor.y, 5, pack.data);
+    ByteUtils.toBytes(coor.z, 9, pack.data);
+    ByteUtils.toBytes(getWorldID(), 13, pack.data);
+    
+    Universe.Comms comms = getObject(HardcodedValues.COMMS_NAME);
+    comms.sendMessage(pack);
   }
 
   private boolean isServer() {
     Universe.Comms comms = getObject(HardcodedValues.COMMS_NAME);
     
     return comms == null || 
+      comms.getNetworkManager() == null ||
       !comms.getNetworkManager().isConnected() ||
       comms.getNetworkManager().isServer();
   }
   
   private void fireRegionLoaded(Region reg) {
-    for(WeakReference<WorldListener> ref : listeners) {
-      WorldListener list = ref.get();
-      
-      if(list != null) {
-        list.regionLoaded(reg);
-      } else {
-        listeners.remove(ref);
-      }
-    }
+    for(WorldListener list : listeners)
+      list.regionLoaded(reg);
   }
   
-  private void fireRegionUnoaded(Region reg) {
-    for(WeakReference<WorldListener> ref : listeners) {
-      WorldListener list = ref.get();
-      
-      if(list != null) {
-        list.regionUnloaded(reg);
-      } else {
-        listeners.remove(ref);
-      }
-    }
+  private void fireRegionUnloaded(Region reg) {
+    for(WorldListener list : listeners)
+      list.regionUnloaded(reg);
   }
   
   private final Map<Coordinate, Region> regions;
   private final ReadWriteLock regionlock;
-  private final List<WeakReference<WorldListener>> listeners;
+  private final Collection<WorldListener> listeners;
   private short worldid;
   
   private static final String locprefix = World.class.getName().toLowerCase();

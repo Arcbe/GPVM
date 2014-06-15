@@ -4,10 +4,13 @@
  */
 package taiga.gpvm.map;
 
+import java.util.ArrayList;
 import taiga.gpvm.util.geom.Coordinate;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import taiga.code.util.ByteUtils;
+import taiga.gpvm.registry.TileEntry;
 
 /**
  *
@@ -42,7 +45,8 @@ public final class Region {
   /**
    * Constructs a region with the given {@link Tile} data.
    * 
-   * @param data The data to use when creating the {@link Region}
+   * @param data The data to use when creating the {@link Region}, the data should be
+   * laid out using the function z * REGION_SIZE ^ 2 + x * REGION_SIZE + y
    * @param loc The location of the region in the map.
    * @param parent The {@link World} that contains this {@link Region}.
    */
@@ -112,10 +116,115 @@ public final class Region {
    * Informs the {@link Region} that is being unloaded.
    */
   public void unload() {
-    Iterator<RegionListener> it = listeners.iterator();
-    while(it.hasNext()) {
-      it.next().regionUnloading(this);
+    for(RegionListener list : listeners)
+      list.regionUnloading(this);
+  }
+  
+  /**
+   * This will encode the {@link Region} into an array of bytes.  Tiles will be
+   * listed sequential with in the y direction, followed by in the x direction,
+   * and finally in the z direction.  Following each entry will be a single byte
+   * that for how many tiles share the same value.  First ids for {@link TileEntry}s
+   * will be encoded, then the damage value, and finally a list of meta-data.
+   * The meta-data will be encoded as an int id, a coordinate, and a value depending
+   * on the type of meta-data.  All values are unsigned.
+   * 
+   * @return The {@link Region} encoded as a byte array.
+   */
+  public byte[] toBytes() {
+    //An arbitrary starting amount.
+    List<Byte> bytes = new ArrayList<>(16000);
+    
+    encodeDamageValues(bytes);
+    encodeTileType(bytes);
+    
+    byte[] result = new byte[bytes.size()];
+    int index = 0;
+    for(Byte b : bytes)
+      result[index++] = b;
+    return result;
+  }
+  
+  private void encodeDamageValues(List<Byte> bytes) {
+    
+    //first get all of the damage values
+    short amount = 1;
+    Tile last = null;
+    byte[] converts = new byte[8]; //to hold bytes for a long.
+    for(Tile t : tiles) {
+      if(t == null) {
+        throw new NullPointerException();
+      }
+      
+      //lets start this thing.
+      if(last == null) {
+        last = t;
+        continue;
+      }
+      
+      //continue until a tile with a different value is hit.
+      if(last.damage == t.damage && amount < 256) {
+        amount++;
+        continue;
+      }
+      
+      ByteUtils.toBytes(last.damage, 0, converts);
+      for(byte b : converts)
+        bytes.add(b);
+      bytes.add((byte) amount);
+      amount = 1;
+      
+      last = t;
     }
+    //and one more encoding to get the last set of tiles.
+    ByteUtils.toBytes(last.damage, 0, converts);
+    for(byte b : converts)
+      bytes.add(b);
+    bytes.add((byte) amount);
+  }
+  
+  private void encodeTileType(List<Byte> bytes) {
+    
+    //first get all of the damage values
+    short amount = 1;
+    Tile last = null;
+    byte[] converts = new byte[4]; //to hold bytes for a long.
+    for(Tile t : tiles) {
+      if(t == null) {
+        throw new NullPointerException();
+      }
+      
+      //lets start this thing.
+      if(last == null) {
+        last = t;
+        continue;
+      }
+      
+      //continue until a tile with a different value is hit.
+      if(last.type == t.type && amount < 256) {
+        amount++;
+        continue;
+      }
+      
+      if(last.type == null)
+        ByteUtils.toBytes(-1, 0, converts);
+      else
+        ByteUtils.toBytes(last.type.getID(), 0, converts);
+      for(byte b : converts)
+        bytes.add(b);
+      bytes.add((byte) amount);
+      amount = 1;
+      
+      last = t;
+    }
+    //and one more encoding to get the last set of tiles.
+    if(last.type == null)
+      ByteUtils.toBytes(-1, 0, converts);
+    else
+      ByteUtils.toBytes(last.type.getID(), 0, converts);
+    for(byte b : converts)
+      bytes.add(b);
+    bytes.add((byte) amount);
   }
   
   private Collection<RegionListener> listeners;

@@ -1,5 +1,6 @@
 package taiga.gpvm;
 
+import java.io.IOException;
 import org.lwjgl.util.vector.Vector3f;
 import taiga.code.networking.LoopbackNetwork;
 import taiga.code.registration.RegisteredSystem;
@@ -28,6 +29,77 @@ public class Main {
     //sets the properties for logging
     if(System.getProperty("java.util.logging.config.file") == null) System.setProperty("java.util.logging.config.file", "logging.properties");
     
+//    final GameManager server = createServer();
+//    final GameManager client = createClient();
+//    
+//    
+//    //connect the client and server.
+//    final LoopbackNetwork servernet = new LoopbackNetwork("network", true, false);
+//    final LoopbackNetwork clientnet = new LoopbackNetwork("network", false, true);
+//    
+//    //create a shutdown hook for the server
+//    client.addSystemListener(new SystemListener() {
+//
+//      @Override
+//      public void systemStarted(RegisteredSystem sys) {}
+//
+//      @Override
+//      public void systemStopped(RegisteredSystem sys) {
+//        server.stop();
+//        servernet.stop();
+//      }
+//    });
+//    
+//    //add the servers network and set it up
+//    server.addChild(servernet);
+//    servernet.scanRegisteredObjects();
+//    
+//    //add the clients network and set it up
+//    client.addChild(clientnet);
+//    clientnet.scanRegisteredObjects();
+//    clientnet.connect(servernet);
+    
+    GameManager game = createGame();
+    GraphicsRoot graphics = game.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+    GameScreen screen = graphics.getObject(HardcodedValues.GAME_SCREEN_NAME);
+    
+    //create the camera for the game screen
+    WorldRenderer worldview = screen.getObject("test-world");
+    worldview.setCamera(new StationaryCamera(new Vector3f(0,0,1),
+      new Vector3f(1, 1, -.2f),
+      new Vector3f(-5, -5, 5), 
+      60, 1, 100));
+    
+    game.start();
+  }
+  
+  public static GameManager createGame() throws Exception {
+    GameManager game = new GameManager(true, true);
+    
+    Universe universe = game.getObject(HardcodedValues.UNIVERSE_NAME);
+    SettingManager settings = game.getObject(HardcodedValues.SETTING_MANAGER_NAME);
+    TileRegistry tiles = game.getObject(HardcodedValues.TILE_REGISTRY_NAME);
+    RenderingRegistry rendreg = game.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    
+    settings.loadSettings("settings.yml");
+    tiles.loadFile("tiles.yml", "default");
+    rendreg.loadRenderingRegistryData("renderer.yml", "default");
+    
+    universe.addListener(new UniverseListener() {
+
+      @Override
+      public void worldCreated(World world) {
+        world.addChild(new FixedSizeManager(new Coordinate(), 128, 128, 32));
+      }
+    });
+    
+    TileEntry ent = tiles.getEntry("default.Grass");
+    World test = universe.addWorld("test-world", new FlatWorldGenerator(ent, 2));
+    
+    return game;
+  }
+  
+  public static GameManager createServer() throws Exception {
     //create a server for the game
     final GameManager server = new GameManager(true, false);
     Universe        suniverse = server.getObject(HardcodedValues.UNIVERSE_NAME);
@@ -39,13 +111,24 @@ public class Main {
     //load the server tiles
     stiles.loadFile("tiles.yml", "default");
     
-    //create a new game and retreive the systems from it
-    GameManager       game = new GameManager(false, true);
-    Universe          universe = game.getObject(HardcodedValues.UNIVERSE_NAME);
-    SettingManager    settings = game.getObject(HardcodedValues.SETTING_MANAGER_NAME);
-    TileRegistry      tiles = game.getObject(HardcodedValues.TILE_REGISTRY_NAME);
-    RenderingRegistry rendreg = game.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
-    GraphicsRoot      graphics = game.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+    //create a new world.
+    TileEntry ent = stiles.getEntry("default.Grass");
+    suniverse.addWorld("test-world", new FlatWorldGenerator(ent, 2));
+    ((World)suniverse.getObject("test-world")).addChild(new FixedSizeManager(new Coordinate(), 128, 128, 32));
+    
+    //start the server.
+    server.start();
+    
+    return server;
+  }
+  
+  public static GameManager createClient() throws Exception {//create a new game and retreive the systems from it
+    GameManager       client = new GameManager(false, true);
+    Universe          universe = client.getObject(HardcodedValues.UNIVERSE_NAME);
+    SettingManager    settings = client.getObject(HardcodedValues.SETTING_MANAGER_NAME);
+    TileRegistry      tiles = client.getObject(HardcodedValues.TILE_REGISTRY_NAME);
+    RenderingRegistry rendreg = client.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    GraphicsRoot      graphics = client.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
     GameScreen        screen = graphics.getObject(HardcodedValues.GAME_SCREEN_NAME);
     
     //load the settings file
@@ -54,26 +137,6 @@ public class Main {
     tiles.loadFile("tiles.yml", "default");
     //load rendering information
     rendreg.loadRenderingRegistryData("renderer.yml", "default");
-    
-    //create a new world.
-    TileEntry ent = stiles.getEntry("default.Grass");
-    suniverse.addWorld("test-world", new FlatWorldGenerator(ent, 2));
-    
-    //connect the client and server.
-    final LoopbackNetwork servernet = new LoopbackNetwork("network", true, false);
-    LoopbackNetwork clientnet = new LoopbackNetwork("network", false, true);
-    
-    //add the servers network and set it up
-    server.addChild(servernet);
-    servernet.scanRegisteredObjects();
-    
-    //start the server.
-    server.start();
-    
-    //add the clients network and set it up
-    game.addChild(clientnet);
-    clientnet.connect(servernet);
-    clientnet.scanRegisteredObjects();
     
     //add a region manager to load the map
     universe.addListener(new UniverseListener() {
@@ -84,26 +147,8 @@ public class Main {
       }
     });
     
-    //create the camera for the game screen
-//    WorldRenderer worldview = screen.getObject("test-world");
-//    worldview.setCamera(new StationaryCamera(new Vector3f(0,0,1),
-//      new Vector3f(1, 1, -.2f), `
-//      new Vector3f(-5, -5, 5), 
-//      60, 1, 100));
+    client.start();
     
-    //create a shutdown hook for the server
-    game.addSystemListener(new SystemListener() {
-
-      @Override
-      public void systemStarted(RegisteredSystem sys) {}
-
-      @Override
-      public void systemStopped(RegisteredSystem sys) {
-        server.stop();
-        servernet.stop();
-      }
-    });
-    
-    game.start();
+    return client;
   }
 }

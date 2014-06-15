@@ -17,6 +17,7 @@ import taiga.code.networking.Packet;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.registration.ReusableObject;
 import taiga.code.util.ByteUtils;
+import taiga.gpvm.util.geom.Coordinate;
 
 /**
  * This class manages a collection of {@link World}s and provides events for
@@ -49,9 +50,9 @@ public final class Universe extends ReusableObject {
     
     addChild(nworld);
     
-    fireWorldCreated(nworld);
-    
     assignID(nworld);
+    
+    fireWorldCreated(nworld);
     
     return nworld;
   }
@@ -83,6 +84,16 @@ public final class Universe extends ReusableObject {
     
     listeners.clear();
     index.clear();
+  }
+  
+  private void clearWorlds() {
+    for(RegisteredObject obj : this) {
+      if(!(obj instanceof World)) continue;
+      World world = (World) obj;
+      
+      removeChild(obj);
+      world.reset();
+    }
   }
     
   private void setID(World world, short id) {
@@ -148,7 +159,7 @@ public final class Universe extends ReusableObject {
     
     @Override
     protected void connected() {
-      reset();
+      clearWorlds();
       
       Packet request = new Packet();
       request.data = new byte[]{NAME_REQ};
@@ -219,16 +230,34 @@ public final class Universe extends ReusableObject {
     }
     
     private void receiveRegionRequest(Packet pack) {
+      Coordinate coor = new Coordinate();
       
+      coor.x = ByteUtils.toInteger(pack.data, 1);
+      coor.y = ByteUtils.toInteger(pack.data, 5);
+      coor.z = ByteUtils.toInteger(pack.data, 9);
+      short wid = ByteUtils.toShort(pack.data, 13);
+      
+      Region reg = index.get(wid).getRegion(coor);
+      
+      byte[] regdata = reg.toBytes();
+      byte[] data = new byte[regdata.length + 15];
+      
+      data[0] = REG_RES;
+      System.arraycopy(pack.data, 1, data, 1, 14);
+      System.arraycopy(regdata, 0, data, 15, regdata.length);
+      
+      Packet res = new Packet();
+      res.data = data;
+      sendMessage(pack);
     }
     
     private void receiveRegionResponse(Packet pack) {
       
     }
     
-    private static final int NAME_REQ = 0;
-    private static final int NAME_RES = 1;
-    private static final int REG_REQ = 2;
-    private static final int REG_RES = 3;
+    protected static final int NAME_REQ = 0;
+    protected static final int NAME_RES = 1;
+    protected static final int REG_REQ = 2;
+    protected static final int REG_RES = 3;
   }
 }
