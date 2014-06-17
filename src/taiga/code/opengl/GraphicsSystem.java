@@ -14,6 +14,7 @@ import taiga.code.registration.RegisteredSystem;
 import taiga.code.text.TextLocalizer;
 import taiga.code.util.Setting;
 import taiga.code.util.SettingManager;
+import taiga.code.util.Updateable;
 
 /**
  * Manages the OpenGL window and graphics thread.  Settings will automatically be
@@ -57,6 +58,7 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
     running = false;
     gthread = null;
     listeners = new HashSet<>();
+    updaters = new HashSet<>();
   }
   
   /**
@@ -78,6 +80,25 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
    */
   public void removeWindowListener(WindowListener list) {
     listeners.remove(list);
+  }
+  
+  /**
+   * Adds a new {@link Updateable} to this {@link GraphicsSystem}.  The {@link Updateable}
+   * will be updated at the beginning of every update of the {@link GraphicsSystem}.
+   * 
+   * @param up THe {@link Updateable} to add.
+   */
+  public void addUpdateable(Updateable up) {
+    updaters.add(up);
+  }
+  
+  /**
+   * Removes a previously added {@link Updateable} from this {@link GraphicsSystem}.
+   * 
+   * @param up The {@link Updateable} to remove.
+   */
+  public void removeUpdateable(Updateable up) {
+    updaters.remove(up);
   }
 
   @Override
@@ -171,7 +192,8 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
   private volatile boolean reset;
   private volatile boolean running;
   private Thread gthread;
-  private Collection<WindowListener> listeners;
+  private final Collection<WindowListener> listeners;
+  private final Collection<Updateable> updaters;
   
   private void updateSettings() {
     RegisteredObject set = getObject(SettingManager.SETTINGMANAGER_NAME);
@@ -229,6 +251,9 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
       if(obj != null && obj instanceof Renderable)
         ((Renderable)obj).update();
     }
+    
+    for(Updateable up : updaters)
+      up.Update();
   }
   
   private void render() {

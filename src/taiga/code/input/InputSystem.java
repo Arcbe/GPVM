@@ -1,11 +1,12 @@
 package taiga.code.input;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import taiga.code.registration.RegisteredSystem;
 import taiga.code.util.Updateable;
 
 /**
@@ -19,6 +20,8 @@ public class InputSystem extends HotkeyTable implements Updateable {
 
   public InputSystem(String name) {
     super(name);
+    
+    listeners = new HashSet<>();
   }
 
   @Override
@@ -39,8 +42,24 @@ public class InputSystem extends HotkeyTable implements Updateable {
     }
     
     while(Keyboard.next()) {
+      KeyboardEvent event = new KeyboardEvent(
+        Keyboard.getEventKey(), 
+        Keyboard.getEventCharacter(), 
+        Keyboard.getEventNanoseconds(), 
+        Keyboard.getEventKeyState(), 
+        Keyboard.isRepeatEvent());
+      
+      for(KeyboardListener list : listeners)
+        list.handleEvent(event);
+      
+      //if the event is consumed then go on to the next one.
+      if(event.consumed) continue;
+      
+      handleEvent(event);
     }
   }
+  
+  private final Collection<KeyboardListener> listeners;
   
   private static final String locprefix = InputSystem.class.getName().toLowerCase();
   

@@ -6,6 +6,7 @@
 
 package taiga.gpvm;
 
+import taiga.code.input.InputSystem;
 import taiga.code.opengl.GraphicsSystem;
 import taiga.code.util.SettingManager;
 import taiga.gpvm.event.MapEventManager;
@@ -32,6 +33,10 @@ public class HardcodedValues {
   
   //internal system names
   //<editor-fold>
+  /**
+   * The name for the {@link InputSystem}.
+   */
+  public static final String INPUT_SYSTEM_NAME = "input";
   /**
    * The name for the {@link SettingManager}.  This is the same as {@link SettingManager#SETTINGMANAGER_NAME}
    */

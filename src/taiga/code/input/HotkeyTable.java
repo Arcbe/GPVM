@@ -156,6 +156,17 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
   }
 
   @Override
+  public void handleEvent(KeyboardEvent event) {
+    int index = event.key;
+    Collection<KeyAction> bindings = getBindings(index);
+    if(bindings == null) return;
+    
+    for(KeyAction action : bindings) {
+      action.list.handleEvent(event);
+    }
+  }
+
+  @Override
   protected void resetObject() {
     keyactions.clear();
     keybindings.clear();

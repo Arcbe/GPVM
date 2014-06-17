@@ -131,17 +131,19 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * by this method.
    * 
    * @param child The child to add.
+   * @return A reference to the input {@link RegisteredObject} or null if the child
+   * could not be added.
    * @throws NullPointerException Thrown if the child is null.
    */
-  public void addChild(RegisteredObject child) {
-    if(child == null) return;
+  public RegisteredObject addChild(RegisteredObject child) {
+    if(child == null) return null;
     
     //check to make sure that this child does not already have a parent. kidnapping is
     //not allowed
     if(child.getParent() != null) {
       log.log(Level.WARNING, EXISTING_PARENT, new Object[]{getFullName(), child.name});
       
-      return;
+      return null;
     }
     
     if(children == null) {
@@ -152,7 +154,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
       if(children.get(child.name) != null) {
         log.log(Level.WARNING, ALREADY_ADDED, new Object[]{getFullName(), child.name});
         
-        return;
+        return null;
       }
       
       children.put(child.name, child);
@@ -163,6 +165,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     
     //now notify the listeners
     fireChildAdded(child);
+    
+    return child;
   }
   
   /**

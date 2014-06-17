@@ -5,6 +5,7 @@
 package taiga.gpvm;
 
 import java.awt.event.WindowEvent;
+import taiga.code.input.InputSystem;
 import taiga.code.registration.RegisteredSystem;
 
 import static taiga.gpvm.HardcodedValues.GAMEMANAGER_NAME;
@@ -97,6 +98,7 @@ public final class GameManager extends RegisteredSystem implements WindowListene
     RegisteredObject gamescreen = getObject(HardcodedValues.GAME_SCREEN_NAME);
     RegisteredObject uni = getObject(HardcodedValues.UNIVERSE_NAME);
     RegisteredObject updater = getObject(HardcodedValues.WORLD_UPDATER_NAME);
+    RegisteredObject input = getObject(HardcodedValues.INPUT_SYSTEM_NAME);
     
     if(client) {
       if(rendreg == null) addChild(new RenderingRegistry());
@@ -108,7 +110,11 @@ public final class GameManager extends RegisteredSystem implements WindowListene
         gamescreen = new GameScreen();
         graphics.addChild(gamescreen);
       }
+      if(input == null) {
+        input = addChild(new InputSystem(HardcodedValues.INPUT_SYSTEM_NAME));
+      }
       
+      ((GraphicsRoot)graphics).addUpdateable((InputSystem)input);
       ((GraphicsRoot)graphics).addWindowListener(this);
       ((Universe)uni).addListener((GameScreen)gamescreen);
       ((WorldUpdater)updater).addWorldChangeListener((WorldChangeListener) gamescreen);
