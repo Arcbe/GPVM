@@ -1,19 +1,9 @@
-Grass:
+grass:
   renderer: taiga.gpvm.render.ColorRenderer
   rendering-info:
     color: 0xFF00CC00
     
-Stone:
+slate:
   renderer: taiga.gpvm.render.ColorRenderer
   rendering-info:
     color: 0xFF555555
-
-Water:
-  renderer: taiga.gpvm.render.ColorRenderer
-  rendering-info:
-    color: 0xFF0000CC
-    
-Lava:
-  renderer: taiga.gpvm.render.ColorRenderer
-  rendering-info:
-    color: 0xFFCC0000

@@ -1,18 +1,34 @@
 ## YAML Template.
 ---
 
-Grass:
-  opaque: yes
-  metadata: 0
+grass:
+    opaque: yes
+    solid: yes
   
-Stone:
-  opaque: yes
-  metadata: 0
+coal:
+    opaque: yes
+    solid: yes
   
-Water:
-  opaque: yes
-  metadata: 0
+granite:
+    opaque: yes
+    solid: yes
   
-Lava:
-  opaque: yes
-  metadata: 0
+basalt:
+    opaque: yes
+    solid: yes
+  
+chalk:
+    opaque: yes
+    solid: yes
+  
+limestone:
+    opaque: yes
+    solid: yes
+  
+marble:
+    opaque: yes
+    solid: yes
+    
+slate:
+    opaque: yes
+    solid: yes

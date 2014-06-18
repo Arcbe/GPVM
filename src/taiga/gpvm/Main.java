@@ -94,7 +94,6 @@ public class Main {
     TileEntry ent = tiles.getEntry("default.Grass");
     World test = universe.addWorld("test-world", new FlatWorldGenerator(ent, 2));
     
-    
     game.start();
     return game;
   }

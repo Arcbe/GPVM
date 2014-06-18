@@ -3,6 +3,7 @@ package taiga.gpvm.map;
 import taiga.gpvm.util.geom.Coordinate;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -48,6 +49,10 @@ public final class World extends ReusableObject {
   public Region getRegion(Coordinate coor) {
     Coordinate rc = coor.getRegionCoordinate();
     return regions.get(rc);
+  }
+  
+  public Collection<Region> getRegions() {
+    return Collections.unmodifiableCollection(regions.values());
   }
   
   /**

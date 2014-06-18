@@ -36,6 +36,8 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
     renderers = new HashMap<>();
     
     world.addListener(this);
+    for(Region reg : world.getRegions())
+      regionLoaded(reg);
   }
   
   public void setCamera(Camera cam) {
