@@ -213,7 +213,7 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
 
   private static final String locprefix = HotkeyTable.class.getName().toLowerCase();
   
-  private static final String INVALID_KEY_NAME = locprefix + ".invalid_kay_name";
+  private static final String INVALID_KEY_NAME = locprefix + ".invalid_key_name";
   private static final String INVALID_KEY_ACTION_NAME = locprefix + ".invalid_key_action_name";
   private static final String KEY_ACTION_ALREADY_BOUND = locprefix + ".key_action_already_bound";
   private static final String KEY_ACTION_ADDED = locprefix + ".key_action_added";

@@ -1,10 +1,10 @@
 package taiga.gpvm;
 
-import java.io.IOException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
-import taiga.code.networking.LoopbackNetwork;
-import taiga.code.registration.RegisteredSystem;
-import taiga.code.registration.SystemListener;
+import taiga.code.input.InputSystem;
+import taiga.code.input.KeyboardEvent;
+import taiga.code.input.KeyboardListener;
 import taiga.code.util.SettingManager;
 import taiga.gpvm.map.FixedSizeManager;
 import taiga.gpvm.map.FlatWorldGenerator;
@@ -15,6 +15,7 @@ import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileEntry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.GraphicsRoot;
+import taiga.gpvm.render.MobileCamera;
 import taiga.gpvm.render.StationaryCamera;
 import taiga.gpvm.render.WorldRenderer;
 import taiga.gpvm.screens.GameScreen;
@@ -62,13 +63,85 @@ public class Main {
     GameManager game = createGame();
     GraphicsRoot graphics = game.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
     GameScreen screen = graphics.getObject(HardcodedValues.GAME_SCREEN_NAME);
+    InputSystem input = game.getObject(HardcodedValues.INPUT_SYSTEM_NAME);
     
     //create the camera for the game screen
     WorldRenderer worldview = screen.getObject("test-world");
-    worldview.setCamera(new StationaryCamera(new Vector3f(0,0,1),
-      new Vector3f(1, 1, -1f),
-      new Vector3f(-5, -5, 5), 
-      100, 1, 100));
+    final MobileCamera cam = new MobileCamera(new Vector3f(),
+      new Vector3f(0,0,1),
+      new Vector3f(1, 1, -2f),
+      new Vector3f(-1, -1, 20), 
+      100, 1, 1000);
+    graphics.addUpdateable(cam);
+    worldview.setCamera(cam);
+    
+    input.addAction("move-z", new KeyboardListener() {
+
+      @Override
+      public void handleEvent(KeyboardEvent event) {
+        if(event.state)
+          cam.velocity.z = -.1f;
+        else
+          cam.velocity.z = 0;
+      }
+    });
+    input.addAction("move+z", new KeyboardListener() {
+
+      @Override
+      public void handleEvent(KeyboardEvent event) {
+        if(event.state)
+          cam.velocity.z = +.1f;
+        else
+          cam.velocity.z = 0;
+      }
+    });
+    input.addAction("move-y", new KeyboardListener() {
+
+      @Override
+      public void handleEvent(KeyboardEvent event) {
+        if(event.state)
+          cam.velocity.y = -.1f;
+        else
+          cam.velocity.y = 0;
+      }
+    });
+    input.addAction("move+y", new KeyboardListener() {
+
+      @Override
+      public void handleEvent(KeyboardEvent event) {
+        if(event.state)
+          cam.velocity.y = +.1f;
+        else
+          cam.velocity.y = 0;
+      }
+    });
+    input.addAction("move-x", new KeyboardListener() {
+
+      @Override
+      public void handleEvent(KeyboardEvent event) {
+        if(event.state)
+          cam.velocity.x = -.1f;
+        else
+          cam.velocity.x = 0;
+      }
+    });
+    input.addAction("move+x", new KeyboardListener() {
+
+      @Override
+      public void handleEvent(KeyboardEvent event) {
+        if(event.state)
+          cam.velocity.x = +.1f;
+        else
+          cam.velocity.x = 0;
+      }
+    });
+    
+    input.addKeyBinding("Q", "move+z");
+    input.addKeyBinding("E", "move-z");
+    input.addKeyBinding("A", "move-y");
+    input.addKeyBinding("D", "move+y");
+    input.addKeyBinding("W", "move+x");
+    input.addKeyBinding("S", "move-x");
   }
   
   public static GameManager createGame() throws Exception {
@@ -91,8 +164,8 @@ public class Main {
       }
     });
     
-    TileEntry ent = tiles.getEntry("default.Grass");
-    World test = universe.addWorld("test-world", new FlatWorldGenerator(ent, 2));
+    TileEntry ent = tiles.getEntry("default.grass");
+    World test = universe.addWorld("test-world", new FlatWorldGenerator(ent, 1));
     
     game.start();
     return game;

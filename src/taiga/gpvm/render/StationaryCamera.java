@@ -14,15 +14,15 @@ public class StationaryCamera extends Camera {
   /**
    * The up direction of the {@link StationaryCamera}.
    */
-  public Vector3f up;
+  public final Vector3f up;
   /**
    * The direction the {@link StationaryCamera} is looking.
    */
-  public Vector3f direction;
+  public final Vector3f direction;
   /**
    * The position of the {@link StationaryCamera}.
    */
-  public Vector3f position;
+  public final Vector3f position;
   /**
    * The field of view.
    */
@@ -44,6 +44,10 @@ public class StationaryCamera extends Camera {
     fov = 60;
     near = 1;
     far = 100;
+    
+    up = new Vector3f();
+    direction = new Vector3f();
+    position = new Vector3f();
   }
 
   /**
