@@ -28,6 +28,8 @@ public class GameScreen extends RenderableSwitcher implements UniverseListener, 
    */
   public GameScreen() {
     super(HardcodedValues.GAME_SCREEN_NAME);
+    
+    setPasses(HardcodedValues.NUM_GRAPHICS_LAYERS);
   }
 
   @Override

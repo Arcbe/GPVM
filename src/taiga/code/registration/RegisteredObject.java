@@ -130,12 +130,13 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * the first available slot in this object and can be index by the id returned
    * by this method.
    * 
+   * @param <T> The return type for this method.
    * @param child The child to add.
    * @return A reference to the input {@link RegisteredObject} or null if the child
    * could not be added.
    * @throws NullPointerException Thrown if the child is null.
    */
-  public RegisteredObject addChild(RegisteredObject child) {
+  public <T extends RegisteredObject> T addChild(RegisteredObject child) {
     if(child == null) return null;
     
     //check to make sure that this child does not already have a parent. kidnapping is
@@ -166,7 +167,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     //now notify the listeners
     fireChildAdded(child);
     
-    return child;
+    return (T) child;
   }
   
   /**

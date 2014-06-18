@@ -39,14 +39,14 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
   public RegionRenderer(Region target) {
     super(NAME_PREFIX + target.getLocation());
     
-    reg = target;
-    reg.addListener(this);
-    dirty = true;
-    
     entries = new HashMap<>();
     rendindex = new HashMap<>();
     instances = new ConcurrentHashMap<>();
     dirtyents = new HashMap<>();
+    
+    reg = target;
+    reg.addListener(this);
+    dirty = true;
   }
   
   /**
@@ -210,7 +210,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
 
   protected void render(int pass) {    
     for(Renderer rend : instances.values())
-      rend.render();
+      rend.render(pass);
   }
   
   private boolean dirty;

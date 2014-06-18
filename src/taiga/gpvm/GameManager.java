@@ -19,6 +19,7 @@ import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.schedule.WorldUpdater;
 import taiga.gpvm.registry.RenderingRegistry;
+import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.schedule.WorldChangeListener;
 import taiga.gpvm.screens.GameScreen;
@@ -93,31 +94,25 @@ public final class GameManager extends RegisteredSystem implements WindowListene
    * @param client Whether this {@link GameManager} should be a client.
    */
   public void setClientMoe(boolean client) {
-    RegisteredObject rendreg = getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
-    RegisteredObject graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
-    RegisteredObject gamescreen = getObject(HardcodedValues.GAME_SCREEN_NAME);
-    RegisteredObject uni = getObject(HardcodedValues.UNIVERSE_NAME);
-    RegisteredObject updater = getObject(HardcodedValues.WORLD_UPDATER_NAME);
-    RegisteredObject input = getObject(HardcodedValues.INPUT_SYSTEM_NAME);
+    RenderingRegistry rendreg = getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    GraphicsRoot graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+    GameScreen gamescreen = getObject(HardcodedValues.GAME_SCREEN_NAME);
+    Universe uni = getObject(HardcodedValues.UNIVERSE_NAME);
+    WorldUpdater updater = getObject(HardcodedValues.WORLD_UPDATER_NAME);
+    InputSystem input = getObject(HardcodedValues.INPUT_SYSTEM_NAME);
+    SkyRegistry skies = getObject(HardcodedValues.SKY_REGISTRY);
     
     if(client) {
-      if(rendreg == null) addChild(new RenderingRegistry());
-      if(graphics == null) {
-        graphics = new GraphicsRoot();
-        addChild(graphics);
-      }
-      if(gamescreen == null) {
-        gamescreen = new GameScreen();
-        graphics.addChild(gamescreen);
-      }
-      if(input == null) {
-        input = addChild(new InputSystem(HardcodedValues.INPUT_SYSTEM_NAME));
-      }
+      if(rendreg == null) rendreg = addChild(new RenderingRegistry());
+      if(graphics == null) graphics = addChild(new GraphicsRoot());
+      if(gamescreen == null) gamescreen = graphics.addChild(new GameScreen());
+      if(input == null) input = addChild(new InputSystem(HardcodedValues.INPUT_SYSTEM_NAME));
+      if(skies == null) skies = addChild(new SkyRegistry());
       
-      ((GraphicsRoot)graphics).addUpdateable((InputSystem)input);
-      ((GraphicsRoot)graphics).addWindowListener(this);
-      ((Universe)uni).addListener((GameScreen)gamescreen);
-      ((WorldUpdater)updater).addWorldChangeListener((WorldChangeListener) gamescreen);
+      graphics.addUpdateable(input);
+      graphics.addWindowListener(this);
+      uni.addListener(gamescreen);
+      updater.addWorldChangeListener(gamescreen);
     }
   }
 

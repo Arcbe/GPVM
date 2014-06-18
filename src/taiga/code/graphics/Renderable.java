@@ -91,7 +91,7 @@ public abstract class Renderable extends RegisteredObject {
    * 
    * @param passes The number of passes to request.
    */
-  public void setPasses(int passes) {
+  protected void setPasses(int passes) {
     assert passes > 0;
     minpasses = passes;
   }

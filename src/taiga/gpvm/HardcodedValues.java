@@ -18,6 +18,7 @@ import taiga.gpvm.registry.RenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.ColorRenderer;
 import taiga.gpvm.render.Renderer;
+import taiga.gpvm.render.SkyBoxRenderer;
 import taiga.gpvm.screens.GameScreen;
 
 /**
@@ -31,8 +32,30 @@ public class HardcodedValues {
    */
   public static final String NAMESPACE_SEPERATOR = ".";
   
+  //graphics layer numbers
+  //<editor-fold>
+  /**
+   * The number of layers for rendering.  These will not necessarily be layers in
+   * a geometrical sense, e.g. transparencies will have there own layer be will be mixed
+   * in spatially with opaque objects.
+   */
+  public static final int NUM_GRAPHICS_LAYERS = 3;
+  /**
+   * The layer for rendering backgrounds.
+   */
+  public static final int SKY_LAYER = 0;
+  /**
+   * The layer for rendering opaque objects in the world.
+   */
+  public static final int OPAQUE_WORLD_LAYER = 2;
+  //</editor-fold>
+  
   //internal system names
   //<editor-fold>
+  /**
+   * The name for the {@link SkyBoxRenderer}.
+   */
+  public static final String SKY_REGISTRY = "skies";
   /**
    * The name for the {@link InputSystem}.
    */

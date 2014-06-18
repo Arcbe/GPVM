@@ -12,8 +12,11 @@ import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.UniverseListener;
 import taiga.gpvm.map.World;
 import taiga.gpvm.registry.RenderingRegistry;
+import taiga.gpvm.registry.SkyEntry;
+import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.registry.TileEntry;
 import taiga.gpvm.registry.TileRegistry;
+import taiga.gpvm.render.ColoredSky;
 import taiga.gpvm.render.GraphicsRoot;
 import taiga.gpvm.render.MobileCamera;
 import taiga.gpvm.render.StationaryCamera;
@@ -136,12 +139,12 @@ public class Main {
       }
     });
     
-    input.addKeyBinding("Q", "move+z");
-    input.addKeyBinding("E", "move-z");
+    input.addKeyBinding("Q", "move+x");
+    input.addKeyBinding("E", "move-x");
     input.addKeyBinding("A", "move-y");
     input.addKeyBinding("D", "move+y");
-    input.addKeyBinding("W", "move+x");
-    input.addKeyBinding("S", "move-x");
+    input.addKeyBinding("W", "move+z");
+    input.addKeyBinding("S", "move-z");
   }
   
   public static GameManager createGame() throws Exception {
@@ -151,6 +154,7 @@ public class Main {
     SettingManager settings = game.getObject(HardcodedValues.SETTING_MANAGER_NAME);
     TileRegistry tiles = game.getObject(HardcodedValues.TILE_REGISTRY_NAME);
     RenderingRegistry rendreg = game.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    SkyRegistry skies = game.getObject(HardcodedValues.SKY_REGISTRY);
     
     settings.loadSettings("settings.yml");
     tiles.loadFile("tiles.yml", "default");
@@ -165,6 +169,7 @@ public class Main {
     });
     
     TileEntry ent = tiles.getEntry("default.grass");
+    skies.addEntry(new SkyEntry("test-world", ColoredSky.class));
     World test = universe.addWorld("test-world", new FlatWorldGenerator(ent, 1));
     
     game.start();

@@ -30,8 +30,10 @@ public interface Renderer {
   
   /**
    * Renders the tiles compiled with this {@link Object}.
+   * 
+   * @param pass The number of the current rendering pass.
    */
-  public void render();
+  public void render(int pass);
   
   /**
    * Returns the class that this renderer uses to store information about how to

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Tile;
 import taiga.gpvm.registry.RenderingInfo;
 import taiga.gpvm.util.geom.Direction;
@@ -120,8 +121,10 @@ public class ColorRenderer implements Renderer {
  }
 
   @Override
-  public void render() {
-    if(verts == null || color == null) return;
+  public void render(int pass) {
+    if(verts == null || 
+      color == null || 
+      pass != HardcodedValues.OPAQUE_WORLD_LAYER) return;
     
     GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
     GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
