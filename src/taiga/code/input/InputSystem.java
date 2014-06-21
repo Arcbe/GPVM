@@ -18,27 +18,60 @@ import taiga.code.util.Updateable;
  */
 public class InputSystem extends HotkeyTable implements Updateable {
 
+  /**
+   * Creates a new {@link InputSystem} with the given name.
+   * 
+   * @param name The name for the new {@link InputSystem}.
+   */
   public InputSystem(String name) {
     super(name);
     
     listeners = new HashSet<>();
   }
+  
+  /**
+   * Sets whether the mouse pointer should be captured by the window or not.
+   * 
+   * @param cap Whether to capture the mouse.
+   */
+  public void setCaptureMouse(boolean cap) {
+    
+  }
 
   @Override
   public void Update() {
+    handleKeyboard();
+    handleMouse();
+  }
+  
+  private void handleMouse() {
+    //same for the mouse
+    if(!Mouse.isCreated()) try {
+      Mouse.create();
+    } catch(LWJGLException ex) {
+      log.log(Level.SEVERE, MOUSE_EX, ex);
+    }
+    
+    while(Mouse.next()) {
+      MouseButtonEvent event = new MouseButtonEvent(
+        Mouse.getEventDWheel(),
+        Mouse.getEventButton(),
+        Mouse.getEventButtonState(),
+        Mouse.getEventX(),
+        Mouse.getEventY(),
+        Mouse.getEventDX(),
+        Mouse.getEventDY(),
+        Mouse.getEventNanoseconds());
+    }
+  }
+  
+  private void handleKeyboard() {
     //create the keyboard if needed.  This is done here to insure that the window
     //has been created already.
     if(!Keyboard.isCreated()) try {
       Keyboard.create();
     } catch (LWJGLException ex) {
       log.log(Level.SEVERE, KEYBOARD_EX, ex);
-    }
-    
-    //same for the mouse
-    if(!Mouse.isCreated()) try {
-      Mouse.create();
-    } catch(LWJGLException ex) {
-      log.log(Level.SEVERE, MOUSE_EX, ex);
     }
     
     while(Keyboard.next()) {

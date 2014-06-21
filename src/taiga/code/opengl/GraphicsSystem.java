@@ -269,7 +269,7 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
     }
     
     //now do the passes
-    for(int i = 1; i <= passes; i++) {
+    for(int i = 0; i < passes; i++) {
       for(RegisteredObject obj : this) {
         if(obj != null && obj instanceof Renderable)
           ((Renderable)obj).render(i);
