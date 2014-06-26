@@ -18,7 +18,7 @@ import taiga.code.yaml.YAMLDataReader;
 import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.schedule.WorldUpdater;
-import taiga.gpvm.registry.RenderingRegistry;
+import taiga.gpvm.registry.TileRenderingRegistry;
 import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.schedule.WorldChangeListener;
@@ -94,16 +94,16 @@ public final class GameManager extends RegisteredSystem implements WindowListene
    * @param client Whether this {@link GameManager} should be a client.
    */
   public void setClientMoe(boolean client) {
-    RenderingRegistry rendreg = getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    TileRenderingRegistry rendreg = getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
     GraphicsRoot graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
     GameScreen gamescreen = getObject(HardcodedValues.GAME_SCREEN_NAME);
     Universe uni = getObject(HardcodedValues.UNIVERSE_NAME);
     WorldUpdater updater = getObject(HardcodedValues.WORLD_UPDATER_NAME);
     InputSystem input = getObject(HardcodedValues.INPUT_SYSTEM_NAME);
-    SkyRegistry skies = getObject(HardcodedValues.SKY_REGISTRY);
+    SkyRegistry skies = getObject(HardcodedValues.SKY_REGISTRY_NAME);
     
     if(client) {
-      if(rendreg == null) rendreg = addChild(new RenderingRegistry());
+      if(rendreg == null) rendreg = addChild(new TileRenderingRegistry());
       if(graphics == null) graphics = addChild(new GraphicsRoot());
       if(gamescreen == null) gamescreen = graphics.addChild(new GameScreen());
       if(input == null) input = addChild(new InputSystem(HardcodedValues.INPUT_SYSTEM_NAME));

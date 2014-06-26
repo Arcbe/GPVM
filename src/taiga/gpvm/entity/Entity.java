@@ -7,8 +7,11 @@
 package taiga.gpvm.entity;
 
 import java.util.logging.Logger;
-import tagia.code.geom.BoundingVolume;
+import org.lwjgl.util.vector.ReadableVector3f;
+import org.lwjgl.util.vector.Vector3f;
+import tagia.code.geom.AABox;
 import taiga.code.io.DataNode;
+import taiga.gpvm.registry.EntityEntry;
 
 /**
  * Base class for all {@link Entity}s in the game.  This class provides a
@@ -21,15 +24,28 @@ import taiga.code.io.DataNode;
  * 
  * @author russell
  */
-public abstract class Entity{
+public abstract class Entity {
   public final long id;
+  public final EntityEntry type;
 
-  public Entity(long id) {
+  public Entity(long id, EntityEntry type) {
     this.id = id;
+    this.type = type;
+    location = new Vector3f();
+    velocity = new Vector3f();
+    damage = 0;
+  }
+  
+  public ReadableVector3f getLocation() {
+    return new Vector3f(location);
   }
   
   public abstract void render(int pass);
-  public abstract BoundingVolume getBounds();
+  public abstract AABox getBounds();
+  
+  private final Vector3f location;
+  private final Vector3f velocity;
+  private final long damage;
 
   private static final String locprefix = Entity.class.getName().toLowerCase();
 

@@ -7,15 +7,10 @@
 package taiga.gpvm.registry;
 
 import java.util.logging.Logger;
-import taiga.gpvm.HardcodedValues;
 
-public class SkyRegistry extends Registry<SkyEntry> {
+public class EntityRenderingRegistry {
 
-  public SkyRegistry() {
-    super(HardcodedValues.SKY_REGISTRY_NAME);
-  }
-
-  private static final String locprefix = SkyRegistry.class.getName().toLowerCase();
+  private static final String locprefix = EntityRenderingRegistry.class.getName().toLowerCase();
 
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));

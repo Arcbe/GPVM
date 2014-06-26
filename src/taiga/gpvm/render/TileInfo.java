@@ -3,7 +3,7 @@ package taiga.gpvm.render;
 import taiga.gpvm.map.Tile;
 import taiga.gpvm.util.geom.Coordinate;
 import taiga.gpvm.util.geom.Direction;
-import taiga.gpvm.registry.RenderingEntry;
+import taiga.gpvm.registry.TileRenderingEntry;
 
 /**
  * A descriptor of basic information about a {@link Tile} for use in rendering.
@@ -32,7 +32,7 @@ public final class TileInfo {
   public Tile[] adjacent;
   
   /**
-   * The {@link RenderingEntry} for the {@link Tile} described by this {@link TileInfo}.
+   * The {@link TileRenderingEntry} for the {@link Tile} described by this {@link TileInfo}.
    */
-  public RenderingEntry rendentry;
+  public TileRenderingEntry rendentry;
 }

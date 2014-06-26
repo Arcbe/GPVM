@@ -14,7 +14,7 @@ import taiga.gpvm.render.Renderer;
  * 
  * @author russell
  */
-public class RenderingEntry extends RegistryEntry {
+public class TileRenderingEntry extends RegistryEntry {
   
   /**
    * The {@link Class} of the {@link Renderer} that will be used to render the
@@ -26,10 +26,10 @@ public class RenderingEntry extends RegistryEntry {
    * Additional information used by the {@link Renderer}.  THis may be null if
    * no information is available.
    */
-  public final RenderingInfo info;
+  public final TileRenderingInfo info;
   
   /**
-   * The {@link TileEntry} for the tiles that will use this {@link RenderingEntry}
+   * The {@link TileEntry} for the tiles that will use this {@link TileRenderingEntry}
    * for rendering.
    */
   public final TileEntry tile;
@@ -41,7 +41,7 @@ public class RenderingEntry extends RegistryEntry {
    * @param inf Any additional information for rendering, or null if there is none.
    * @param t The {@link TileEntry} that this {@link RenderingEntry} is for.
    */
-  public RenderingEntry(Class<? extends Renderer> rend, RenderingInfo inf, TileEntry t) {
+  public TileRenderingEntry(Class<? extends Renderer> rend, TileRenderingInfo inf, TileEntry t) {
     super(t.getName());
     
     renderer = rend;

@@ -15,7 +15,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Tile;
-import taiga.gpvm.registry.RenderingInfo;
+import taiga.gpvm.registry.TileRenderingInfo;
 import taiga.gpvm.util.geom.Direction;
 
 /**
@@ -143,7 +143,7 @@ public class ColorRenderer implements Renderer {
   }
 
   @Override
-  public Class<? extends RenderingInfo> getInfoClass() {
+  public Class<? extends TileRenderingInfo> getInfoClass() {
     return ColorInfo.class;
   }
   

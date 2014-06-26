@@ -58,7 +58,7 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
   
   @Override
   protected void attached(RegisteredObject parent) {
-    SkyRegistry skies = getObject(HardcodedValues.SKY_REGISTRY);
+    SkyRegistry skies = getObject(HardcodedValues.SKY_REGISTRY_NAME);
     
     if(skies == null) {
       log.log(Level.WARNING, NO_SKY_REGISTRY);

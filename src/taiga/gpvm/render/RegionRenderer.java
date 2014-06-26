@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.registration.RegisteredObject;
-import taiga.gpvm.registry.RenderingRegistry;
+import taiga.gpvm.registry.TileRenderingRegistry;
 
 /**
  * A renderer for a {@link Region} in the {@link GameMap}.
@@ -89,7 +89,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
    * @param z The z coordinate of the {@link Tile} in the {@link Region}.
    */
   public void updateTile(int x, int y, int z) {
-    RenderingRegistry rendreg = (RenderingRegistry) getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    TileRenderingRegistry rendreg = (TileRenderingRegistry) getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
     
     //first check to see if the tile needs rendering
     Tile tar = reg.getTile(x, y, z);

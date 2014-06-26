@@ -1,18 +1,16 @@
 package tagia.code.geom;
 
+
 /**
- * Interface for class that represent volumes in 3d space and can calculate
- * whether the intersect.
+ * An interface for collections of {@link Box}es for use as hit boxes.
  * 
  * @author russell
  */
 public interface BoundingVolume {
   /**
-   * Calculates whether this {@link BoundingVolume} intersects with the
-   * given {@link Ellipsoid}.
+   * Returns a {@link AABox} that covers the entire {@link BoundingVolume}.
    * 
-   * @param ell The {@link Ellipsoid} to check collision with.
-   * @return Whether this {@link BoundingVolume} collides with the {@link Ellipsoid}.
+   * @return 
    */
-  public boolean collides(Ellipsoid ell);
+  public AABox getBounds();
 }

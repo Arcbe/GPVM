@@ -11,7 +11,7 @@ import taiga.gpvm.map.FlatWorldGenerator;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.UniverseListener;
 import taiga.gpvm.map.World;
-import taiga.gpvm.registry.RenderingRegistry;
+import taiga.gpvm.registry.TileRenderingRegistry;
 import taiga.gpvm.registry.SkyEntry;
 import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.registry.TileEntry;
@@ -153,8 +153,8 @@ public class Main {
     Universe universe = game.getObject(HardcodedValues.UNIVERSE_NAME);
     SettingManager settings = game.getObject(HardcodedValues.SETTING_MANAGER_NAME);
     TileRegistry tiles = game.getObject(HardcodedValues.TILE_REGISTRY_NAME);
-    RenderingRegistry rendreg = game.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
-    SkyRegistry skies = game.getObject(HardcodedValues.SKY_REGISTRY);
+    TileRenderingRegistry rendreg = game.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    SkyRegistry skies = game.getObject(HardcodedValues.SKY_REGISTRY_NAME);
     
     settings.loadSettings("settings.yml");
     tiles.loadFile("tiles.yml", "default");
@@ -204,7 +204,7 @@ public class Main {
     Universe          universe = client.getObject(HardcodedValues.UNIVERSE_NAME);
     SettingManager    settings = client.getObject(HardcodedValues.SETTING_MANAGER_NAME);
     TileRegistry      tiles = client.getObject(HardcodedValues.TILE_REGISTRY_NAME);
-    RenderingRegistry rendreg = client.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    TileRenderingRegistry rendreg = client.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
     GraphicsRoot      graphics = client.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
     GameScreen        screen = graphics.getObject(HardcodedValues.GAME_SCREEN_NAME);
     

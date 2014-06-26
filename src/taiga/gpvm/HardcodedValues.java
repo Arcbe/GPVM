@@ -9,12 +9,13 @@ package taiga.gpvm;
 import taiga.code.input.InputSystem;
 import taiga.code.opengl.GraphicsSystem;
 import taiga.code.util.SettingManager;
+import taiga.gpvm.entity.EntityManager;
 import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.RegionManager;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.schedule.WorldUpdater;
-import taiga.gpvm.registry.RenderingRegistry;
+import taiga.gpvm.registry.TileRenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.ColorRenderer;
 import taiga.gpvm.render.Renderer;
@@ -53,9 +54,13 @@ public class HardcodedValues {
   //internal system names
   //<editor-fold>
   /**
+   * The name for the {@link EntityManager}s.
+   */
+  public static final String ENTITY_MANAGER_NAME = "entities";
+  /**
    * The name for the {@link SkyBoxRenderer}.
    */
-  public static final String SKY_REGISTRY = "skies";
+  public static final String SKY_REGISTRY_NAME = "skies";
   /**
    * The name for the {@link InputSystem}.
    */
@@ -81,7 +86,7 @@ public class HardcodedValues {
    */
   public static final String TILE_REGISTRY_NAME = "tiles";
   /**
-   * Name for the {@link RenderingRegistry}.
+   * Name for the {@link TileRenderingRegistry}.
    */
   public static final String RENDERING_REGISTRY_NAME = "rendering-info";
   /**

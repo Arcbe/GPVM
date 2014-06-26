@@ -21,43 +21,43 @@ import taiga.gpvm.render.Renderer;
 /**
  * A {@link Registry} of information for rendering {@link Tile}s.  In additional
  * to the index provided by the super class an index by the {@link
- * TileEntry} for each {@link RenderingEntry} will also be maintained.
+ * TileEntry} for each {@link TileRenderingEntry} will also be maintained.
  * 
  * @author russell
  */
-public class RenderingRegistry extends Registry<RenderingEntry>{
+public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
   /**
    * Creates a new empty {@link RenderingRegistry}.
    */
-  public RenderingRegistry() {
+  public TileRenderingRegistry() {
     super(HardcodedValues.RENDERING_REGISTRY_NAME);
     
     tileindex = new HashMap<>();
   }
 
   @Override
-  public void addEntry(RenderingEntry ent) {
+  public void addEntry(TileRenderingEntry ent) {
     super.addEntry(ent);
     
     tileindex.put(ent.tile, ent);
   }
   
   /**
-   * Provides a way to access {@link RenderingEntry} indexed by {@link TileEntry}
+   * Provides a way to access {@link TileRenderingEntry} indexed by {@link TileEntry}
    * instead of by id.
    * 
-   * @param tile The {@link TileEntry} for the desired {@link RenderingEntry}
-   * @return The desired {@link RenderingEntry} or null if none are found.
+   * @param tile The {@link TileEntry} for the desired {@link TileRenderingEntry}
+   * @return The desired {@link TileRenderingEntry} or null if none are found.
    */
-  public RenderingEntry getEntry(TileEntry tile) {
+  public TileRenderingEntry getEntry(TileEntry tile) {
     return tileindex.get(tile);
   }
   
   /**
-   * Loads a data file of {@link RenderingEntry}s into this {@link RenderingRegistry}.
+   * Loads a data file of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
    * 
    * @param in The name of the {@link File} to read in.
-   * @param namespace The namespace that the {@link RenderingEntry} should be added to
+   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
    * 
    * @throws IOException Thrown if the file could not be read successfully.
@@ -71,10 +71,10 @@ public class RenderingRegistry extends Registry<RenderingEntry>{
   }
   
   /**
-   * Loads a data file of {@link RenderingEntry}s into this {@link RenderingRegistry}.
+   * Loads a data file of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
    * 
    * @param in The {@link File} to read in.
-   * @param namespace The namespace that the {@link RenderingEntry} should be added to
+   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
    * 
    * @throws IOException Thrown if the file could not be read successfully.
@@ -88,10 +88,10 @@ public class RenderingRegistry extends Registry<RenderingEntry>{
   }
   
   /**
-   * Loads a {@link DataNode} of {@link RenderingEntry}s into this {@link RenderingRegistry}.
+   * Loads a {@link DataNode} of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
    * 
    * @param data The {@link DataNode} with the rendering information.
-   * @param namespace The namespace that the {@link RenderingEntry} should be added to
+   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
    * 
    * @throws ReflectiveOperationException Thrown if there is a problem loading the
@@ -104,10 +104,10 @@ public class RenderingRegistry extends Registry<RenderingEntry>{
   }
   
   /**
-   * Loads a data file of {@link RenderingEntry}s into this {@link RenderingRegistry}.
+   * Loads a data file of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
    * 
    * @param in The name of the {@link File} to read in.
-   * @param namespace The namespace that the {@link RenderingEntry} should be added to
+   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
    * @param loader The {@link ClassLoader} to load the {@link Renderer} {@link Class} from.
    * 
@@ -132,10 +132,10 @@ public class RenderingRegistry extends Registry<RenderingEntry>{
   }
   
   /**
-   * Loads a data file of {@link RenderingEntry}s into this {@link RenderingRegistry}.
+   * Loads a data file of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
    * 
    * @param in The {@link File} to read in.
-   * @param namespace The namespace that the {@link RenderingEntry} should be added to
+   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
    * @param loader The {@link ClassLoader} to load the {@link Renderer} from.
    * 
@@ -160,10 +160,10 @@ public class RenderingRegistry extends Registry<RenderingEntry>{
   }
   
   /**
-   * Loads a {@link DataNode} of {@link RenderingEntry}s into this {@link RenderingRegistry}.
+   * Loads a {@link DataNode} of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
    * 
    * @param data The {@link DataNode} with the rendering information.
-   * @param namespace The namespace that the {@link RenderingEntry} should be added to
+   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
    * @param loader The {@link ClassLoader} to load the {@link Renderer} from.
    * 
@@ -215,22 +215,22 @@ public class RenderingRegistry extends Registry<RenderingEntry>{
       if(rendclass == null) continue;
 
       Renderer temp = rendclass.newInstance();
-      Class<? extends RenderingInfo> infoclass = temp.getInfoClass();
+      Class<? extends TileRenderingInfo> infoclass = temp.getInfoClass();
 
-      RenderingInfo info = null;
+      TileRenderingInfo info = null;
       if(infoclass != null) {
-        Constructor<? extends RenderingInfo> con = infoclass.getConstructor(DataNode.class);
+        Constructor<? extends TileRenderingInfo> con = infoclass.getConstructor(DataNode.class);
         info = con.newInstance(renddata);
       }
 
-      RenderingEntry entry = new RenderingEntry(rendclass, info, tiles.getEntry(namespace + NAMESPACE_SEPERATOR + val.name));
+      TileRenderingEntry entry = new TileRenderingEntry(rendclass, info, tiles.getEntry(namespace + NAMESPACE_SEPERATOR + val.name));
       addEntry(entry);
     }
   }
   
-  private Map<TileEntry, RenderingEntry> tileindex;
+  private Map<TileEntry, TileRenderingEntry> tileindex;
   
-  private static final String locprefix = RenderingRegistry.class.getName().toLowerCase();
+  private static final String locprefix = TileRenderingRegistry.class.getName().toLowerCase();
   
   private static final String INVALID_RENDERING_ENTRY = locprefix + ".invalid_rendering_entry";
   private static final String LOADED_FILE = locprefix + ".loaded_file";

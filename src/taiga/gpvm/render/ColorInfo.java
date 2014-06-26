@@ -7,14 +7,14 @@
 package taiga.gpvm.render;
 
 import taiga.code.io.DataNode;
-import taiga.gpvm.registry.RenderingInfo;
+import taiga.gpvm.registry.TileRenderingInfo;
 
 /**
  * Provides information for the {@link ColorRenderer}.
  * 
  * @author russell
  */
-public class ColorInfo implements RenderingInfo {
+public class ColorInfo implements TileRenderingInfo {
   /**
    * Field name for the color attribute in rendering information data files.
    */

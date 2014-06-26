@@ -11,5 +11,5 @@ import taiga.code.io.DataNode;
  * 
  * @author russell
  */
-public interface RenderingInfo {
+public interface TileRenderingInfo {
 }
