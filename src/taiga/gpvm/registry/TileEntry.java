@@ -6,7 +6,6 @@
 
 package taiga.gpvm.registry;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import taiga.gpvm.map.Tile;
 
 /**

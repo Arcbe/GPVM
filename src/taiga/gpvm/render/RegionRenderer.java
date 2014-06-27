@@ -58,7 +58,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     entries.clear();
     rendindex.clear();
     
-    //construct the various tile infos.
+    //construct the various entity infos.
     for(byte i = 0; i < Region.REGION_SIZE; i++) {
       for(byte j = 0; j < Region.REGION_SIZE; j++) {
         for(byte k = 0; k < Region.REGION_SIZE; k++) {
@@ -71,7 +71,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
   }
   
   /**
-   * Update the rendering information for a single tile in the {@link Region}.
+   * Update the rendering information for a single entity in the {@link Region}.
    * 
    * @param coor The {@link Coordinate} or the {@link Tile} to update.
    */
@@ -82,20 +82,20 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
   }
   
   /**
-   * Updates rendering information for a single tile in the {@link Region}.
+   * Updates rendering information for a single entity in the {@link Region}.
    * 
    * @param x The x coordinate of the {@link Tile} in the {@link Region}.
    * @param y The y coordinate of the {@link Tile} in the {@link Region}.
    * @param z The z coordinate of the {@link Tile} in the {@link Region}.
    */
   public void updateTile(int x, int y, int z) {
-    TileRenderingRegistry rendreg = (TileRenderingRegistry) getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    TileRenderingRegistry rendreg = (TileRenderingRegistry) getObject(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
     
-    //first check to see if the tile needs rendering
+    //first check to see if the entity needs rendering
     Tile tar = reg.getTile(x, y, z);
     if(tar == null || tar.type == null) return;
     
-    //now check if the tile is actually visible
+    //now check if the entity is actually visible
     Coordinate loc = new Coordinate(x, y, z);
     Tile[] ngbrs = reg.getWorld().getNeighborTiles(loc);
     boolean visible = false;
@@ -111,7 +111,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     }
     if(!visible) return;
     
-    //The tile can be rendered and is visible, now collect information on the tile.
+    //The entity can be rendered and is visible, now collect information on the entity.
     TileInfo info = new TileInfo();
     info.adjacent = ngbrs;
     info.tile = tar;

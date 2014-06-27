@@ -94,7 +94,7 @@ public final class GameManager extends RegisteredSystem implements WindowListene
    * @param client Whether this {@link GameManager} should be a client.
    */
   public void setClientMoe(boolean client) {
-    TileRenderingRegistry rendreg = getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    TileRenderingRegistry rendreg = getObject(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
     GraphicsRoot graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
     GameScreen gamescreen = getObject(HardcodedValues.GAME_SCREEN_NAME);
     Universe uni = getObject(HardcodedValues.UNIVERSE_NAME);

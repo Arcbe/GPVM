@@ -7,7 +7,7 @@
 package taiga.gpvm.render;
 
 import java.util.List;
-import taiga.gpvm.registry.TileRenderingInfo;
+import taiga.gpvm.registry.RenderingInfo;
 import taiga.gpvm.registry.TileRenderingRegistry;
 
 /**
@@ -44,5 +44,5 @@ public interface Renderer {
    * @return The class that will be used to store additional rendering information
    * for any tiles that use this {@link Renderer}.
    */
-  public Class<? extends TileRenderingInfo> getInfoClass();
+  public Class<? extends RenderingInfo> getInfoClass();
 }

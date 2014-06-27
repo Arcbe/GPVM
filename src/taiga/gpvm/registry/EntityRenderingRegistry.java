@@ -7,8 +7,13 @@
 package taiga.gpvm.registry;
 
 import java.util.logging.Logger;
+import taiga.gpvm.HardcodedValues;
 
-public class EntityRenderingRegistry {
+public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
+
+  public EntityRenderingRegistry(String name) {
+    super(HardcodedValues.ENTITY_RENDERING_REGISTRY_NAME);
+  }
 
   private static final String locprefix = EntityRenderingRegistry.class.getName().toLowerCase();
 

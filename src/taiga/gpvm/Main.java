@@ -153,7 +153,7 @@ public class Main {
     Universe universe = game.getObject(HardcodedValues.UNIVERSE_NAME);
     SettingManager settings = game.getObject(HardcodedValues.SETTING_MANAGER_NAME);
     TileRegistry tiles = game.getObject(HardcodedValues.TILE_REGISTRY_NAME);
-    TileRenderingRegistry rendreg = game.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    TileRenderingRegistry rendreg = game.getObject(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
     SkyRegistry skies = game.getObject(HardcodedValues.SKY_REGISTRY_NAME);
     
     settings.loadSettings("settings.yml");
@@ -204,7 +204,7 @@ public class Main {
     Universe          universe = client.getObject(HardcodedValues.UNIVERSE_NAME);
     SettingManager    settings = client.getObject(HardcodedValues.SETTING_MANAGER_NAME);
     TileRegistry      tiles = client.getObject(HardcodedValues.TILE_REGISTRY_NAME);
-    TileRenderingRegistry rendreg = client.getObject(HardcodedValues.RENDERING_REGISTRY_NAME);
+    TileRenderingRegistry rendreg = client.getObject(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
     GraphicsRoot      graphics = client.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
     GameScreen        screen = graphics.getObject(HardcodedValues.GAME_SCREEN_NAME);
     

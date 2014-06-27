@@ -30,7 +30,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    * Creates a new empty {@link RenderingRegistry}.
    */
   public TileRenderingRegistry() {
-    super(HardcodedValues.RENDERING_REGISTRY_NAME);
+    super(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
     
     tileindex = new HashMap<>();
   }
@@ -215,11 +215,11 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
       if(rendclass == null) continue;
 
       Renderer temp = rendclass.newInstance();
-      Class<? extends TileRenderingInfo> infoclass = temp.getInfoClass();
+      Class<? extends RenderingInfo> infoclass = temp.getInfoClass();
 
-      TileRenderingInfo info = null;
+      RenderingInfo info = null;
       if(infoclass != null) {
-        Constructor<? extends TileRenderingInfo> con = infoclass.getConstructor(DataNode.class);
+        Constructor<? extends RenderingInfo> con = infoclass.getConstructor(DataNode.class);
         info = con.newInstance(renddata);
       }
 
