@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import taiga.gpvm.HardcodedValues;
 import java.util.logging.Logger;
-import sun.security.pkcs.EncodingException;
 import taiga.code.networking.NetworkManager;
 import taiga.code.networking.NetworkedObject;
 import taiga.code.networking.Packet;

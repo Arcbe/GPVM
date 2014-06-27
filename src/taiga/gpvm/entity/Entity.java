@@ -9,7 +9,7 @@ package taiga.gpvm.entity;
 import java.util.logging.Logger;
 import org.lwjgl.util.vector.ReadableVector3f;
 import org.lwjgl.util.vector.Vector3f;
-import tagia.code.geom.AABox;
+import taiga.code.geom.AABox;
 import taiga.code.io.DataNode;
 import taiga.gpvm.registry.EntityEntry;
 

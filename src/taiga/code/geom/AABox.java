@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package tagia.code.geom;
+package taiga.code.geom;
 
 import java.util.logging.Logger;
 import org.lwjgl.util.vector.Vector3f;
