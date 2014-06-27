@@ -187,7 +187,7 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
     }
     
     //get or create a collection of actions for binding.
-    Collection bindings = keybindings.get(index);
+    Collection<KeyAction> bindings = keybindings.get(index);
     if(bindings == null) {
       bindings = new HashSet();
       keybindings.put(index, bindings);

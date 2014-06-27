@@ -184,47 +184,47 @@ public final class Region {
   }
   
   private void encodeTileType(List<Byte> bytes) {
-    
-    //first get all of the damage values
-    short amount = 1;
-    Tile last = null;
-    byte[] converts = new byte[4]; //to hold bytes for a long.
-    for(Tile t : tiles) {
-      if(t == null) {
-        throw new NullPointerException();
-      }
-      
-      //lets start this thing.
-      if(last == null) {
-        last = t;
-        continue;
-      }
-      
-      //continue until a tile with a different value is hit.
-      if(last.type == t.type && amount < 256) {
-        amount++;
-        continue;
-      }
-      
-      if(last.type == null)
-        ByteUtils.toBytes(-1, 0, converts);
-      else
-        ByteUtils.toBytes(last.type.getID(), 0, converts);
-      for(byte b : converts)
-        bytes.add(b);
-      bytes.add((byte) amount);
-      amount = 1;
-      
-      last = t;
-    }
-    //and one more encoding to get the last set of tiles.
-    if(last.type == null)
-      ByteUtils.toBytes(-1, 0, converts);
-    else
-      ByteUtils.toBytes(last.type.getID(), 0, converts);
-    for(byte b : converts)
-      bytes.add(b);
-    bytes.add((byte) amount);
+//    
+//    //first get all of the damage values
+//    short amount = 1;
+//    Tile last = null;
+//    byte[] converts = new byte[4]; //to hold bytes for a long.
+//    for(Tile t : tiles) {
+//      if(t == null) {
+//        throw new NullPointerException();
+//      }
+//      
+//      //lets start this thing.
+//      if(last == null) {
+//        last = t;
+//        continue;
+//      }
+//      
+//      //continue until a tile with a different value is hit.
+//      if(last.type == t.type && amount < 256) {
+//        amount++;
+//        continue;
+//      }
+//      
+//      if(last.type == null)
+//        ByteUtils.toBytes(-1, 0, converts);
+//      else
+//        ByteUtils.toBytes(last.type.getID(), 0, converts);
+//      for(byte b : converts)
+//        bytes.add(b);
+//      bytes.add((byte) amount);
+//      amount = 1;
+//      
+//      last = t;
+//    }
+//    //and one more encoding to get the last set of tiles.
+//    if(last.type == null)
+//      ByteUtils.toBytes(-1, 0, converts);
+//    else
+//      ByteUtils.toBytes(last.type.getID(), 0, converts);
+//    for(byte b : converts)
+//      bytes.add(b);
+//    bytes.add((byte) amount);
   }
   
   private Collection<RegionListener> listeners;
