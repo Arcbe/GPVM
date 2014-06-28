@@ -4,7 +4,6 @@
  */
 package taiga.gpvm;
 
-import java.awt.event.WindowEvent;
 import taiga.code.input.InputSystem;
 import taiga.code.registration.RegisteredSystem;
 
@@ -12,16 +11,15 @@ import static taiga.gpvm.HardcodedValues.GAMEMANAGER_NAME;
 import taiga.gpvm.render.GraphicsRoot;
 import taiga.code.io.DataFileManager;
 import taiga.code.opengl.WindowListener;
-import taiga.code.registration.RegisteredObject;
 import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
 import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.Universe;
+import taiga.gpvm.registry.EntityRegistry;
 import taiga.gpvm.schedule.WorldUpdater;
 import taiga.gpvm.registry.TileRenderingRegistry;
 import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.registry.TileRegistry;
-import taiga.gpvm.schedule.WorldChangeListener;
 import taiga.gpvm.screens.GameScreen;
 
 /**
@@ -61,11 +59,13 @@ public final class GameManager extends RegisteredSystem implements WindowListene
     
     
     TileRegistry tiles = new TileRegistry();
+    EntityRegistry entities = new EntityRegistry();
     Universe uni = new Universe();
     WorldUpdater updater = new WorldUpdater();
     MapEventManager events = new MapEventManager();
     
     addChild(tiles);
+    addChild(entities);
     addChild(uni);
     addChild(updater);
     addChild(events);

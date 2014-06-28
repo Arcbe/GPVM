@@ -26,11 +26,6 @@ public class EntityEntry extends RegistryEntry {
    * will return the name prepended with the modname and separated by a '.'.
    */
   public final String name;
-  
-  /**
-   * Whether the tile is opaque.  This should only be true if the tile completely
-   * covers the side of any adjacent tile.
-   */
 
   /**
    * Creates a new {@link EntityEntry} with the given information.
@@ -50,13 +45,7 @@ public class EntityEntry extends RegistryEntry {
    * @return The full name of the {@link TileEntry}.
    */
   public String getName() {
-    StringBuilder builder = new StringBuilder();
-    
-    builder.append(modname);
-    builder.append('.');
-    builder.append(name);
-    
-    return builder.toString();
+    return name;
   }
 
   private static final String locprefix = EntityEntry.class.getName().toLowerCase();
