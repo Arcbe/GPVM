@@ -15,7 +15,7 @@ import taiga.code.io.DataNode;
 import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.HardcodedValues;
 
-public class EntityRegistry extends Registry<EntityEntry> {
+public class EntityRegistry extends NetworkRegistry<EntityEntry> {
 
   public EntityRegistry() {
     super(HardcodedValues.ENTITY_REGISTRY_NAME);

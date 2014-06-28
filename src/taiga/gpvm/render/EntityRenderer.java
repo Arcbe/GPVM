@@ -1,4 +1,4 @@
-package taiga.gpvm.registry;
+package taiga.gpvm.render;
 
 import taiga.code.io.DataNode;
 import taiga.gpvm.entity.Entity;
@@ -19,4 +19,12 @@ public interface EntityRenderer {
    * @param pass The current rendering pass.
    */
   public void render(Entity ent, int pass);
+  
+  /**
+   * Loads data specific to the type of {@link Entity} that will be rendered
+   * with this {@link EntityRenderer}.
+   * 
+   * @param data The {@link DataNode} containing the data.
+   */
+  public void loadData(DataNode data);
 }
