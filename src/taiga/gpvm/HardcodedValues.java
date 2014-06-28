@@ -19,7 +19,7 @@ import taiga.gpvm.registry.EntityRenderingRegistry;
 import taiga.gpvm.schedule.WorldUpdater;
 import taiga.gpvm.registry.TileRenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
-import taiga.gpvm.render.ColorRenderer;
+import taiga.gpvm.render.ColorTileRenderer;
 import taiga.gpvm.render.TileRenderer;
 import taiga.gpvm.render.SkyBoxRenderer;
 import taiga.gpvm.screens.GameScreen;
@@ -153,7 +153,7 @@ public class HardcodedValues {
    * The default {@link TileRenderer} for tiles.  This will result in a solid magenta
    * cube.
    */
-  public static final Class<? extends TileRenderer> DEFAULT_RENDERER = ColorRenderer.class;
+  public static final Class<? extends TileRenderer> DEFAULT_RENDERER = ColorTileRenderer.class;
   /**
    * The delay in milliseconds between updates of the world map.
    */
