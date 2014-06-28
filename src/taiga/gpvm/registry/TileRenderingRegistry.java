@@ -16,7 +16,7 @@ import taiga.code.io.DataNode;
 import taiga.code.registration.MissingObjectException;
 import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.map.Tile;
-import taiga.gpvm.render.Renderer;
+import taiga.gpvm.render.TileRenderer;
 
 /**
  * A {@link Registry} of information for rendering {@link Tile}s.  In additional
@@ -62,7 +62,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    * 
    * @throws IOException Thrown if the file could not be read successfully.
    * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link Renderer}.
+   *  {@link Class} for a {@link TileRenderer}.
    * @throws MissingObjectException If there is no {@link DataFileManager} in the
    *  registration tree or it could not be found.
    */
@@ -79,7 +79,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    * 
    * @throws IOException Thrown if the file could not be read successfully.
    * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link Renderer}.
+   *  {@link Class} for a {@link TileRenderer}.
    * @throws MissingObjectException If there is no {@link DataFileManager} in the
    *  registration tree or it could not be found.
    */
@@ -95,7 +95,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
    * 
    * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link Renderer}.
+   *  {@link Class} for a {@link TileRenderer}.
    * @throws MissingObjectException If there is no {@link DataFileManager} in the
    *  registration tree or it could not be found.
    */
@@ -109,11 +109,11 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    * @param in The name of the {@link File} to read in.
    * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
-   * @param loader The {@link ClassLoader} to load the {@link Renderer} {@link Class} from.
+   * @param loader The {@link ClassLoader} to load the {@link TileRenderer} {@link Class} from.
    * 
    * @throws IOException Thrown if the file could not be read successfully.
    * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link Renderer}.
+   *  {@link Class} for a {@link TileRenderer}.
    * @throws MissingObjectException If there is no {@link DataFileManager} in the
    *  registration tree or it could not be found.
    */
@@ -137,11 +137,11 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    * @param in The {@link File} to read in.
    * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
-   * @param loader The {@link ClassLoader} to load the {@link Renderer} from.
+   * @param loader The {@link ClassLoader} to load the {@link TileRenderer} from.
    * 
    * @throws IOException Thrown if the file could not be read successfully.
    * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link Renderer}.
+   *  {@link Class} for a {@link TileRenderer}.
    * @throws MissingObjectException If there is no {@link DataFileManager} in the
    *  registration tree or it could not be found.
    */
@@ -165,10 +165,10 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    * @param data The {@link DataNode} with the rendering information.
    * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
-   * @param loader The {@link ClassLoader} to load the {@link Renderer} from.
+   * @param loader The {@link ClassLoader} to load the {@link TileRenderer} from.
    * 
    * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link Renderer}.
+   *  {@link Class} for a {@link TileRenderer}.
    * @throws MissingObjectException If there is no {@link DataFileManager} in the
    *  registration tree or it could not be found.
    */
@@ -188,7 +188,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
       }
 
       DataNode renddata = null;
-      Class<? extends Renderer> rendclass = null;
+      Class<? extends TileRenderer> rendclass = null;
 
       for(RegisteredObject obj : cur) {
         if(!(obj instanceof DataNode)) continue;
@@ -197,7 +197,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
         switch(dataval.name) {
           case RENDERER_CLASS_FIELD:
             if(dataval.data instanceof String) {
-              rendclass = (Class<? extends Renderer>) loader.loadClass((String) dataval.data);
+              rendclass = (Class<? extends TileRenderer>) loader.loadClass((String) dataval.data);
             } else {
               log.log(Level.WARNING, INVALID_RENDERING_ENTRY, new Object[]{val});
             }
@@ -214,7 +214,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
 
       if(rendclass == null) continue;
 
-      Renderer temp = rendclass.newInstance();
+      TileRenderer temp = rendclass.newInstance();
       Class<? extends RenderingInfo> infoclass = temp.getInfoClass();
 
       RenderingInfo info = null;

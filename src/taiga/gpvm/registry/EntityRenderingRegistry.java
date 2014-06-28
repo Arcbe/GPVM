@@ -21,7 +21,7 @@ import static taiga.gpvm.HardcodedValues.NAMESPACE_SEPERATOR;
 import static taiga.gpvm.HardcodedValues.RENDERER_CLASS_FIELD;
 import static taiga.gpvm.HardcodedValues.RENDERING_INFO_FIELD;
 import taiga.gpvm.render.EntityRenderer;
-import taiga.gpvm.render.Renderer;
+import taiga.gpvm.render.TileRenderer;
 
 public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
 
@@ -105,7 +105,7 @@ public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
    * @param in The name of the {@link File} to read in.
    * @param namespace The namespace that the {@link EntityRenderingEntry} should be added to
    *  to agree with the {@link EntityRegistry} and prevent name conflicts.
-   * @param loader The {@link ClassLoader} to load the {@link Renderer} {@link Class} from.
+   * @param loader The {@link ClassLoader} to load the {@link TileRenderer} {@link Class} from.
    * 
    * @throws IOException Thrown if the file could not be read successfully.
    * @throws ReflectiveOperationException Thrown if there is a problem loading the
@@ -133,7 +133,7 @@ public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
    * @param in The {@link File} to read in.
    * @param namespace The namespace that the {@link EntityRenderingEntry} should be added to
    *  to agree with the {@link EntityRegistry} and prevent name conflicts.
-   * @param loader The {@link ClassLoader} to load the {@link Renderer} from.
+   * @param loader The {@link ClassLoader} to load the {@link TileRenderer} from.
    * 
    * @throws IOException Thrown if the file could not be read successfully.
    * @throws ReflectiveOperationException Thrown if there is a problem loading the
@@ -161,7 +161,7 @@ public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
    * @param data The {@link DataNode} with the rendering information.
    * @param namespace The namespace that the {@link EntityRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
-   * @param loader The {@link ClassLoader} to load the {@link Renderer} from.
+   * @param loader The {@link ClassLoader} to load the {@link TileRenderer} from.
    * 
    * @throws ReflectiveOperationException Thrown if there is a problem loading the
    *  {@link Class} for a {@link EntityRenderer}.

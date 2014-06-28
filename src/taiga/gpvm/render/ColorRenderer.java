@@ -22,7 +22,7 @@ import taiga.gpvm.util.geom.Direction;
  *
  * @author russell
  */
-public class ColorRenderer implements Renderer {
+public class ColorRenderer implements TileRenderer {
 
   @Override
   public void compile(List<TileInfo> tiles) {

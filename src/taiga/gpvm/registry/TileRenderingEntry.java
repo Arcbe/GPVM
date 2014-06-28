@@ -6,7 +6,7 @@
 
 package taiga.gpvm.registry;
 
-import taiga.gpvm.render.Renderer;
+import taiga.gpvm.render.TileRenderer;
 
 /**
  * An entry that contains all of the information needed to render a given type
@@ -17,13 +17,13 @@ import taiga.gpvm.render.Renderer;
 public class TileRenderingEntry extends RegistryEntry {
   
   /**
-   * The {@link Class} of the {@link Renderer} that will be used to render the
+   * The {@link Class} of the {@link TileRenderer} that will be used to render the
    * given {@link Tile}s.
    */
-  public final Class<? extends Renderer> renderer;
+  public final Class<? extends TileRenderer> renderer;
   
   /**
-   * Additional information used by the {@link Renderer}.  THis may be null if
+   * Additional information used by the {@link TileRenderer}.  THis may be null if
    * no information is available.
    */
   public final RenderingInfo info;
@@ -37,11 +37,11 @@ public class TileRenderingEntry extends RegistryEntry {
   /**
    * Creates a new {@link RenderingEntry} with the given attributes.
    * 
-   * @param rend The class of the {@link Renderer} for this {@link RenderingEntry}.
+   * @param rend The class of the {@link TileRenderer} for this {@link RenderingEntry}.
    * @param inf Any additional information for rendering, or null if there is none.
    * @param t The {@link TileEntry} that this {@link RenderingEntry} is for.
    */
-  public TileRenderingEntry(Class<? extends Renderer> rend, RenderingInfo inf, TileEntry t) {
+  public TileRenderingEntry(Class<? extends TileRenderer> rend, RenderingInfo inf, TileEntry t) {
     super(t.getName());
     
     renderer = rend;

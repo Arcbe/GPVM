@@ -119,7 +119,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     info.rendentry = rendreg.getEntry(tar.type);
     
     //ues the asociated renderer if avalaible otherwise use the default one.
-    Class<? extends Renderer> renderer;
+    Class<? extends TileRenderer> renderer;
     if(info.rendentry == null) {
       renderer = HardcodedValues.DEFAULT_RENDERER;
     } else {
@@ -128,7 +128,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     
     List<TileInfo> ents = entries.get(renderer);
     TileInfo oldent = rendindex.get(info.absposition);
-    Renderer newrend = instances.get(renderer);
+    TileRenderer newrend = instances.get(renderer);
     
     // create the renderer if needed
     if(newrend == null) {
@@ -154,14 +154,14 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     if(oldent != null) {
     
       //ues the asociated renderer if avalaible otherwise use the default one.
-      Class<? extends Renderer> oldrendclass;
+      Class<? extends TileRenderer> oldrendclass;
       if(oldent.rendentry == null) {
         oldrendclass = HardcodedValues.DEFAULT_RENDERER;
       } else {
         oldrendclass = oldent.rendentry.renderer;
       }
       
-      Renderer oldrend = instances.get(oldrendclass);
+      TileRenderer oldrend = instances.get(oldrendclass);
       if(oldrend != newrend){
         List<TileInfo> oldents = entries.get(oldrendclass);
 
@@ -197,10 +197,10 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     if(dirty)
       scanRegion();
     
-    for(Map.Entry<Class<? extends Renderer>, Boolean> ent : dirtyents.entrySet()) {
+    for(Map.Entry<Class<? extends TileRenderer>, Boolean> ent : dirtyents.entrySet()) {
       if(ent.getValue()) {
         ent.setValue(false);
-        Renderer rend = instances.get(ent.getKey());
+        TileRenderer rend = instances.get(ent.getKey());
         List<TileInfo> tiles = entries.get(ent.getKey());
         
         rend.compile(tiles);
@@ -209,7 +209,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
   }
 
   protected void render(int pass) {    
-    for(Renderer rend : instances.values())
+    for(TileRenderer rend : instances.values())
       rend.render(pass);
   }
   
@@ -218,9 +218,9 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
   
   //cached data for static rendering.
   private final Map<Coordinate, TileInfo> rendindex;
-  private final Map<Class<? extends Renderer>, List<TileInfo>> entries;
-  private final Map<Class<? extends Renderer>, Boolean> dirtyents;
-  private final Map<Class<? extends Renderer>, Renderer> instances;
+  private final Map<Class<? extends TileRenderer>, List<TileInfo>> entries;
+  private final Map<Class<? extends TileRenderer>, Boolean> dirtyents;
+  private final Map<Class<? extends TileRenderer>, TileRenderer> instances;
   
   private static VertexArrayBatch grid;
   

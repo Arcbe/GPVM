@@ -7,7 +7,7 @@
 package taiga.gpvm.registry;
 
 import taiga.gpvm.render.EntityRenderer;
-import taiga.gpvm.render.Renderer;
+import taiga.gpvm.render.TileRenderer;
 
 /**
  * An entry that contains all of the information needed to render a given type
@@ -18,7 +18,7 @@ import taiga.gpvm.render.Renderer;
 public class EntityRenderingEntry extends RegistryEntry {
   
   /**
-   * The {@link Class} of the {@link Renderer} that will be used to render the
+   * The {@link Class} of the {@link TileRenderer} that will be used to render the
    * given {@link Tile}s.
    */
   public final EntityRenderer renderer;
@@ -32,7 +32,7 @@ public class EntityRenderingEntry extends RegistryEntry {
   /**
    * Creates a new {@link RenderingEntry} with the given attributes.
    * 
-   * @param rend The class of the {@link Renderer} for this {@link RenderingEntry}.
+   * @param rend The class of the {@link TileRenderer} for this {@link RenderingEntry}.
    * @param e The {@link TileEntry} that this {@link RenderingEntry} is for.
    */
   public EntityRenderingEntry(EntityRenderer rend, EntityEntry e) {
