@@ -253,7 +253,7 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
     }
     
     for(Updateable up : updaters)
-      up.Update();
+      up.update();
   }
   
   private void render() {

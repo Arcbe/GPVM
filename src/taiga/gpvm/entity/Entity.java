@@ -11,7 +11,15 @@ import org.lwjgl.util.vector.ReadableVector3f;
 import org.lwjgl.util.vector.Vector3f;
 import taiga.code.geom.AABox;
 import taiga.code.io.DataNode;
+import taiga.code.registration.MissingObjectException;
+import taiga.code.text.TextLocalizer;
+import taiga.code.util.Updateable;
+import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.registry.EntityEntry;
+import taiga.gpvm.registry.EntityRenderingEntry;
+import taiga.gpvm.registry.EntityRenderingRegistry;
+import taiga.gpvm.render.ColorEntityRenderer;
+import taiga.gpvm.render.EntityRenderer;
 
 /**
  * Base class for all {@link Entity}s in the game.  This class provides a
@@ -24,30 +32,61 @@ import taiga.gpvm.registry.EntityEntry;
  * 
  * @author russell
  */
-public abstract class Entity {
+public class Entity implements Updateable {
   public final long id;
   public final EntityEntry type;
+  public final EntityManager manager;
 
-  public Entity(long id, EntityEntry type) {
+  protected Entity(long id, EntityEntry type, EntityManager manager) {
     this.id = id;
     this.type = type;
-    location = new Vector3f();
+    this.manager = manager;
+    
+    bounds = new AABox();
     velocity = new Vector3f();
     damage = 0;
   }
   
-  public ReadableVector3f getLocation() {
-    return new Vector3f(location);
+  public void render(int pass){
+    checkRenderer();
+    
+    renderer.render(this, pass);
   }
   
-  public abstract void render(int pass);
-  public abstract AABox getBounds();
+  public AABox getBounds() {
+    return bounds;
+  }
+
+  @Override
+  public void update() {
+  }
   
-  private final Vector3f location;
+  private final AABox bounds;
   private final Vector3f velocity;
   private final long damage;
+  
+  private EntityRenderer renderer;
+  
+  private void checkRenderer() {
+    if(renderer != null) return;
+    
+    EntityRenderingRegistry rend = manager.getObject(HardcodedValues.ENTITY_RENDERING_REGISTRY_NAME);
+    if(rend == null) {
+      throw new MissingObjectException(TextLocalizer.localize(MISSING_RENDERING_REGISTRY));
+    }
+    
+    EntityRenderingEntry entry = rend.getEntry(type);
+    if(entry == null || entry.renderer == null) {
+      //lets use the default renderer
+      renderer = new ColorEntityRenderer();
+    } else {
+      renderer = entry.renderer;
+    }
+  }
 
   private static final String locprefix = Entity.class.getName().toLowerCase();
+  
+  private static final String MISSING_RENDERING_REGISTRY = locprefix + ".missing_rendering_registry";
 
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));

@@ -12,5 +12,5 @@ public interface Updateable {
   /**
    * Called periodically to allow the {@link Object} to update itself.
    */
-  public void Update();
+  public void update();
 }

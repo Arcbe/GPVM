@@ -89,7 +89,7 @@ public class MobileCamera extends StationaryCamera implements Updateable {
   }
   
   @Override
-  public void Update() {
+  public void update() {
     Vector3f zvec = getScreenUp();
     Vector3f yvec = getRightDir();
     Vector3f xvec = new Vector3f(direction);

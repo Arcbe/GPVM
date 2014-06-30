@@ -14,7 +14,7 @@ import taiga.code.text.TextLocalizer;
  * 
  * @author russell
  */
-public class MissingObjectException extends Exception {
+public class MissingObjectException extends RuntimeException {
   /**
    * Creates a new {@link MissingObjectException} with a default message.
    */

@@ -207,7 +207,7 @@ public class WorldUpdater extends RegisteredSystem implements UniverseListener {
   private void processUpdateables() {
     for(UpdateStruct struct : ups) {
       if(struct.next <= updatecount) {
-        struct.up.Update();
+        struct.up.update();
         struct.next += struct.period;
       }
     }

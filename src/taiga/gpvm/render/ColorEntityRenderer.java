@@ -25,7 +25,7 @@ public class ColorEntityRenderer implements EntityRenderer {
     
     GL11.glBegin(GL11.GL_POINTS);
     
-    ReadableVector3f loc = ent.getLocation();
+    ReadableVector3f loc = ent.getBounds().getCenter();
     GL11.glVertex3f(loc.getX(), loc.getY(), loc.getZ());
     GL11.glColor3f(red, green, blue);
     

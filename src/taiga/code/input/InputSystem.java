@@ -39,7 +39,7 @@ public class InputSystem extends HotkeyTable implements Updateable {
   }
 
   @Override
-  public void Update() {
+  public void update() {
     handleKeyboard();
     handleMouse();
   }

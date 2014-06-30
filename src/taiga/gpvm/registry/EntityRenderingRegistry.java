@@ -45,7 +45,7 @@ public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
    * @param tile The {@link EntityEntry} for the desired {@link EntityRenderingEntry}
    * @return The desired {@link EntityRenderingEntry} or null if none are found.
    */
-  public EntityRenderingEntry getEntry(TileEntry tile) {
+  public EntityRenderingEntry getEntry(EntityEntry tile) {
     return entindex.get(tile);
   }
   

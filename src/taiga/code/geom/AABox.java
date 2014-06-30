@@ -7,14 +7,16 @@
 package taiga.code.geom;
 
 import java.util.logging.Logger;
+import org.lwjgl.util.vector.ReadableVector3f;
 import org.lwjgl.util.vector.Vector3f;
 
 /**
- * Represents an axis-aligned 3d rectangular prism.
+ * Represents an axis-aligned 3d rectangular prism with the z axis as the
+ * vertical axis, and the y axis as the axis from front to back.
  * 
  * @author russell
  */
-public class AABox implements BoundingVolume {
+public final class AABox implements BoundingVolume {
 
   /**
    * Creates a 1x1x1 {@link AABox} with a corner at the origin.
@@ -55,7 +57,25 @@ public class AABox implements BoundingVolume {
   public AABox getBounds() {
     return this;
   }
+
+  /**
+   * Returns the {@link Vector3f} foe the center of this {@link AABox}.
+   * 
+   * @return The center of the {@link AABox}.
+   */
+  public ReadableVector3f getCenter() {
+    return new Vector3f(
+      (blfcorner.x + trbcorner.x) / 2,
+      (blfcorner.y + trbcorner.y) / 2,
+      (blfcorner.z + trbcorner.z) / 2);
+  }
   
+  /**
+   * Checks whether this {@link AABox} intersects with the given {@link AABox}.
+   * 
+   * @param box The {@link AABox} to check for intersections.
+   * @return Whether the two {@link AABox}es intersect.
+   */
   public boolean collides(AABox box) {
     return 
       blfcorner.x <= box.trbcorner.x &&
@@ -64,6 +84,60 @@ public class AABox implements BoundingVolume {
       box.blfcorner.y <= trbcorner.y &&
       blfcorner.z <= box.trbcorner.z &&
       box.blfcorner.z <= trbcorner.z;
+  }
+  
+  /**
+   * Returns the coordinate of the top plane of the {@link AABox}.
+   * 
+   * @return The top of this {@link AABox}.
+   */
+  public float top() {
+    return trbcorner.z;
+  }
+  
+  /**
+   * Returns the coordinate of the right plane of the {@link AABox}.
+   * 
+   * @return The right of this {@link AABox}.
+   */
+  public float right() {
+    return trbcorner.x;
+  }
+  
+  /**
+   * Returns the coordinate of the top plane of the {@link AABox}.
+   * 
+   * @return The top of this {@link AABox}.
+   */
+  public float back() {
+    return trbcorner.y;
+  }
+  
+  /**
+   * Returns the coordinate of the left plane of the {@link AABox}.
+   * 
+   * @return The left of this {@link AABox}.
+   */
+  public float left() {
+    return blfcorner.x;
+  }
+  
+  /**
+   * Returns the coordinate of the front plane of the {@link AABox}.
+   * 
+   * @return The front of this {@link AABox}.
+   */
+  public float front() {
+    return blfcorner.y;
+  }
+  
+  /**
+   * Returns the coordinate of the bottom plane of the {@link AABox}.
+   * 
+   * @return The bottom of this {@link AABox}.
+   */
+  public float bottom() {
+    return blfcorner.z;
   }
   
   private final Vector3f blfcorner;

@@ -13,6 +13,7 @@ import taiga.code.io.DataFileManager;
 import taiga.code.opengl.WindowListener;
 import taiga.code.util.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
+import taiga.gpvm.entity.EntityManager;
 import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.registry.EntityRegistry;
@@ -64,15 +65,18 @@ public final class GameManager extends RegisteredSystem implements WindowListene
     Universe uni = new Universe();
     WorldUpdater updater = new WorldUpdater();
     MapEventManager events = new MapEventManager();
+    EntityManager entman = new EntityManager();
     
     addChild(tiles);
     addChild(entities);
     addChild(uni);
     addChild(updater);
     addChild(events);
+    addChild(entman);
     
     uni.addListener(updater);
     updater.addWorldChangeListener(events);
+    updater.addUpdateable(entman, 0, 1);
     
     setServerMode(server);
     setClientMoe(client);

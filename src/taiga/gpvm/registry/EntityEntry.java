@@ -8,6 +8,7 @@ package taiga.gpvm.registry;
 
 import java.util.logging.Logger;
 import taiga.gpvm.entity.Entity;
+import taiga.gpvm.render.EntityRenderer;
 
 /**
  * Contains the definitions for a type of {@link Entity}.

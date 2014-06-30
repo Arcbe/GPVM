@@ -1,9 +1,9 @@
 grass:
-  renderer: taiga.gpvm.render.ColorRenderer
+  renderer: taiga.gpvm.render.ColorTileRenderer
   rendering-info:
     color: 0xFF00CC00
     
 slate:
-  renderer: taiga.gpvm.render.ColorRenderer
+  renderer: taiga.gpvm.render.ColorTileRenderer
   rendering-info:
     color: 0xFF555555
