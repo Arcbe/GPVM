@@ -12,8 +12,9 @@ import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
+import taiga.code.graphics.Drawable;
 
-public final class NinePatch {
+public final class NinePatch implements Drawable {
 
   /**
    * Creates an empty {@link NinePatch}.  A {@link Texture} will have to be
@@ -110,6 +111,16 @@ public final class NinePatch {
     return left + right;
   }
   
+  @Override
+  public int getWidth() {
+    return minWidth();
+  }
+  
+  @Override
+  public int getHeight() {
+    return minHeight();
+  }
+  
   /**
    * Returns the width of the bottom sections of this {@link NinePatch}.
    * 
@@ -162,6 +173,7 @@ public final class NinePatch {
   public void draw(int x, int y, int w, int h) {
     if(texture == null) return;
     
+    GL11.glEnable(GL11.GL_TEXTURE_2D);
     GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
     
@@ -192,7 +204,7 @@ public final class NinePatch {
     coordinates = BufferUtils.createIntBuffer(32);
     
     for(int i = 0; i < 3; i++) {
-      for(int j = 0; j < 3; i++) {
+      for(int j = 0; j < 3; j++) {
         indices.put(j + i * 4); //top left corner
         indices.put(j + 1 + i * 4); //top right corner
         indices.put(j + 1 + (i+ 1) * 4); //bottom right corner
@@ -209,10 +221,10 @@ public final class NinePatch {
       float x = 0;
       switch(i) {
         case 1:
-          x = left / texture.getWidth();
+          x = left / (float) texture.getImageWidth();
           break;
         case 2:
-          x = 1f - right / texture.getWidth();
+          x = 1f - right / (float) texture.getImageWidth();
           break;
         case 3:
           x = 1;
@@ -224,10 +236,10 @@ public final class NinePatch {
         float y = 0;
         switch(j) {
           case 1:
-            y = top / texture.getHeight();
+            y = (float) top / (float) texture.getImageHeight();
             break;
           case 2:
-            y = 1f - bottom / texture.getHeight();
+            y = 1f - (float) bottom / (float) texture.getImageHeight();
             break;
           case 3:
             y = 1f;

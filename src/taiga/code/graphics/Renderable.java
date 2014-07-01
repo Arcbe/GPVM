@@ -115,6 +115,16 @@ public abstract class Renderable extends RegisteredObject {
   protected abstract void renderSelf(int pass);
   
   /**
+   * Called after all the children for this {@link Renderable} have be
+   * rendered during a given pass.
+   * 
+   * @param pass The current rendering pass.
+   */
+  protected void postRendering(int pass) {
+    
+  }
+  
+  /**
    * A flag for whether this {@link Renderable} should be updated and rendered.
    * If this is false then this along with any children will not be updated or
    * rendered.
