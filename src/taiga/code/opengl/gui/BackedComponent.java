@@ -7,7 +7,7 @@
 package taiga.code.opengl.gui;
 
 import java.util.logging.Logger;
-import taiga.code.graphics.Drawable;
+import taiga.code.opengl.Drawable;
 
 /**
  * A simple {@link Component} that has a background {@link Drawable}.  The

@@ -1,4 +1,4 @@
-package taiga.code.graphics;
+package taiga.code.opengl;
 
 /**
  * An interface for objects that can be drawn to the window.  This is for

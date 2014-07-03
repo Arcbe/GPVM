@@ -1,4 +1,4 @@
-package taiga.code.graphics;
+package taiga.code.opengl;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;

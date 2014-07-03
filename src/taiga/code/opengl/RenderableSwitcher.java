@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package taiga.code.graphics;
+package taiga.code.opengl;
 
 /**
  * Used to switch between {@link Renderable} so that at most one child {@link Renderable}

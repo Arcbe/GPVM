@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
-import taiga.code.graphics.Drawable;
 
 public final class NinePatch implements Drawable {
 

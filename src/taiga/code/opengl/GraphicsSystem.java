@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import taiga.code.graphics.Renderable;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.registration.RegisteredSystem;
 import taiga.code.text.TextLocalizer;

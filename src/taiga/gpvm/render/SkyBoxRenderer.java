@@ -6,7 +6,7 @@
 
 package taiga.gpvm.render;
 
-import taiga.code.graphics.Renderable;
+import taiga.code.opengl.Renderable;
 import taiga.gpvm.HardcodedValues;
 
 /**

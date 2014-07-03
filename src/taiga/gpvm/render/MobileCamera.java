@@ -8,7 +8,7 @@ package taiga.gpvm.render;
 
 import java.util.logging.Logger;
 import org.lwjgl.util.vector.Vector3f;
-import taiga.code.graphics.Camera;
+import taiga.code.opengl.Camera;
 import taiga.code.util.Updateable;
 
 /**

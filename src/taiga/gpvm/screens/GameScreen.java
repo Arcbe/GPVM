@@ -7,7 +7,7 @@
 package taiga.gpvm.screens;
 
 import java.util.logging.Logger;
-import taiga.code.graphics.RenderableSwitcher;
+import taiga.code.opengl.RenderableSwitcher;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.UniverseListener;
 import taiga.gpvm.map.World;

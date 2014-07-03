@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package taiga.code.graphics;
+package taiga.code.opengl;
 
 import taiga.code.opengl.GraphicsSystem;
 import taiga.code.registration.RegisteredObject;

@@ -9,7 +9,7 @@ package taiga.code.opengl.gui;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.logging.Logger;
-import taiga.code.graphics.Renderable;
+import taiga.code.opengl.Renderable;
 
 /**
  * This is the base class for objects within a GUI.
