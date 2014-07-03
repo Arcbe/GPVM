@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package taiga.code.io;
+package taiga.code.util;
 
 import java.text.MessageFormat;
 import taiga.code.registration.RegisteredObject;
@@ -29,6 +29,25 @@ public class DataNode extends RegisteredObject {
    */
   public DataNode(String name) {
     super(name);
+  }
+  
+  /**
+   * Returns the value of the child with the given name, or null if there
+   * is not a child with that name or the child does not contain data.
+   * 
+   * @param <T> The type of data that is expected.
+   * @param name The name of the child to get the value from.
+   * @return The data from the child with the given name.
+   */
+  public <T> T getValueByName(String name) {
+    DataNode data = getObject(name);
+    
+    if(data == null || data.data == null) return null;
+    else try {
+      return (T) data.data;
+    } catch(ClassCastException ex) {}
+    
+    return null;
   }
   
   /**

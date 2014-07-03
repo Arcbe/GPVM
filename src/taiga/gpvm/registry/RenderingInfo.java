@@ -1,6 +1,6 @@
 package taiga.gpvm.registry;
 
-import taiga.code.io.DataNode;
+import taiga.code.util.DataNode;
 
 /**
  * Indicates that a class can be used to store rendering data for a specific

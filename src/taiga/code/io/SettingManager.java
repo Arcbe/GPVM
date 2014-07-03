@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.io.DataFileManager;
-import taiga.code.io.DataNode;
+import taiga.code.util.DataNode;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.registration.ReusableObject;
 import taiga.code.util.Setting;

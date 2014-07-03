@@ -9,7 +9,7 @@ package taiga.gpvm.render;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.ReadableVector3f;
-import taiga.code.io.DataNode;
+import taiga.code.util.DataNode;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.entity.Entity;
 

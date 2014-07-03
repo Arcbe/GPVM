@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import org.lwjgl.util.vector.ReadableVector3f;
 import org.lwjgl.util.vector.Vector3f;
 import taiga.code.geom.AABox;
-import taiga.code.io.DataNode;
+import taiga.code.util.DataNode;
 import taiga.code.registration.MissingObjectException;
 import taiga.code.text.TextLocalizer;
 import taiga.code.util.Updateable;

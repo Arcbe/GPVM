@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import org.yaml.snakeyaml.Yaml;
 import taiga.code.io.DataFileManager;
 import taiga.code.io.DataFileReader;
-import taiga.code.io.DataNode;
+import taiga.code.util.DataNode;
 
 /**
  * A {@link DataFileReader} for .yml data files.

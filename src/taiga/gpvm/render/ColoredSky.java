@@ -2,7 +2,7 @@ package taiga.gpvm.render;
 
 import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
-import taiga.code.io.DataNode;
+import taiga.code.util.DataNode;
 
 /**
  * A {@link SkyBoxRenderer} that renders a simple sky of a solid color.

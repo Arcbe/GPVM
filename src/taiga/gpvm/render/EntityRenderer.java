@@ -1,6 +1,6 @@
 package taiga.gpvm.render;
 
-import taiga.code.io.DataNode;
+import taiga.code.util.DataNode;
 import taiga.gpvm.entity.Entity;
 
 /**
