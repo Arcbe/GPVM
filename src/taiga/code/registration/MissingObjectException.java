@@ -47,6 +47,4 @@ public class MissingObjectException extends RuntimeException {
   public MissingObjectException(Throwable cause) {
     super(cause);
   }
-  
-  private static final String DEFAULT_MESSAGE = MissingObjectException.class.getName().toLowerCase() + ".default_message";
 }

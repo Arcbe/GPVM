@@ -1,4 +1,4 @@
-package taiga.code.util;
+package taiga.code.io;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -7,6 +7,7 @@ import taiga.code.io.DataFileManager;
 import taiga.code.io.DataNode;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.registration.ReusableObject;
+import taiga.code.util.Setting;
 
 /**
  * Manages a collection of {@link Setting}s.  This class can be added to a tree

@@ -1,6 +1,7 @@
 package taiga.code.opengl;
 
 import java.awt.Window;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -10,9 +11,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.registration.RegisteredSystem;
-import taiga.code.text.TextLocalizer;
 import taiga.code.util.Setting;
-import taiga.code.util.SettingManager;
 import taiga.code.util.Updateable;
 
 /**
@@ -21,7 +20,7 @@ import taiga.code.util.Updateable;
  * 
  * @author russell
  */
-public abstract class GraphicsSystem extends RegisteredSystem implements Runnable {
+public class GraphicsSystem extends RegisteredSystem implements Runnable {
   /**
    * Default setting for vertical synchronization.
    */
@@ -36,6 +35,7 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
    * Default vertical resolution.
    */
   public static final int DEFAULT_RES_HEIGHT = 600;
+  
   /**
    * Default horizontal resolution.
    */
@@ -182,7 +182,7 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
   /**
    * Called before each frame between updating and rendering.
    */
-  protected abstract void rendering();
+  protected void rendering() {}
   
   private boolean fullscreen;
   private boolean vsync;
@@ -193,17 +193,22 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
   private Thread gthread;
   private final Collection<WindowListener> listeners;
   private final Collection<Updateable> updaters;
+  private String settings;
   
-  private void updateSettings() {
-    RegisteredObject set = getObject(SettingManager.SETTINGMANAGER_NAME);
-    if(set == null || !(set instanceof SettingManager)) {
+  public void updateSettings() {
+    updateSettings(settings);
+  }
+  
+  public void updateSettings(String sets) {
+    if(sets == null || getObject(sets) == null) {
       log.log(Level.WARNING, NO_SETTINGS);
       return;
     }
     
-    SettingManager settings = (SettingManager)set;
     //Resolution height
-    Setting cur = settings.getSetting(RESOLUTION_HEIGHT);
+    Setting cur = getObject( MessageFormat.format("{0}.{1}",
+      settings,
+      RESOLUTION_HEIGHT));
     if(cur == null) {
       log.log(Level.WARNING, MISSING_SETTING, RESOLUTION_HEIGHT);
     } else if(cur.getValue() instanceof Number) {
@@ -213,7 +218,9 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
     }
     
     //Resolution width
-    cur = settings.getSetting(RESOLUTION_WIDTH);
+    cur = getObject( MessageFormat.format("{0}.{1}",
+      settings,
+      RESOLUTION_WIDTH));
     if(cur == null) {
       log.log(Level.WARNING, MISSING_SETTING, RESOLUTION_WIDTH);
     } else if(cur.getValue() instanceof Number) {
@@ -223,7 +230,9 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
     }
     
     //Fullscreen
-    cur = settings.getSetting(FULL_SCREEN);
+    cur = getObject( MessageFormat.format("{0}.{1}",
+      settings,
+      FULL_SCREEN));
     if(cur == null) {
       log.log(Level.WARNING, MISSING_SETTING, FULL_SCREEN);
     } else if(cur.getValue() instanceof Boolean) {
@@ -291,23 +300,23 @@ public abstract class GraphicsSystem extends RegisteredSystem implements Runnabl
   /**
    * Identifiers for the vertical resolution setting within the registration tree.
    */
-  public static final String RESOLUTION_HEIGHT = TextLocalizer.localize(locprefix + ".res_height");
+  public static final String RESOLUTION_HEIGHT = "res_height";
   /**
    * Identifiers for the horizontal resolution setting within the registration tree.
    */
-  public static final String RESOLUTION_WIDTH = TextLocalizer.localize(locprefix + ".res_width");
+  public static final String RESOLUTION_WIDTH = "res_width";
   /**
    * Identifiers for the fullscreen setting within the registration tree.
    */
-  public static final String FULL_SCREEN = TextLocalizer.localize(locprefix + ".full_screen");
+  public static final String FULL_SCREEN = "full_screen";
   /**
    * Identifiers for the vertical synchronization setting within the registration tree.
    */
-  public static final String VSYNC = TextLocalizer.localize(locprefix + ".vsync");
+  public static final String VSYNC = "vsync";
   
-  private static final String GRAPHICS_THREAD_DIED = TextLocalizer.localize(locprefix + ".graphics_thread_died");
-  private static final String ALREADY_STARTED = TextLocalizer.localize(locprefix + ".already_started");
-  private static final String STARTING = TextLocalizer.localize(locprefix + ".starting");
+  private static final String GRAPHICS_THREAD_DIED = locprefix + ".graphics_thread_died";
+  private static final String ALREADY_STARTED = locprefix + ".already_started";
+  private static final String STARTING = locprefix + ".starting";
   private static final String NO_SETTINGS = locprefix + ".no_settings";
   private static final String MISSING_SETTING = locprefix + ".missing_setting";
   private static final String WRONG_SETTING_TYPE = locprefix + ".wrong_setting_type";
