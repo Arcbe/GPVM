@@ -5,7 +5,7 @@ import org.lwjgl.util.vector.Vector3f;
 import taiga.code.input.InputSystem;
 import taiga.code.input.KeyboardEvent;
 import taiga.code.input.KeyboardListener;
-import taiga.code.util.SettingManager;
+import taiga.code.io.SettingManager;
 import taiga.gpvm.map.FixedSizeManager;
 import taiga.gpvm.map.FlatWorldGenerator;
 import taiga.gpvm.map.Universe;

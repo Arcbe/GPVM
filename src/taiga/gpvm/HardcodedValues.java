@@ -8,7 +8,7 @@ package taiga.gpvm;
 
 import taiga.code.input.InputSystem;
 import taiga.code.opengl.GraphicsSystem;
-import taiga.code.util.SettingManager;
+import taiga.code.io.SettingManager;
 import taiga.gpvm.entity.EntityManager;
 import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.MapGenerator;

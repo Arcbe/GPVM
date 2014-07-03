@@ -11,7 +11,7 @@ import static taiga.gpvm.HardcodedValues.GAMEMANAGER_NAME;
 import taiga.gpvm.render.GraphicsRoot;
 import taiga.code.io.DataFileManager;
 import taiga.code.opengl.WindowListener;
-import taiga.code.util.SettingManager;
+import taiga.code.io.SettingManager;
 import taiga.code.yaml.YAMLDataReader;
 import taiga.gpvm.entity.EntityManager;
 import taiga.gpvm.event.MapEventManager;
