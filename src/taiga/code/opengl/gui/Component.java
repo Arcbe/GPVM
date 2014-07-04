@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.logging.Logger;
 import taiga.code.opengl.Renderable;
+import taiga.code.util.DataNode;
 
 /**
  * This is the base class for objects within a GUI.
@@ -17,6 +18,16 @@ import taiga.code.opengl.Renderable;
  * @author russell
  */
 public abstract class Component extends Renderable {
+  
+  public static final String FIELD_NAME_TARGET_PASS = "rendering-pass";
+  public static final String FIELD_NAME_PREF_HEIGHT = "preferred-height";
+  public static final String FIELD_NAME_PREF_WIDTH = "preferred-width";
+  public static final String FIELD_NAME_MIN_HEIGHT = "minimum-height";
+  public static final String FIELD_NAME_MIN_WIDTH = "minimum-width";
+  public static final String FIELD_NAME_HEIGHT = "height";
+  public static final String FIELD_NAME_WIDTH = "width";
+  public static final String FIELD_NAME_X = "x";
+  public static final String FIELD_NAME_Y = "y";
 
   /**
    * Constructs a new {@link Component} with the given name.
@@ -31,6 +42,34 @@ public abstract class Component extends Renderable {
     prefsize = new Dimension();
     
     tarpass = -1;
+  }
+  
+  /**
+   * Constructs a new {@link COmponent} with the given name and with parameters
+   * based on the given {@link DataNode}.
+   * 
+   * @param name The name of the {@link Component}.
+   * @param params The parameters to apply to the {@link Component}.
+   */
+  public Component(String name, DataNode params) {
+    super(name);
+    
+    bounds = new Rectangle();
+    minsize = new Dimension();
+    prefsize = new Dimension();
+    
+    tarpass = -1;
+    
+    Integer temp;
+    if((temp = params.getValueByName(FIELD_NAME_TARGET_PASS)) != null) tarpass = temp;
+    if((temp = params.getValueByName(FIELD_NAME_PREF_HEIGHT)) != null) prefsize.height = temp;
+    if((temp = params.getValueByName(FIELD_NAME_PREF_WIDTH)) != null) prefsize.width = temp;
+    if((temp = params.getValueByName(FIELD_NAME_MIN_HEIGHT)) != null) minsize.height = temp;
+    if((temp = params.getValueByName(FIELD_NAME_MIN_WIDTH)) != null) minsize.width = temp;
+    if((temp = params.getValueByName(FIELD_NAME_HEIGHT)) != null) bounds.height = temp;
+    if((temp = params.getValueByName(FIELD_NAME_WIDTH)) != null) bounds.width = temp;
+    if((temp = params.getValueByName(FIELD_NAME_X)) != null) bounds.x = temp;
+    if((temp = params.getValueByName(FIELD_NAME_Y)) != null) prefsize.height = temp;
   }
   
   /**
