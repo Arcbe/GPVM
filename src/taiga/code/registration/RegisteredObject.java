@@ -112,6 +112,22 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   }
   
   /**
+   * Retrieves the child of this {@link RegisteredObject} with the given
+   * name if there is one, otherwise this returns null.
+   * 
+   * @param <T> The type for the returned child
+   * @param name The name of the desired child.
+   * @return The desired child or null.
+   */
+  public <T extends RegisteredObject> T getChild(String name) {
+    try {
+      return (T) children.get(name);
+    } catch(ClassCastException ex) {
+      return null;
+    }
+  }
+  
+  /**
    * Returns an immutable list of the registered children.  Some of the entries
    * may be null if children have been removed.  The index of the children corresponds
    * to their IDs.
@@ -167,7 +183,11 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     //now notify the listeners
     fireChildAdded(child);
     
-    return (T) child;
+    try {
+      return (T) child;
+    } catch(ClassCastException ex) {
+      return null;
+    }
   }
   
   /**

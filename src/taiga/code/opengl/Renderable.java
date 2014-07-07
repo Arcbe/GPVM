@@ -6,7 +6,6 @@
 
 package taiga.code.opengl;
 
-import taiga.code.opengl.GraphicsSystem;
 import taiga.code.registration.RegisteredObject;
 
 /**
@@ -30,6 +29,7 @@ public abstract class Renderable extends RegisteredObject {
     
     enabled = true;
     minpasses = 1;
+    initialized = false;
   }
   
   /**
@@ -37,6 +37,10 @@ public abstract class Renderable extends RegisteredObject {
    */
   public void update() {
     if(!enabled) return;
+    if(!initialized) {
+      initalizeSelf();
+      initialized = true;
+    }
     
     updateSelf();
     
@@ -65,6 +69,8 @@ public abstract class Renderable extends RegisteredObject {
         ((Renderable)obj).render(pass);
       }
     }
+    
+    postRendering(pass);
   }
   
   /**
@@ -120,8 +126,25 @@ public abstract class Renderable extends RegisteredObject {
    * 
    * @param pass The current rendering pass.
    */
-  protected void postRendering(int pass) {
-    
+  protected void postRendering(int pass) {}
+  
+  /**
+   * Called before the first frame after the {@link GraphicsSystem} has be started
+   * or the first frame after this {@link Renderable} has been added.
+   */
+  protected void initalizeSelf() {}
+  
+  /**
+   * Called when this {@link Renderable} has been removed from the registration
+   * tree.  Any resources created in the {@link #initalizeSelf() } method should
+   * be freed here.
+   */
+  protected void uninitializeSelf() {}
+
+  @Override
+  protected void dettached(RegisteredObject parent) {
+    super.dettached(parent);
+    initialized = false;
   }
   
   /**
@@ -130,5 +153,6 @@ public abstract class Renderable extends RegisteredObject {
    * rendered.
    */
   protected boolean enabled;
+  private boolean initialized;
   private int minpasses;
 }

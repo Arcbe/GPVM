@@ -40,7 +40,7 @@ public class DataNode extends RegisteredObject {
    * @return The data from the child with the given name.
    */
   public <T> T getValueByName(String name) {
-    DataNode data = getObject(name);
+    DataNode data = getDataNode(name);
     
     if(data == null || data.data == null) return null;
     else try {
@@ -51,11 +51,35 @@ public class DataNode extends RegisteredObject {
   }
   
   /**
+   * Similar to the {@link #getObject(java.lang.String) } method but only
+   * looks through the children and does not search through the parent.
+   * 
+   * @param names The names of the desired value.
+   * @return The desired value.
+   */
+  public DataNode getDataNode(String ... names) {
+    if(names.length == 1) {
+      String[] temp = names[0].split(Character.toString(SEPARATOR));
+      if(temp.length != 0) names = temp;
+    }
+    
+    return getDataNode(names, 0);
+  }
+  
+  /**
    * 
    * @return 
    */
   @Override
   public String toString() {
     return MessageFormat.format("{0}:{1}", name, data);
+  }
+  
+  private DataNode getDataNode(String[] names, int index) {
+    if(index == names.length) return this;
+    
+    DataNode node = getChild(names[index]);
+    if(node == null) return null;
+    return node.getDataNode(names, index + 1);
   }
 }

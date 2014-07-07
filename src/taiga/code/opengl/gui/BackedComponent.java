@@ -36,8 +36,8 @@ public class BackedComponent extends Component {
     Integer temp = data.getValueByName(FIELD_NAME_PADDING);
     if(temp != null) padding = temp;
     
-    if(data.getObject(FIELD_NAME_BACKGROUND) != null) {
-      DataNode bgclass = data.getObject(new String[]{FIELD_NAME_BACKGROUND, FIELD_NAME_BG_CLASS});
+    if(data.getDataNode(FIELD_NAME_BACKGROUND) != null) {
+      DataNode bgclass = data.getDataNode(new String[]{FIELD_NAME_BACKGROUND, FIELD_NAME_BG_CLASS});
       
       if(bgclass instanceof DataNode || ((DataNode)bgclass).data instanceof String) {
         log.log(Level.SEVERE, NO_BG_CLASS);
@@ -50,7 +50,7 @@ public class BackedComponent extends Component {
             Constructor<? extends Drawable> cons;
 
             cons = bgc.getConstructor(DataNode.class);
-            background = cons.newInstance(bgclass);
+            background = cons.newInstance(data.getDataNode(FIELD_NAME_BACKGROUND));
           } catch(InvocationTargetException |
             NoSuchMethodException | 
             SecurityException |

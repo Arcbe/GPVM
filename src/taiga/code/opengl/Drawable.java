@@ -1,12 +1,14 @@
 package taiga.code.opengl;
 
+import taiga.code.util.Resource;
+
 /**
  * An interface for objects that can be drawn to the window.  This is for
  * 2D drawing.
  * 
  * @author russell
  */
-public interface Drawable {
+public interface Drawable extends Resource {
   
   /**
    * Returns the width of this {@link Drawable}.  The exact interpretation

@@ -49,7 +49,7 @@ public class GUICreator {
    * @return A GUI corresponding to the given data as closely as possible.
    */
   public static Component createGUI(DataNode data, ClassLoader loader) {
-    DataNode aliasnode = data.getObject(FIELD_NAME_ALIAS);
+    DataNode aliasnode = data.getChild(FIELD_NAME_ALIAS);
     
     if(aliasnode == null) return createElement(data, loader, null);
     
@@ -118,7 +118,7 @@ public class GUICreator {
       }
     }
     
-    DataNode childs = data.getObject(FIELD_NAME_CHILDREN);
+    DataNode childs = data.getDataNode(FIELD_NAME_CHILDREN);
     if(childs != null) {
       for(RegisteredObject obj : childs) {
         if(!(obj instanceof DataNode)) continue;
@@ -127,7 +127,7 @@ public class GUICreator {
       }
     }
     
-    DataNode meta = data.getObject(FIELD_NAME_META_COMPONENT);
+    DataNode meta = data.getDataNode(FIELD_NAME_META_COMPONENT);
     if(meta != null) {
       for(RegisteredObject obj : meta) {
         if(!(obj instanceof DataNode)) continue;

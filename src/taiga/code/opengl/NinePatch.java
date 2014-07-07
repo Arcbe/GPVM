@@ -6,14 +6,28 @@
 
 package taiga.code.opengl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+import taiga.code.util.DataNode;
 
 public final class NinePatch implements Drawable {
+  
+  public static final String FIELD_NAME_TEXTURE = "image";
+  public static final String FIELD_NAME_BORDER = "border";
+  public static final String FIELD_NAME_TOP = "top";
+  public static final String FIELD_NAME_BOTTOM = "bottom";
+  public static final String FIELD_NAME_LEFT = "left";
+  public static final String FIELD_NAME_RIGHT = "right";
 
   /**
    * Creates an empty {@link NinePatch}.  A {@link Texture} will have to be
@@ -34,6 +48,45 @@ public final class NinePatch implements Drawable {
     initBuffers();
     
     setImage(tex, border);
+  }
+  
+  /**
+   * Creates a new {@link DataNode} with the parameters derived from the
+   * given {@link DataNode}.
+   * 
+   * @param data The {@link DataNode} to construct the {@link NinePatch} with.
+   */
+  public NinePatch(DataNode data) {
+    String texname = data.getValueByName(FIELD_NAME_TEXTURE);
+    if(texname == null) return;
+    
+    File tfile;
+    try {
+      tfile = new File(getClass().getClassLoader().getResource(texname).toURI());
+    } catch (URISyntaxException ex) {
+      log.log(Level.SEVERE, null, ex);
+      return;
+    }
+    
+    int t = 0;
+    int b = 0;
+    int l = 0;
+    int r = 0;
+    
+    Integer temp;
+    if((temp = data.getValueByName(FIELD_NAME_BORDER)) != null) {
+      t = temp;
+      b = temp;
+      l = temp;
+      r = temp;
+    }
+    
+    if((temp = data.getValueByName(FIELD_NAME_TOP)) != null) t = temp;
+    if((temp = data.getValueByName(FIELD_NAME_BOTTOM)) != null) b = temp;
+    if((temp = data.getValueByName(FIELD_NAME_LEFT)) != null) l = temp;
+    if((temp = data.getValueByName(FIELD_NAME_RIGHT)) != null) r = temp;
+    
+    setImage(tfile, l, r, t, b);
   }
   
   /**
@@ -81,6 +134,54 @@ public final class NinePatch implements Drawable {
     this.bottom = left;
     
     createTexCoords();
+  }
+  
+  /**
+   * Sets the {@link File} that the {@link Texture} for this {@link NinePatch}.
+   * The actual {@link Texture} will not be loaded until the {@link #load() } method
+   * is called.
+   * 
+   * @param imgfile The {@link File} with the {@link Texture} to load.
+   * @param left The width in pixels of the left three sections.
+   * @param right The width in pixels of the right three sections.
+   * @param top The height in pixels of the top three sections.
+   * @param bottom The height in pixels of the bottom three sections.
+   */
+  public void setImage(File imgfile, int left, int right, int top, int bottom) {
+    this.top = top;
+    this.left = left;
+    this.bottom = bottom;
+    this.right = right;
+    
+    this.texfile = imgfile;
+  }
+
+  @Override
+  public void load() {
+    if(texture != null) {
+      texture.release();
+    }
+    
+    if(texfile == null || !texfile.canRead()) {
+      log.log(Level.SEVERE, BAD_TEX_FILE);
+      return;
+    }
+    
+    String filename = texfile.getName();
+    try {
+      texture = TextureLoader.getTexture(filename.substring(filename.lastIndexOf('.')), new FileInputStream(texfile));
+    } catch (IOException ex) {
+      //this should never happen probably
+      log.log(Level.SEVERE, null, ex);
+    }
+    
+    createTexCoords();
+  }
+
+  @Override
+  public void unload() {
+    texture.release();
+    texture = null;
   }
   
   /**
@@ -186,6 +287,8 @@ public final class NinePatch implements Drawable {
     GL11.glDrawElements(GL11.GL_QUADS, indices);
   }
   
+  
+  private File texfile;
   private Texture texture;
   private int left;
   private int right;
@@ -276,6 +379,8 @@ public final class NinePatch implements Drawable {
   }
 
   private static final String locprefix = NinePatch.class.getName().toLowerCase();
+  
+  private static final String BAD_TEX_FILE = locprefix + ".bad_tex_file";
 
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));
