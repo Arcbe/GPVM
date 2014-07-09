@@ -81,7 +81,6 @@ public abstract class Renderable extends RegisteredObject {
    * @return The number of rendering passes needed.
    */
   public int getNumberOfPasses() {
-    int passes = minpasses;
     for(RegisteredObject obj : this) {
       if(obj != null && obj instanceof Renderable) {
         int newpasses = ((Renderable)obj).getNumberOfPasses();

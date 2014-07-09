@@ -1,6 +1,5 @@
 package taiga.gpvm;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 import taiga.code.input.InputSystem;
 import taiga.code.input.KeyboardEvent;
@@ -19,7 +18,6 @@ import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.ColoredSky;
 import taiga.gpvm.render.GraphicsRoot;
 import taiga.gpvm.render.MobileCamera;
-import taiga.gpvm.render.StationaryCamera;
 import taiga.gpvm.render.WorldRenderer;
 import taiga.gpvm.screens.GameScreen;
 import taiga.gpvm.util.geom.Coordinate;
