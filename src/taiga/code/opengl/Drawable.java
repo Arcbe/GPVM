@@ -31,8 +31,8 @@ public interface Drawable extends Resource {
    * Draws the {@link Drawable} in the given area.  The {@link Drawable}
    * should fill the entire area.
    * 
-   * @param x The x coordinate of the drawing area.
-   * @param y The y coordinate of the drawing area.
+   * @param x The x coordinate of the left side of the drawing area.
+   * @param y The y coordinate of the bottom of the drawing area.
    * @param w The width of the drawing area.
    * @param h The height of the drawing area.
    */

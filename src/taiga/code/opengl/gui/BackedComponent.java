@@ -95,6 +95,15 @@ public class BackedComponent extends Component {
 
   @Override
   protected void updateSelf() {}
+
+  @Override
+  protected void initializeSelf() {
+    super.initializeSelf();
+    
+    if(background != null) {
+      background.load();
+    }
+  }
   
   protected void drawForeground() {}
   

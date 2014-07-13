@@ -38,7 +38,7 @@ public abstract class Renderable extends RegisteredObject {
   public void update() {
     if(!enabled) return;
     if(!initialized) {
-      initalizeSelf();
+      initializeSelf();
       initialized = true;
     }
     
@@ -131,11 +131,11 @@ public abstract class Renderable extends RegisteredObject {
    * Called before the first frame after the {@link GraphicsSystem} has be started
    * or the first frame after this {@link Renderable} has been added.
    */
-  protected void initalizeSelf() {}
+  protected void initializeSelf() {}
   
   /**
    * Called when this {@link Renderable} has been removed from the registration
-   * tree.  Any resources created in the {@link #initalizeSelf() } method should
+   * tree.  Any resources created in the {@link #initializeSelf() } method should
    * be freed here.
    */
   protected void uninitializeSelf() {}
