@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2014 Russell Smith
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package taiga.code.registration;
 
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +29,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import taiga.code.text.TextLocalizer;
 
 /**
  * {@link RegisteredObject}s form a tree of objects within a program.  This tree
@@ -21,6 +40,7 @@ import java.util.logging.Logger;
  * @author russell
  */
 public class RegisteredObject implements Iterable<RegisteredObject>{
+
   /**
    * A simple combination of a {@link RegisteredObject} with a {@link Method}
    * that allows for easy invocation of the {@link Method} through the reflection
@@ -63,7 +83,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   /**
    * The default name separator for names in a registration path.
    */
-  public static final char SEPARATOR = '.';
+  public static final String SEPARATOR = ".";
   
   /**
    * The name for this {@link RegisteredObject}.  This will be used to identify
@@ -79,14 +99,14 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * @param name The name for the new {@link RegisteredObject}
    */
   public RegisteredObject(String name) {
-    assert name != null;
-    assert !name.equals("");
+    if(!checkName(name))
+      throw new IllegalArgumentException(TextLocalizer.localize(ILLEGAL_NAME, name));
     
     this.name = name;
     childlist = new ArrayList<>();
     parlist = new ArrayList<>();
     
-    log.log(Level.FINER, CREATION, name);
+    log.log(Level.FINEST, CREATION, name);
   }
   
   /**
@@ -99,7 +119,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    */
   public String getFullName() {
     if(parent == null) return name;
-    else return parent.getFullName().concat("" + SEPARATOR).concat(name);
+    else return parent.getFullName() + SEPARATOR + name;
   }
   
   /**
@@ -123,6 +143,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     try {
       return (T) children.get(name);
     } catch(ClassCastException ex) {
+      log.log(Level.WARNING, WRONG_CHILD_CLASS, new Object[]{name});
+      
       return null;
     }
   }
@@ -186,6 +208,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     try {
       return (T) child;
     } catch(ClassCastException ex) {
+      log.log(Level.WARNING, WRONG_CHILD_CLASS, child);
+      
       return null;
     }
   }
@@ -245,19 +269,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * @return The object with the given name or null if no object can be found.
    */
   public <T extends RegisteredObject> T getObject(String name) {
-    StringTokenizer token = new StringTokenizer(name, 
-      new String(new char[] {SEPARATOR}),
-      false);
-    
-    String[] path = new String[token.countTokens()];
-    
-    int i = 0;
-    while(token.hasMoreTokens()) {
-      path[i] = token.nextToken();
-      i++;
-    }
-    
-    return getObject(path);
+    if(!name.contains(SEPARATOR)) return getObject(new String[]{name});
+    return getObject(name.split(SEPARATOR, -1));
   }
   
   /**
@@ -291,7 +304,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     InvocationTargetException {
     
     StringTokenizer token = new StringTokenizer(name, 
-      new String(new char[] {SEPARATOR}),
+      SEPARATOR,
       false);
     
     String[] path = new String[token.countTokens()];
@@ -338,19 +351,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * can be found.
    */
   public RegisteredObjectMethod getMethod(String name, Class<?> ... paramtypes) {
-    StringTokenizer token = new StringTokenizer(name, 
-      new String(new char[] {SEPARATOR}),
-      false);
-    
-    String[] path = new String[token.countTokens()];
-    
-    int i = 0;
-    while(token.hasMoreTokens()) {
-      path[i] = token.nextToken();
-      i++;
-    }
-    
-    return getMethod(path, paramtypes);
+    if(!name.contains(SEPARATOR)) return getMethod(new String[]{name}, paramtypes);
+    return getMethod(name.split(SEPARATOR), paramtypes);
   }
   
   /**
@@ -452,6 +454,13 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     else return null;
   }
   
+  private boolean checkName(String name) {
+    if(name == null) return false;
+    if(name.isEmpty()) return false;
+    
+    return NAME_REGEX.matcher(name).matches();
+  }
+  
   private void fireChildAdded(RegisteredObject child) {
     for(ChildListener list : childlist)
       list.childAdded(this, child);
@@ -466,11 +475,18 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     child.dettached(this);
   }
   
-  private static final String CREATION = RegisteredObject.class.getName().toLowerCase() + ".created";
-  private static final String EXISTING_PARENT = RegisteredObject.class.getName().toLowerCase() + ".existing_parent";
-  private static final String ALREADY_ADDED = RegisteredObject.class.getName().toLowerCase() + ".already_added";
-  private static final String ADDED_CHILD = RegisteredObject.class.getName().toLowerCase() + ".added_child";
-  private static final String REMOVED_CHILD = RegisteredObject.class.getName().toLowerCase() + ".removed_child";
+  private static final Pattern NAME_REGEX = Pattern.compile("[^\n./\\\\]+?$",
+    Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
+  
+  private static final String locprefix = RegisteredObject.class.getName().toLowerCase();
+  
+  private static final String CREATION = locprefix + ".created";
+  private static final String EXISTING_PARENT = locprefix + ".existing_parent";
+  private static final String ALREADY_ADDED = locprefix + ".already_added";
+  private static final String ADDED_CHILD = locprefix + ".added_child";
+  private static final String REMOVED_CHILD = locprefix + ".removed_child";
+  private static final String WRONG_CHILD_CLASS = locprefix + ".wrong_child_class";
+  private static final String ILLEGAL_NAME = locprefix + ".illegal_name";
   
   private static final Logger log = Logger.getLogger(RegisteredObject.class.getName(),
     System.getProperty("taiga.code.logging.text"));

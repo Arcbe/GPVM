@@ -79,7 +79,7 @@ public final class GameManager extends RegisteredSystem implements WindowListene
     updater.addUpdateable(entman, 0, 1);
     
     setServerMode(server);
-    setClientMoe(client);
+    setClientMode(client);
   }
   
   /**
@@ -98,7 +98,7 @@ public final class GameManager extends RegisteredSystem implements WindowListene
    * 
    * @param client Whether this {@link GameManager} should be a client.
    */
-  public void setClientMoe(boolean client) {
+  public void setClientMode(boolean client) {
     TileRenderingRegistry tilerendreg = getObject(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
     EntityRenderingRegistry entrendreg = getObject(HardcodedValues.ENTITY_RENDERING_REGISTRY_NAME);
     GraphicsRoot graphics = getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);

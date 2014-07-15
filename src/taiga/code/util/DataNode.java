@@ -59,7 +59,7 @@ public class DataNode extends RegisteredObject {
    */
   public DataNode getDataNode(String ... names) {
     if(names.length == 1) {
-      String[] temp = names[0].split(Character.toString(SEPARATOR));
+      String[] temp = names[0].split(SEPARATOR);
       if(temp.length != 0) names = temp;
     }
     
