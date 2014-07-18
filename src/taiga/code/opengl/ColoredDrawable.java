@@ -9,7 +9,6 @@ package taiga.code.opengl;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -71,6 +70,8 @@ public final class ColoredDrawable implements Drawable {
     for(int i = 0; i < 9; i++) {
       color.writeARGB(colors);
     }
+    
+    colors.flip();
   }
   
   public void setGradient(ReadableColor color1, ReadableColor color2, GradientType type) {
@@ -172,7 +173,7 @@ public final class ColoredDrawable implements Drawable {
     GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
     
     GL11.glVertexPointer(2, 0, createVertices(x, y, w, h));
-    GL11.glColorPointer(4, GL11.GL_BYTE, 0, colors);
+    GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, colors);
     
     GL11.glDrawElements(GL11.GL_QUADS, indices);
   }
@@ -208,7 +209,7 @@ public final class ColoredDrawable implements Drawable {
   
   private Color processColorData(int col) {
     byte[] bytes = ByteUtils.toBytes(col);
-    return new Color(bytes[1], bytes[2], bytes[3], bytes[0]);
+    return new Color(bytes[0], bytes[1], bytes[2], bytes[3]);
   }
   
   private void processColors(DataNode data) {
