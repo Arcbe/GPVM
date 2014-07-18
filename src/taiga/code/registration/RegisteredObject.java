@@ -140,6 +140,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * @return The desired child or null.
    */
   public <T extends RegisteredObject> T getChild(String name) {
+    if(children == null) return null;
+    
     try {
       return (T) children.get(name);
     } catch(ClassCastException ex) {

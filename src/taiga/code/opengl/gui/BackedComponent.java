@@ -30,21 +30,24 @@ public class BackedComponent extends Component {
     super(name);
   }
   
-  public BackedComponent(String name, DataNode data) {
-    super(name, data);
+  public BackedComponent(DataNode data) {
+    super(data);
+    
+    data = (DataNode) data.data;
     
     Integer temp = data.getValueByName(FIELD_NAME_PADDING);
     if(temp != null) padding = temp;
     
     if(data.getDataNode(FIELD_NAME_BACKGROUND) != null) {
-      DataNode bgclass = data.getDataNode(new String[]{FIELD_NAME_BACKGROUND, FIELD_NAME_BG_CLASS});
+      String bgclass = data.getValueByName(FIELD_NAME_BACKGROUND, FIELD_NAME_BG_CLASS);
       
-      if(bgclass instanceof DataNode || ((DataNode)bgclass).data instanceof String) {
+      if(bgclass == null) {
         log.log(Level.SEVERE, NO_BG_CLASS);
       } else {
         
         try {
-          Class<? extends Drawable> bgc = (Class<? extends Drawable>) getClass().getClassLoader().loadClass((String) bgclass.data);
+          Class<? extends Drawable> bgc = 
+            (Class<? extends Drawable>) getClass().getClassLoader().loadClass((String) bgclass);
           
           try {
             Constructor<? extends Drawable> cons;

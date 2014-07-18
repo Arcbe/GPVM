@@ -48,11 +48,12 @@ public abstract class Component extends Renderable {
    * Constructs a new {@link COmponent} with the given name and with parameters
    * based on the given {@link DataNode}.
    * 
-   * @param name The name of the {@link Component}.
    * @param params The parameters to apply to the {@link Component}.
    */
-  public Component(String name, DataNode params) {
-    super(name);
+  public Component(DataNode params) {
+    super(params.name);
+    
+    params = (DataNode) params.data;
     
     bounds = new Rectangle();
     minsize = new Dimension();

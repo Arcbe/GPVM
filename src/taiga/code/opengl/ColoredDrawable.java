@@ -9,6 +9,7 @@ package taiga.code.opengl;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -24,6 +25,7 @@ public final class ColoredDrawable implements Drawable {
   public static final String FIELD_NAME_COLOR = "color";
   public static final String FIELD_NAME_HOR_GRAD = "horizontal-gradient";
   public static final String FIELD_NAME_VERT_GRAD = "vertical-gradient";
+  public static final String FIELD_NAME_CENT_GRAD = "center-gradient";
   
   public enum GradientType {
     vertical,
@@ -44,6 +46,34 @@ public final class ColoredDrawable implements Drawable {
   public ColoredDrawable(ReadableColor color1, ReadableColor color2, GradientType type) {
     this.colors = BufferUtils.createByteBuffer(9 * 4);
     
+    setGradient(color1, color2, type);
+  }
+
+  public ColoredDrawable(DataNode data) {
+    this.colors = BufferUtils.createByteBuffer(9 * 4);
+    
+    DataNode val;
+    Number col;
+    if((val = (DataNode) data.getValueByName(FIELD_NAME_COLORS)) != null) {
+      processColors(val);
+    } else if((val = data.getValueByName(FIELD_NAME_VERT_GRAD)) != null) {
+      processGradient(val, GradientType.vertical);
+    } else if((val = data.getValueByName(FIELD_NAME_HOR_GRAD)) != null) {
+      processGradient(val, GradientType.horizontal);
+    } else if((val = data.getValueByName(FIELD_NAME_CENT_GRAD)) != null) {
+      processGradient(val, GradientType.center);
+    } else if((col = data.getValueByName(FIELD_NAME_COLOR)) != null) {
+      setColor(processColorData(col.intValue()));
+    }
+  }
+  
+  public void setColor(ReadableColor color) {
+    for(int i = 0; i < 9; i++) {
+      color.writeARGB(colors);
+    }
+  }
+  
+  public void setGradient(ReadableColor color1, ReadableColor color2, GradientType type) {
     switch(type) {
       case vertical:
         setVerticalGradient(color1, color2);
@@ -54,34 +84,6 @@ public final class ColoredDrawable implements Drawable {
       case center:
         setCentralGradient(color1, color2);
         break;
-    }
-  }
-
-  public ColoredDrawable(DataNode data) {
-    this.colors = BufferUtils.createByteBuffer(9 * 4);
-    
-    DataNode val;
-    if((val = data.getValueByName(FIELD_NAME_COLORS)) != null) {
-      if(!(val.data instanceof List)) return;
-      List cold = (List) val.data;
-      
-      Color[] cols = new Color[9];
-      if(cold.get(0) instanceof Integer) {
-        for(int i = 0; i < cols.length; i++) {
-          byte[] bytes = ByteUtils.toBytes((int) cold.get(i));
-          cols[i] = new Color(bytes[1], bytes[2], bytes[3], bytes[0]);
-        }
-      }
-      
-      setColors(cols);
-    } else if((val = data.getValueByName(FIELD_NAME_VERT_GRAD)) != null) {
-      //if()
-    }
-  }
-  
-  public void setColor(ReadableColor color) {
-    for(int i = 0; i < 9; i++) {
-      color.writeARGB(colors);
     }
   }
   
@@ -203,6 +205,30 @@ public final class ColoredDrawable implements Drawable {
   }
   
   private static final IntBuffer indices;
+  
+  private Color processColorData(int col) {
+    byte[] bytes = ByteUtils.toBytes(col);
+    return new Color(bytes[1], bytes[2], bytes[3], bytes[0]);
+  }
+  
+  private void processColors(DataNode data) {
+    Color[] cols = new Color[9];
+    
+    List<Integer> colors = (List<Integer>) data.data;
+    for(int i = 0; i < 9; i++)
+      cols[i] = processColorData(colors.get(i));
+    
+    setColors(cols);
+  }
+  
+  private void processGradient(DataNode data, GradientType type) {
+    List<Integer> cols = (List<Integer>) data.data;
+    
+    Color color1 = processColorData(cols.get(0));
+    Color color2 = processColorData(cols.get(1));
+    
+    setGradient(color1, color2, type);
+  }
   
   static {
     indices = BufferUtils.createIntBuffer(16);

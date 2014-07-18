@@ -8,7 +8,6 @@ package taiga.code.opengl.gui;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +33,7 @@ public class GUICreator {
    * @param data The {@link DataNode} to construct the GUI with.
    * @return A GUI corresponding to the given data as closely as possible.
    */
-  public static Component createGUI(DataNode data) {
+  public static Component createGUI(DataNode data) throws GUIException {
     return createGUI(data, ClassLoader.getSystemClassLoader());
   }
   
@@ -48,95 +47,44 @@ public class GUICreator {
    * @param loader The {@link ClassLoader} to load the {@link Component}s with.
    * @return A GUI corresponding to the given data as closely as possible.
    */
-  public static Component createGUI(DataNode data, ClassLoader loader) {
+  public static Component createGUI(DataNode data, ClassLoader loader) throws GUIException {
     DataNode aliasnode = data.getChild(FIELD_NAME_ALIAS);
-    
-    if(aliasnode == null) return createElement(data, loader, null);
-    
-    //grab the aliases
-    Map<String, String> alias = new HashMap<>();
-    for(RegisteredObject obj : aliasnode) {
-      if(obj instanceof DataNode && ((DataNode)obj).data instanceof String) {
-        alias.put(obj.name, (String) ((DataNode)obj).data);
-      }
-    }
     
     for(RegisteredObject obj : data) {
       if(!obj.name.equals(FIELD_NAME_ALIAS) && obj instanceof DataNode)
-        return createElement((DataNode) obj, loader, alias);
+        try {
+          return createElement((DataNode) obj, loader);
+      } catch (
+        NoSuchMethodException | 
+          ClassNotFoundException | 
+          InstantiationException | 
+          IllegalAccessException | 
+          IllegalArgumentException | 
+          InvocationTargetException ex) {
+        throw new GUIException(GUI_LOADING_ERROR, ex);
+      }
     }
     
     return null;
   }
   
-  private static Component createElement(DataNode data, ClassLoader loader, Map<String, String> alias) {
-    //get the name for the component
-    String componentname = data.name;
+  private static Component createElement(DataNode data, ClassLoader loader) 
+    throws NoSuchMethodException, 
+    ClassNotFoundException,
+    InstantiationException,
+    IllegalAccessException,
+    IllegalArgumentException, 
+    InvocationTargetException,
+    GUIException {
     
-    //get the class name
-    String classname = data.getValueByName(FIELD_NAME_CLASS);
-    if(classname == null) {
-      log.log(Level.SEVERE, NO_COMPONENT_CLASS, componentname);
-      return null;
-    }
-    if(alias.containsKey(classname)) classname = alias.get(classname);
+    Component comp = loadComponent(data, loader);
     
-    //get the class for the component
-    Class<? extends Component> compclass;
-    try {
-      compclass = (Class<? extends Component>) loader.loadClass(classname);
-    } catch (ClassNotFoundException | ClassCastException ex) {
-      log.log(Level.SEVERE, COMPONENT_CLASS_NOT_FOUND, ex);
-      return null;
+    for(RegisteredObject obj : data) {
+      if(obj instanceof DataNode)
+        comp.addChild((DataNode) obj);
     }
     
-    Component result;
-    Constructor<? extends Component> cons;
-    try {
-      cons = compclass.getConstructor(String.class, DataNode.class);
-      
-      try {
-        result = cons.newInstance(componentname, data);
-      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-        log.log(Level.SEVERE, UNABLE_TO_CONSTRUCT, ex);
-        return null;
-      }
-    } catch (NoSuchMethodException | SecurityException e) {
-      //try for a constructor with a string as an argument.
-      try {
-        cons = compclass.getConstructor(String.class);
-        
-        try {
-          result = cons.newInstance(componentname);
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-          log.log(Level.SEVERE, UNABLE_TO_CONSTRUCT, ex);
-          return null;
-        }
-      } catch (NoSuchMethodException | SecurityException ex) {
-        log.log(Level.SEVERE, INVALID_CONSTRUCTOR, compclass);
-        return null;
-      }
-    }
-    
-    DataNode childs = data.getDataNode(FIELD_NAME_CHILDREN);
-    if(childs != null) {
-      for(RegisteredObject obj : childs) {
-        if(!(obj instanceof DataNode)) continue;
-        
-        result.addChild(createElement((DataNode) obj, loader, alias));
-      }
-    }
-    
-    DataNode meta = data.getDataNode(FIELD_NAME_META_COMPONENT);
-    if(meta != null) {
-      for(RegisteredObject obj : meta) {
-        if(!(obj instanceof DataNode)) continue;
-        
-        result.addChild(createMeta(data, loader, alias));
-      }
-    }
-    
-    return result;
+    return comp;
   }
   
   private static RegisteredObject createMeta(DataNode data, ClassLoader loader, Map<String,String> alias) {
@@ -180,9 +128,37 @@ public class GUICreator {
     
     return result;
   }
+  
+  private static Component loadComponent(DataNode data, ClassLoader loader) 
+    throws NoSuchMethodException, 
+    ClassNotFoundException, 
+    InstantiationException, 
+    IllegalAccessException, 
+    IllegalArgumentException, 
+    InvocationTargetException,
+    GUIException {
+    
+    DataNode attrs = (DataNode) data.data;
+    
+    if(attrs == null || attrs.getValueByName(FIELD_NAME_CLASS) == null) {
+      throw new GUIException(NO_COMPONENT_CLASS);
+    }
+    
+    Class<? extends Component> clazz = (Class<? extends Component>) loader.loadClass((String) attrs.getValueByName(FIELD_NAME_CLASS));
+    
+    try {
+      Constructor cons;
+      cons = clazz.getConstructor(DataNode.class);
+      
+      return (Component) cons.newInstance(data);
+    } catch(NoSuchMethodException ex) {
+      return clazz.newInstance();
+    }
+  }
 
   private static final String locprefix = GUICreator.class.getName().toLowerCase();
   
+  private static final String GUI_LOADING_ERROR = locprefix + ".gui_loading_error";
   private static final String NO_COMPONENT_CLASS = locprefix + ".no_component_class";
   private static final String COMPONENT_CLASS_NOT_FOUND = locprefix + ".component_class_not_found";
   private static final String INVALID_CONSTRUCTOR = locprefix + ".invalid_constructor";

@@ -39,7 +39,7 @@ public class DataNode extends RegisteredObject {
    * @param name The name of the child to get the value from.
    * @return The data from the child with the given name.
    */
-  public <T> T getValueByName(String name) {
+  public <T> T getValueByName(String ... name) {
     DataNode data = getDataNode(name);
     
     if(data == null || data.data == null) return null;
