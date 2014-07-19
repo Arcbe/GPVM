@@ -6,6 +6,7 @@
 
 package taiga.code.opengl;
 
+import taiga.code.math.Matrix4;
 import taiga.code.registration.RegisteredObject;
 
 /**
@@ -58,15 +59,18 @@ public abstract class Renderable extends RegisteredObject {
    * @param pass The rendering pass for this call.  This allows for separating
    * {@link Renderable} into categories that will all be rendered in a defined
    * order.
+   * @param proj The projection to use for this {@link Renderable}.
    */
-  public void render(int pass) {
+  public void render(int pass, Matrix4 proj) {
     if(!enabled) return;
     
-    renderSelf(pass);
+    proj = processProjection(proj, pass);
+    
+    renderSelf(pass, proj);
     
     for(RegisteredObject obj : this) {
       if(obj != null && obj instanceof Renderable) {
-        ((Renderable)obj).render(pass);
+        ((Renderable)obj).render(pass, proj);
       }
     }
     
@@ -116,8 +120,9 @@ public abstract class Renderable extends RegisteredObject {
    * @param pass The rendering pass for this call.  This allows for separating
    * {@link Renderable} into categories that will all be rendered in a defined
    * order.
+   * @param proj The projection that has been passed to this {@link Renderable}.
    */
-  protected abstract void renderSelf(int pass);
+  protected abstract void renderSelf(int pass, Matrix4 proj);
   
   /**
    * Called after all the children for this {@link Renderable} have be
@@ -132,6 +137,18 @@ public abstract class Renderable extends RegisteredObject {
    * or the first frame after this {@link Renderable} has been added.
    */
   protected void initializeSelf() {}
+  
+  /**
+   * Allows this {@link Renderable} to alter the projection it uses.  This
+   * will also apply to any children {@link Renderable}s.  This method should
+   * create a new {@link Matrix4} instead of using the given {@link Matrix4}.
+   * 
+   * @param proj The projection {@link Matrix4} given to this {@link Renderable}.
+   * @param pass The current pass that is being rendered.
+   * @return The {@link Matrix4} that should be used for this {@link Renderable}
+   *  and its children.
+   */
+  protected Matrix4 processProjection(Matrix4 proj, int pass) { return proj; }
   
   /**
    * Called when this {@link Renderable} has been removed from the registration

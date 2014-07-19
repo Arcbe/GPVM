@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import taiga.code.math.Matrix4;
 import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.registry.TileRenderingRegistry;
 
@@ -208,9 +209,9 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     }
   }
 
-  protected void render(int pass) {    
+  protected void render(int pass, Matrix4 proj) {    
     for(TileRenderer rend : instances.values())
-      rend.render(pass);
+      rend.render(pass, proj);
   }
   
   private boolean dirty;

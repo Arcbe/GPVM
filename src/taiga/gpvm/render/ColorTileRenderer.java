@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import taiga.code.math.Matrix4;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Tile;
 import taiga.gpvm.registry.RenderingInfo;
@@ -121,7 +122,7 @@ public class ColorTileRenderer implements TileRenderer {
  }
 
   @Override
-  public void render(int pass) {
+  public void render(int pass, Matrix4 proj) {
     if(verts == null || 
       color == null || 
       pass != HardcodedValues.OPAQUE_WORLD_LAYER) return;

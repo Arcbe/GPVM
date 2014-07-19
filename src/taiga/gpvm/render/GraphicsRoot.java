@@ -59,10 +59,6 @@ public class GraphicsRoot extends GraphicsSystem implements ChildListener {
   }
 
   @Override
-  protected void rendering() {
-  }
-
-  @Override
   public void childAdded(RegisteredObject parent, RegisteredObject child) {
   }
 

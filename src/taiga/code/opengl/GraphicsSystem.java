@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import taiga.code.math.Matrix4;
 import taiga.code.registration.RegisteredObject;
 import taiga.code.registration.RegisteredSystem;
 import taiga.code.util.Setting;
@@ -182,7 +183,7 @@ public class GraphicsSystem extends RegisteredSystem implements Runnable {
   /**
    * Called before each frame between updating and rendering.
    */
-  protected void rendering() {}
+  protected Matrix4 rendering() { return null; }
   
   private boolean fullscreen;
   private boolean vsync;
@@ -265,7 +266,8 @@ public class GraphicsSystem extends RegisteredSystem implements Runnable {
   }
   
   private void render() {
-    rendering();
+    Matrix4 proj = rendering();
+    if(proj == null) proj = new Matrix4();
     
     //get the number of passes
     int passes = 0;
@@ -280,7 +282,7 @@ public class GraphicsSystem extends RegisteredSystem implements Runnable {
     for(int i = 0; i < passes; i++) {
       for(RegisteredObject obj : this) {
         if(obj != null && obj instanceof Renderable)
-          ((Renderable)obj).render(i);
+          ((Renderable)obj).render(i, proj);
       }
     }
   }

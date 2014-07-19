@@ -7,6 +7,7 @@
 package taiga.gpvm.screens;
 
 import java.util.logging.Logger;
+import taiga.code.math.Matrix4;
 import taiga.code.opengl.RenderableSwitcher;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.UniverseListener;
@@ -37,7 +38,7 @@ public class GameScreen extends RenderableSwitcher implements UniverseListener, 
   }
 
   @Override
-  protected void renderSelf(int pass) {
+  protected void renderSelf(int pass, Matrix4 proj) {
   }
 
   @Override

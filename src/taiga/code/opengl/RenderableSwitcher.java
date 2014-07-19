@@ -6,6 +6,8 @@
 
 package taiga.code.opengl;
 
+import taiga.code.math.Matrix4;
+
 /**
  * Used to switch between {@link Renderable} so that at most one child {@link Renderable}
  * is visible at a time.  For example the {@link Renderable}s could be various
@@ -30,6 +32,6 @@ public class RenderableSwitcher extends Renderable {
   protected void updateSelf() {}
 
   @Override
-  protected void renderSelf(int pass) {}
+  protected void renderSelf(int pass, Matrix4 proj) {}
   
 }

@@ -8,8 +8,12 @@ package taiga.code.opengl.gui;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.FloatBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import taiga.code.math.Matrix4;
 import taiga.code.opengl.Drawable;
 import taiga.code.util.DataNode;
 
@@ -90,7 +94,12 @@ public class BackedComponent extends Component {
   }
 
   @Override
-  protected final void drawComponent() {
+  protected final void drawComponent(Matrix4 proj) {
+    final FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
+    
+    GL11.glMatrixMode(GL11.GL_PROJECTION_MATRIX);
+    GL11.glLoadMatrix(proj.store(buffer));
+    
     drawBackground();
     
     drawForeground();

@@ -87,6 +87,7 @@ public final class Matrix4 implements Serializable {
         out.values[2][j] = vec[2];
         out.values[3][j] = vec[3];
       }
+    //otherwise assume that the out parameter is this matrix.
     } else {
       
       for(int i = 0; i < 4; i++) {
@@ -160,9 +161,12 @@ public final class Matrix4 implements Serializable {
    * The buffer is not reset or otherwise changed other than storing the values.
    * 
    * @param buffer The {@link ByteBuffer} to store this {@link Matrix4} in.
+   * @reutrn A reference to the given {@link ByteBuffer}.
    */
-  public void store(ByteBuffer buffer) {
+  public ByteBuffer store(ByteBuffer buffer) {
     store(buffer.asFloatBuffer());
+    
+    return buffer;
   }
   
   /**
@@ -170,10 +174,13 @@ public final class Matrix4 implements Serializable {
    * The buffer is not reset or otherwise changed other than storing the values.
    * 
    * @param buffer The {@link FloatBuffer} to store this {@link Matrix4} in.
+   * @reutrn A reference to the given {@link FloatBuffer}.
    */
-  public void store(FloatBuffer buffer) {
+  public FloatBuffer store(FloatBuffer buffer) {
     for(int i = 0; i < 4; i++)
       buffer.put(values[i]);
+    
+    return buffer;
   }
   
   /**
@@ -182,9 +189,12 @@ public final class Matrix4 implements Serializable {
    * other than loading the values.
    * 
    * @param buffer The {@link ByteBuffer} to load values from.
+   * @reutrn A reference to the given {@link ByteBuffer}.
    */
-  public void load(ByteBuffer buffer) {
+  public ByteBuffer load(ByteBuffer buffer) {
     load(buffer.asFloatBuffer());
+    
+    return buffer;
   }
   
   /**
@@ -193,10 +203,13 @@ public final class Matrix4 implements Serializable {
    * other than storing the values.
    * 
    * @param buffer The {@link FloatBuffer} to load values form.
+   * @reutrn A reference to the given {@link FloatBuffer}.
    */
-  public void load(FloatBuffer buffer) {
+  public FloatBuffer load(FloatBuffer buffer) {
     for(int i = 0; i < 4; i++)
       for(int j = 0; j < 4; j++)
         values[i][j] = buffer.get();
+    
+    return buffer;
   }
 }

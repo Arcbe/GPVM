@@ -6,6 +6,7 @@
 
 package taiga.gpvm.render;
 
+import taiga.code.math.Matrix4;
 import taiga.code.opengl.Renderable;
 import taiga.gpvm.HardcodedValues;
 
@@ -26,7 +27,7 @@ public abstract class SkyBoxRenderer extends Renderable {
   }
   
   @Override
-  protected final void renderSelf(int pass) {
+  protected final void renderSelf(int pass, Matrix4 proj) {
     if(pass == HardcodedValues.SKY_LAYER) renderSky();
   }
   

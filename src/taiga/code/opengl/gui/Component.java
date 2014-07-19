@@ -9,6 +9,7 @@ package taiga.code.opengl.gui;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.logging.Logger;
+import taiga.code.math.Matrix4;
 import taiga.code.opengl.Renderable;
 import taiga.code.util.DataNode;
 
@@ -86,7 +87,7 @@ public abstract class Component extends Renderable {
   }
   
   /**
-   * Changes the loaction for this {@link Component}.
+   * Changes the location for this {@link Component}.
    * 
    * @param x The x coordinate for the {@link Component}.
    * @param y The y coordinate for the {@link Component}.
@@ -243,16 +244,18 @@ public abstract class Component extends Renderable {
   private int tarpass;
   
   @Override
-  protected final void renderSelf(int pass) {
+  protected final void renderSelf(int pass, Matrix4 proj) {
     if(pass != getTargetPass()) return;
     
-    drawComponent();
+    drawComponent(proj);
   }
   
   /**
    * Renders the {@link Component} during the targeted rendering pass.
+   * 
+   * @param proj The projection to use for this {@link Component}.
    */
-  protected abstract void drawComponent();
+  protected abstract void drawComponent(Matrix4 proj);
   
   private void fireBoundsChanged() {
     

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
+import taiga.code.math.Matrix4;
 import taiga.code.opengl.Camera;
 import taiga.code.opengl.Renderable;
 import taiga.code.registration.RegisteredObject;
@@ -88,7 +89,7 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
   }
 
   @Override
-  protected void renderSelf(int pass) {
+  protected void renderSelf(int pass, Matrix4 proj) {
     if(camera == null) return;
     
     camera.setupProjectioMatrix();
@@ -101,7 +102,7 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
       GL11.glLoadIdentity();
       GL11.glTranslatef(coor.x, coor.y, coor.z);
       
-      reg.render(pass);
+      reg.render(pass, proj);
     }
     
     GL11.glPopMatrix();
