@@ -7,6 +7,7 @@
 package taiga.code.opengl;
 
 import taiga.code.math.Matrix4;
+import taiga.code.math.ReadableMatrix4;
 import taiga.code.registration.RegisteredObject;
 
 /**
@@ -31,6 +32,8 @@ public abstract class Renderable extends RegisteredObject {
     enabled = true;
     minpasses = 1;
     initialized = false;
+    localtrans = new Matrix4();
+    globaltrans = new Matrix4();
   }
   
   /**
@@ -93,6 +96,47 @@ public abstract class Renderable extends RegisteredObject {
     }
     
     return minpasses;
+  }
+  
+  /**
+   * Returns the transformation applied to this {@link Renderable}.
+   * 
+   * @return The local transformation.
+   */
+  public ReadableMatrix4 getLocalTransform() {
+    return localtrans.asReadOnly();
+  }
+  
+  /**
+   * Sets the transformation matrix for this {@link Renderable}.
+   * 
+   * @param trans The new transformation matrix.
+   */
+  public void setLocalTransformation(ReadableMatrix4 trans) {
+    localtrans.setValues(trans);
+    updateGlobalTransform();
+  }
+  
+  /**
+   * Applies the given transformation matrix to the local transformation
+   * of this {@link Renderable}.
+   * 
+   * @param trans The transformation to apply.
+   */
+  public void applyTransformation(ReadableMatrix4 trans) {
+    localtrans.mulRHS(trans, localtrans);
+    updateGlobalTransform();
+  }
+  
+  /**
+   * Returns the composite transformation from all of the parents of this
+   * {@link Renderable} along with itself.
+   * 
+   * @return The transformation from world coordinates to eye coordinates for
+   * this {@link Renderable}.
+   */
+  public ReadableMatrix4 getGlobalTransform() {
+    return globaltrans.asReadOnly();
   }
   
   /**
@@ -163,6 +207,24 @@ public abstract class Renderable extends RegisteredObject {
     initialized = false;
   }
   
+  @Override
+  protected void attached(RegisteredObject parent) {
+    super.attached(parent);
+    updateGlobalTransform();
+  }
+  
+  private void updateGlobalTransform() {
+    RegisteredObject obj = getParent();
+    if(!(obj instanceof Renderable)) return;
+    
+    ((Renderable)obj).globaltrans.mul(localtrans, globaltrans);
+    
+    //now that we are updated update the children.
+    for(RegisteredObject o : this)
+      if(o instanceof Renderable)
+        ((Renderable)o).updateGlobalTransform();
+  }
+  
   /**
    * A flag for whether this {@link Renderable} should be updated and rendered.
    * If this is false then this along with any children will not be updated or
@@ -171,4 +233,7 @@ public abstract class Renderable extends RegisteredObject {
   protected boolean enabled;
   private boolean initialized;
   private int minpasses;
+  
+  private final Matrix4 localtrans;
+  private final Matrix4 globaltrans;
 }
