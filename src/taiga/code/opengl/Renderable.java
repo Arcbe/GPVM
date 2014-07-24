@@ -6,6 +6,9 @@
 
 package taiga.code.opengl;
 
+import java.nio.FloatBuffer;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
 import taiga.code.math.ReadableMatrix4;
 import taiga.code.registration.RegisteredObject;
@@ -123,7 +126,7 @@ public abstract class Renderable extends RegisteredObject {
    * 
    * @param trans The transformation to apply.
    */
-  public void applyTransformation(ReadableMatrix4 trans) {
+  public void applyLocalTransformation(ReadableMatrix4 trans) {
     localtrans.mulRHS(trans, localtrans);
     updateGlobalTransform();
   }
@@ -137,6 +140,40 @@ public abstract class Renderable extends RegisteredObject {
    */
   public ReadableMatrix4 getGlobalTransform() {
     return globaltrans.asReadOnly();
+  }
+  
+  /**
+   * Sets the OpenGL model-view matrix to the global transformation {@link Matrix4}
+   * for this {@link Renderable}.
+   */
+  public void applyGlobalModelView() {
+    setGLMatrix(GL11.GL_MODELVIEW, getGlobalTransform());
+  }
+  
+  /**
+   * Sets the OpenGL projection matrix to the given {@link Matrix4}.
+   * 
+   * @param proj The new projection matrix.
+   */
+  public void applyProjection(ReadableMatrix4 proj) {
+    setGLMatrix(GL11.GL_PROJECTION, proj);
+  }
+  
+  /**
+   * Sets the values for an Opengl matrix stack to the given value.  This
+   * will not push or pop the stack.
+   * 
+   * @param matrixmode Which matrix stack to set.
+   * @param mat The matrix to set the stack to.
+   */
+  public void setGLMatrix(int matrixmode, ReadableMatrix4 mat) {
+    FloatBuffer buffer = matbuffer.get();
+    buffer.rewind();
+    mat.store(buffer);
+    buffer.flip();
+    
+    GL11.glMatrixMode(matrixmode);
+    GL11.glLoadMatrix(buffer);
   }
   
   /**
@@ -236,4 +273,15 @@ public abstract class Renderable extends RegisteredObject {
   
   private final Matrix4 localtrans;
   private final Matrix4 globaltrans;
+  
+  /**
+   * A {@link ThreadLocal} variable that stores a 16 element {@link FloatBuffer}
+   * for use in transferring {@link Matrix4}s to OpenGL calls.
+   */
+  protected static final ThreadLocal<FloatBuffer> matbuffer = new ThreadLocal<FloatBuffer>() {
+    @Override
+    protected FloatBuffer initialValue() {
+      return BufferUtils.createFloatBuffer(16);
+    }
+  };
 }

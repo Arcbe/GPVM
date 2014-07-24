@@ -197,9 +197,9 @@ public final class ColoredDrawable implements Drawable {
     verts.put(x).put(y + h / 2);
     verts.put(x + w / 2).put(y + h / 2);
     verts.put(x + w).put(y + h / 2);
-    verts.put(x).put(y + h / 2);
-    verts.put(x + w / 2).put(y + h / 2);
-    verts.put(x + w).put(y + h / 2);
+    verts.put(x).put(y);
+    verts.put(x + w / 2).put(y);
+    verts.put(x + w).put(y);
     verts.flip();
     
     return verts;
@@ -209,7 +209,7 @@ public final class ColoredDrawable implements Drawable {
   
   private Color processColorData(int col) {
     byte[] bytes = ByteUtils.toBytes(col);
-    return new Color(bytes[0], bytes[1], bytes[2], bytes[3]);
+    return new Color(bytes[1], bytes[2], bytes[3], bytes[0]);
   }
   
   private void processColors(DataNode data) {

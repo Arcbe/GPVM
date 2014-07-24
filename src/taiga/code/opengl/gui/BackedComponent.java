@@ -95,10 +95,10 @@ public class BackedComponent extends Component {
 
   @Override
   protected final void drawComponent(Matrix4 proj) {
-    final FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
+    final FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
     
-    GL11.glMatrixMode(GL11.GL_PROJECTION_MATRIX);
-    GL11.glLoadMatrix(proj.store(buffer));
+    applyProjection(proj);
+    applyGlobalModelView();
     
     drawBackground();
     
@@ -122,7 +122,7 @@ public class BackedComponent extends Component {
   protected void drawBackground() {
     if(background == null) return;
     
-    background.draw(getX(), getY(), getWidth(), getHeight());
+    background.draw(0, 0, getWidth(), getHeight());
   }
 
   private Drawable background;

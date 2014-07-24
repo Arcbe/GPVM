@@ -9,7 +9,9 @@ package taiga.code.opengl.gui;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.logging.Logger;
+import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
+import taiga.code.math.ReadableMatrix4;
 import taiga.code.opengl.Renderable;
 import taiga.code.util.DataNode;
 
@@ -258,7 +260,12 @@ public abstract class Component extends Renderable {
   protected abstract void drawComponent(Matrix4 proj);
   
   private void fireBoundsChanged() {
-    
+    setLocalTransformation(new ReadableMatrix4(new float[][]{
+      {1, 0, 0, bounds.x},
+      {0, 1, 0, bounds.y},
+      {0, 0, 1, 0},
+      {0, 0, 0, 1}
+    }));
   }
   
   private void firePrefSizeChanged() {
