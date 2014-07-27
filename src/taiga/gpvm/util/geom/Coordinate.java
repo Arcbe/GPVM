@@ -4,15 +4,17 @@
  */
 package taiga.gpvm.util.geom;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import taiga.gpvm.map.Region;
+import taiga.gpvm.map.World;
 
 /**
  * Represents the location of a tile in space.
  * 
  * @author russell
  */
-public class Coordinate {
+public class Coordinate implements Cloneable, Serializable {
   /**
    * The position of the {@link Coordinate} on the x axis.
    */
@@ -27,22 +29,19 @@ public class Coordinate {
    * The position of the {@link Coordinate} on the z axis.
    */
   public int z;
+  
+  /**
+   * The id of the {@link World} this {@link Coordinate} is in. An id of
+   * -1 indicates that this is the current world if there is a current world in
+   * the given context.
+   */
+  public int worldid;
 
   /**
    * Creates a coordinate at the origin.
    */
   public Coordinate() {
-  }
-  
-  /**
-   * Creates a copy of the given coordinate.
-   * 
-   * @param orig The {@link Coordinate} to copy.
-   */
-  public Coordinate(Coordinate orig) {
-    x = orig.x;
-    y = orig.y;
-    z = orig.z;
+    worldid = -1;
   }
 
   /**
@@ -167,6 +166,7 @@ public class Coordinate {
     hash = 17 * hash + this.x;
     hash = 17 * hash + this.y;
     hash = 17 * hash + this.z;
+    hash = 17 * hash + this.worldid;
     return hash;
   }
 

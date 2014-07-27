@@ -1,5 +1,6 @@
 package taiga.gpvm.render;
 
+import java.util.Collection;
 import taiga.code.util.DataNode;
 import taiga.gpvm.entity.Entity;
 
@@ -18,7 +19,7 @@ public interface EntityRenderer {
    * @param ent The {@link Entity} to render.
    * @param pass The current rendering pass.
    */
-  public void render(Entity ent, int pass);
+  public void render(Collection<Entity> ent, int pass);
   
   /**
    * Loads data specific to the type of {@link Entity} that will be rendered

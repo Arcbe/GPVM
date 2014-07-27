@@ -7,7 +7,6 @@
 package taiga.gpvm.entity;
 
 import java.util.logging.Logger;
-import org.lwjgl.util.vector.ReadableVector3f;
 import org.lwjgl.util.vector.Vector3f;
 import taiga.code.geom.AABox;
 import taiga.code.util.DataNode;
@@ -45,12 +44,6 @@ public class Entity implements Updateable {
     bounds = new AABox();
     velocity = new Vector3f();
     damage = 0;
-  }
-  
-  public void render(int pass){
-    checkRenderer();
-    
-    renderer.render(this, pass);
   }
   
   public AABox getBounds() {

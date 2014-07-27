@@ -7,6 +7,7 @@
 package taiga.gpvm.entity;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,10 +32,16 @@ public class EntityManager extends RegisteredObject implements Updateable {
     nextid = 0;
   }
   
-  public void addEntity(EntityEntry type) {
+  public void createEntity(EntityEntry type) {
     Entity nent = new Entity(getNextID(), type, this);
     
     index.put(nent.id, nent);
+  }
+  
+  public Collection<Entity> getEntitiesAtRegion(Coordinate coor) {
+    coor = coor.getRegionCoordinate();
+    
+    return Collections.unmodifiableCollection(entlocs.get(coor));
   }
 
   @Override
@@ -59,6 +66,31 @@ public class EntityManager extends RegisteredObject implements Updateable {
     }
     
     addEntityLoc(ent, ent.getBounds());
+  }
+  
+  private void removeEntityLoc(Entity ent, AABox bounds) {
+    int top = (int) bounds.top() / Region.REGION_SIZE;
+    int right = (int) bounds.right() / Region.REGION_SIZE;
+    int back = (int) bounds.back() / Region.REGION_SIZE;
+    
+    Coordinate loc = new Coordinate();
+    for(int i = (int) bounds.left() / Region.REGION_SIZE; i <= top; i++) {
+      loc.x = i;
+      for(int j = (int) bounds.front() / Region.REGION_SIZE; i <= top; i++) {
+        loc.y = j;
+        for(int k = (int) bounds.bottom() / Region.REGION_SIZE; i <= top; i++) {
+          loc.z = k;
+          
+          Collection<Entity> ents = entlocs.get(loc);
+          if(ents == null) {
+            ents = new HashSet<>();
+            entlocs.put(loc, ents);
+          }
+          
+          ents.remove(ent);
+        }
+      }
+    } 
   }
     
   private void addEntityLoc(Entity ent, AABox bounds) {

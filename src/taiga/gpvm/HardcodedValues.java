@@ -55,6 +55,7 @@ public class HardcodedValues {
   
   //internal system names
   //<editor-fold>
+  public static final String REGIONAL_ENTITY_RENDERER_NAME = "entities";
   /**
    * The name for the {@link EntityRenderingRegistry}.
    */

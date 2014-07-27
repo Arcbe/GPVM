@@ -6,6 +6,7 @@
 
 package taiga.gpvm.render;
 
+import java.util.Collection;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.ReadableVector3f;
@@ -18,16 +19,18 @@ public class ColorEntityRenderer implements EntityRenderer {
   public static final String COLOR_FIELD = "color";
 
   @Override
-  public void render(Entity ent, int pass) {
+  public void render(Collection<Entity> ents, int pass) {
     if(pass != HardcodedValues.OPAQUE_WORLD_LAYER) return;
     
     GL11.glPointSize(size);
     
     GL11.glBegin(GL11.GL_POINTS);
     
-    ReadableVector3f loc = ent.getBounds().getCenter();
-    GL11.glVertex3f(loc.getX(), loc.getY(), loc.getZ());
-    GL11.glColor3f(red, green, blue);
+    for(Entity ent : ents) {
+      ReadableVector3f loc = ent.getBounds().getCenter();
+      GL11.glVertex3f(loc.getX(), loc.getY(), loc.getZ());
+      GL11.glColor3f(red, green, blue);
+    }
     
     GL11.glEnd();
   }
