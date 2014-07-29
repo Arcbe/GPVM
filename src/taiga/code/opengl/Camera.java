@@ -26,7 +26,7 @@ public abstract class Camera {
     
     GL11.glMatrixMode(GL11.GL_PROJECTION);
     GL11.glLoadIdentity();
-    GLU.gluPerspective(fov, (float) Display.getWidth() / (float)Display.getHeight(), near, far);
+    GLU.gluPerspective(fov, (float) Display.getHeight()/ (float)Display.getWidth(), near, far);
     GLU.gluLookAt(
             position.x, 
             position.y, 

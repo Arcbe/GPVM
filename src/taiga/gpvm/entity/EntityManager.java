@@ -41,7 +41,9 @@ public class EntityManager extends RegisteredObject implements Updateable {
   public Collection<Entity> getEntitiesAtRegion(Coordinate coor) {
     coor = coor.getRegionCoordinate();
     
-    return Collections.unmodifiableCollection(entlocs.get(coor));
+    Collection<Entity> result = entlocs.get(coor);
+    if(result == null) return null;
+    else return Collections.unmodifiableCollection(result);
   }
 
   @Override

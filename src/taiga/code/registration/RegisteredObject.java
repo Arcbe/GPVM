@@ -139,6 +139,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * @param name The name of the desired child.
    * @return The desired child or null.
    */
+  @SuppressWarnings("unchecked")
   public <T extends RegisteredObject> T getChild(String name) {
     if(children == null) return null;
     
@@ -176,6 +177,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * could not be added.
    * @throws NullPointerException Thrown if the child is null.
    */
+  @SuppressWarnings("unchecked")
   public <T extends RegisteredObject> T addChild(RegisteredObject child) {
     if(child == null) return null;
     
@@ -286,10 +288,15 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * 
    * @param <T> The type of the {@link RegisteredObject} to return.
    * @param path A array of names for the path to the desired object.
-   * @return 
+   * @return The desired {@link RegisteredObject} or null if it could not be found.
    */
+  @SuppressWarnings("unchecked")
   public <T extends RegisteredObject> T getObject(String[] path) {
-    if(path.length == 0) return (T) this;
+    if(path.length == 0) try {
+      return (T) this;
+    } catch(ClassCastException ex) {
+      return null;
+    }
     
     T obj =  (T) getObject(path, 0);
     

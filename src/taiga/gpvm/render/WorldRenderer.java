@@ -4,10 +4,12 @@
  */
 package taiga.gpvm.render;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
@@ -16,10 +18,13 @@ import taiga.code.opengl.Camera;
 import taiga.code.opengl.Renderable;
 import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.HardcodedValues;
+import taiga.gpvm.entity.Entity;
+import taiga.gpvm.entity.EntityManager;
 import taiga.gpvm.util.geom.Coordinate;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.World;
 import taiga.gpvm.map.WorldListener;
+import taiga.gpvm.registry.EntityRenderingRegistry;
 import taiga.gpvm.registry.SkyEntry;
 import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.schedule.WorldChange;
@@ -41,6 +46,8 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
     
     map = world;
     renderers = new HashMap<>();
+    viewables = new HashSet<>();
+    entrend = new HashMap<>();
     
     world.addListener(this);
     for(Region reg : world.getRegions())
@@ -51,14 +58,22 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
     camera = cam;
   }
   
-  private static int drawdistance = 4;
+  private static final int drawdistance = 4;
   
-  private World map;
-  private Map<Coordinate, RegionRenderer> renderers;
+  private final World map;
+  private final Collection<Coordinate> viewables;
+  private final Map<EntityRenderer, Collection<Entity>> entrend;
+  private final Map<Coordinate, RegionRenderer> renderers;
   private volatile Camera camera;
+  
+  private EntityRenderingRegistry entreg;
+  private EntityManager entmng;
   
   @Override
   protected void attached(RegisteredObject parent) {
+    entreg = getObject(HardcodedValues.ENTITY_RENDERING_REGISTRY_NAME);
+    entmng = getObject(HardcodedValues.ENTITY_MANAGER_NAME);
+    
     SkyRegistry skies = getObject(HardcodedValues.SKY_REGISTRY_NAME);
     
     if(skies == null) {
@@ -84,6 +99,9 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
 
   @Override
   protected void updateSelf() {
+    updateRendFrustrum();
+    collectEntities();
+    
     for(RegionRenderer reg : renderers.values())
       reg.update();
   }
@@ -96,6 +114,10 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
     
     GL11.glMatrixMode(GL11.GL_MODELVIEW);
     GL11.glPushMatrix();
+    
+    for(Map.Entry<EntityRenderer, Collection<Entity>> val : entrend.entrySet()) {
+      val.getKey().render(val.getValue(), pass);
+    }
     
     for(RegionRenderer reg : renderers.values()) {
       Coordinate coor = reg.getLocation();
@@ -125,6 +147,37 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
     
     RegionRenderer reg = renderers.get(change.location.getRegionCoordinate());
     reg.updateTile(change.location);
+  }
+  
+  private void updateRendFrustrum() {
+    viewables.clear();
+    
+    for(Coordinate coor : renderers.keySet())
+      viewables.add(coor);
+  }
+  
+  private void collectEntities() {
+    HashSet<Entity> ents = new HashSet<>();
+    for (Collection<Entity> cols : entrend.values()) {
+      cols.clear();
+    }
+    
+    for(Coordinate coor : viewables) {
+      Collection<Entity> temp = entmng.getEntitiesAtRegion(coor);
+      if(temp != null) ents.addAll(temp);
+    }
+    
+    for(Entity ent : ents) {
+      EntityRenderer rend = entreg.getEntry(ent.type).renderer;
+      
+      Collection<Entity> list = entrend.get(rend);
+      if(list == null) {
+        list = new HashSet<>();
+        entrend.put(rend, list);
+      }
+      
+      list.add(ent);
+    }
   }
   
   private static final String locprefix = WorldRenderer.class.getName().toLowerCase();

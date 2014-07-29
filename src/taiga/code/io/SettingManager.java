@@ -67,7 +67,7 @@ public class SettingManager extends ReusableObject {
    * @param name The name of the {@link Setting}
    * @return The {@link Setting} or null.
    */
-  public Setting getSetting(String name) {
+  public <V> Setting<V> getSetting(String name) {
     RegisteredObject set = getObject(name);
     if(set == null || !(set instanceof Setting)) return null;
     
@@ -79,7 +79,7 @@ public class SettingManager extends ReusableObject {
     removeAllChildren();
   }
   
-  private Setting addData(DataNode node) {
+  private <V> Setting<V> addData(DataNode node) {
     Setting result = new Setting(node.name, node.data);
     
     for(RegisteredObject obj : node) {

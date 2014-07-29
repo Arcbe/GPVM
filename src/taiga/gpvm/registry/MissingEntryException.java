@@ -21,4 +21,6 @@ class MissingEntryException extends RuntimeException {
   public MissingEntryException(String name) {
     super(name);
   }
+  
+  private static final long serialVersionUID = 1;
 }
