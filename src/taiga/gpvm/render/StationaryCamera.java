@@ -1,7 +1,6 @@
 package taiga.gpvm.render;
 
 import org.lwjgl.util.vector.Vector3f;
-import taiga.code.opengl.Camera;
 
 /**
  * A simple camera that just stores the acts as a storage for the various

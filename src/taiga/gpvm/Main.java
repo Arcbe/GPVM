@@ -5,6 +5,7 @@ import taiga.code.input.InputSystem;
 import taiga.code.input.KeyboardEvent;
 import taiga.code.input.KeyboardListener;
 import taiga.code.io.SettingManager;
+import taiga.code.opengl.GraphicsSystem;
 import taiga.gpvm.map.FixedSizeManager;
 import taiga.gpvm.map.FlatWorldGenerator;
 import taiga.gpvm.map.Universe;
@@ -16,7 +17,6 @@ import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.registry.TileEntry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.ColoredSky;
-import taiga.gpvm.render.GraphicsRoot;
 import taiga.gpvm.render.MobileCamera;
 import taiga.gpvm.render.WorldRenderer;
 import taiga.gpvm.screens.GameScreen;
@@ -62,7 +62,7 @@ public class Main {
 //    clientnet.connect(servernet);
     
     GameManager game = createGame();
-    GraphicsRoot graphics = game.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+    GraphicsSystem graphics = game.getObject(HardcodedValues.GRAPHICS_SYSTEM_NAME);
     GameScreen screen = graphics.getObject(HardcodedValues.GAME_SCREEN_NAME);
     InputSystem input = game.getObject(HardcodedValues.INPUT_SYSTEM_NAME);
     
@@ -203,7 +203,7 @@ public class Main {
     SettingManager    settings = client.getObject(HardcodedValues.SETTING_MANAGER_NAME);
     TileRegistry      tiles = client.getObject(HardcodedValues.TILE_REGISTRY_NAME);
     TileRenderingRegistry rendreg = client.getObject(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
-    GraphicsRoot      graphics = client.getObject(HardcodedValues.GRAPHICSSYSTEM_NAME);
+    GraphicsSystem    graphics = client.getObject(HardcodedValues.GRAPHICS_SYSTEM_NAME);
     GameScreen        screen = graphics.getObject(HardcodedValues.GAME_SCREEN_NAME);
     
     //load the settings file

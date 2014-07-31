@@ -91,7 +91,7 @@ public class HardcodedValues {
   /**
    * Name for the {@link GraphicsSystem}.
    */
-  public static final String GRAPHICSSYSTEM_NAME = "graphics";
+  public static final String GRAPHICS_SYSTEM_NAME = "graphics";
   /**
    * Name for the {@link TileRegistry}
    */

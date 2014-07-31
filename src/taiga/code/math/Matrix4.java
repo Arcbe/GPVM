@@ -45,6 +45,210 @@ public class Matrix4 extends ReadableMatrix4 implements Serializable {
   }
   
   /**
+   * Sets this {@link Matrix4} to the inverse of the given {@link ReadableMatrix4}.
+   * 
+   * @param other The {@link ReadableMatrix4} to get the inverse from.
+   * @return A reference to this {@link Matrix4}.
+   */
+  public final Matrix4 asInverse(ReadableMatrix4 other) {
+    setValues(other);
+    return invert();
+  }
+  
+  /**
+   * Inverts this {@link Matrix4}.
+   * 
+   * @return A reference to this {@link Matrix4}.
+   */
+  public final Matrix4 invert() {
+    return invert(this);
+  }
+  
+  /**
+   * Sets the given {@link Matrix4} to the inverse of this {@link Matrix4}.
+   * If this {@link Matrix4} is not invertible, then the output of this method is
+   * null and the state of the out parameter is undefined.
+   * 
+   * @param out The {@link Matrix4} to set to the inverse.
+   * @return A reference to the out parameter.
+   */
+  public final Matrix4 invert(Matrix4 out) {
+    float[][] orig;
+    //create a copy of the original values if needed
+    if(out == this) {
+      orig = new float[4][4];
+      for(int i = 0; i < 4; i++)
+        System.arraycopy(values[i], 0, orig[i], 0, 4);
+    } else {
+      //just use the array in this matrix if possible.
+      orig = values;
+    }
+    
+    out.values[0][0] = 
+      orig[1][1] * orig[2][2] * orig[3][3] +
+      orig[1][2] * orig[2][3] * orig[3][1] +
+      orig[1][3] * orig[2][1] * orig[3][2] -
+      orig[3][1] * orig[2][2] * orig[1][3] -
+      orig[3][2] * orig[2][3] * orig[1][1] -
+      orig[3][3] * orig[2][1] * orig[1][2];
+    
+    out.values[0][1] = 
+      orig[1][0] * orig[2][2] * orig[3][3] +
+      orig[1][2] * orig[2][3] * orig[3][0] +
+      orig[1][3] * orig[2][0] * orig[3][2] -
+      orig[3][0] * orig[2][2] * orig[1][3] -
+      orig[3][2] * orig[2][3] * orig[1][0] -
+      orig[3][3] * orig[2][0] * orig[1][2];
+    
+    out.values[0][2] = 
+      orig[1][0] * orig[2][1] * orig[3][3] +
+      orig[1][1] * orig[2][3] * orig[3][0] +
+      orig[1][3] * orig[2][0] * orig[3][1] -
+      orig[3][0] * orig[2][1] * orig[1][3] -
+      orig[3][1] * orig[2][3] * orig[1][0] -
+      orig[3][3] * orig[2][0] * orig[1][1];
+    
+    out.values[0][3] = 
+      orig[1][0] * orig[2][1] * orig[3][2] +
+      orig[1][1] * orig[2][2] * orig[3][0] +
+      orig[1][2] * orig[2][0] * orig[3][1] -
+      orig[3][0] * orig[2][1] * orig[1][2] -
+      orig[3][1] * orig[2][2] * orig[1][0] -
+      orig[3][2] * orig[2][0] * orig[1][1];
+    
+    out.values[1][0] = 
+      orig[0][1] * orig[2][2] * orig[3][3] +
+      orig[0][2] * orig[2][3] * orig[3][1] +
+      orig[0][3] * orig[2][1] * orig[3][2] -
+      orig[3][1] * orig[2][2] * orig[0][3] -
+      orig[3][2] * orig[2][3] * orig[0][1] -
+      orig[3][3] * orig[2][1] * orig[0][2];
+    
+    out.values[1][1] = 
+      orig[0][0] * orig[2][2] * orig[3][3] +
+      orig[0][2] * orig[2][3] * orig[3][0] +
+      orig[0][3] * orig[2][0] * orig[3][2] -
+      orig[3][0] * orig[2][2] * orig[0][3] -
+      orig[3][2] * orig[2][3] * orig[0][0] -
+      orig[3][3] * orig[2][0] * orig[0][2];
+    
+    out.values[1][2] = 
+      orig[0][0] * orig[2][1] * orig[3][3] +
+      orig[0][1] * orig[2][3] * orig[3][0] +
+      orig[0][3] * orig[2][0] * orig[3][1] -
+      orig[3][0] * orig[2][1] * orig[0][3] -
+      orig[3][1] * orig[2][3] * orig[0][0] -
+      orig[3][3] * orig[2][0] * orig[0][1];
+    
+    out.values[1][3] = 
+      orig[0][0] * orig[2][1] * orig[3][2] +
+      orig[0][1] * orig[2][2] * orig[3][0] +
+      orig[0][2] * orig[2][0] * orig[3][1] -
+      orig[3][0] * orig[2][1] * orig[0][2] -
+      orig[3][1] * orig[2][2] * orig[0][0] -
+      orig[3][2] * orig[2][0] * orig[0][1];
+    
+    out.values[2][0] = 
+      orig[0][1] * orig[1][2] * orig[3][3] +
+      orig[0][2] * orig[1][3] * orig[3][1] +
+      orig[0][3] * orig[1][1] * orig[3][2] -
+      orig[3][1] * orig[1][2] * orig[0][3] -
+      orig[3][2] * orig[1][3] * orig[0][1] -
+      orig[3][3] * orig[1][1] * orig[0][2];
+    
+    out.values[2][1] = 
+      orig[0][0] * orig[1][2] * orig[3][3] +
+      orig[0][2] * orig[1][3] * orig[3][0] +
+      orig[0][3] * orig[1][0] * orig[3][2] -
+      orig[3][0] * orig[1][2] * orig[0][3] -
+      orig[3][2] * orig[1][3] * orig[0][0] -
+      orig[3][3] * orig[1][0] * orig[0][2];
+    
+    out.values[2][2] = 
+      orig[0][0] * orig[1][1] * orig[3][3] +
+      orig[0][1] * orig[1][3] * orig[3][0] +
+      orig[0][3] * orig[1][0] * orig[3][1] -
+      orig[3][0] * orig[1][1] * orig[0][3] -
+      orig[3][1] * orig[1][3] * orig[0][0] -
+      orig[3][3] * orig[1][0] * orig[0][1];
+    
+    out.values[2][3] = 
+      orig[0][0] * orig[1][1] * orig[3][2] +
+      orig[0][1] * orig[1][2] * orig[3][0] +
+      orig[0][2] * orig[1][0] * orig[3][1] -
+      orig[3][0] * orig[1][1] * orig[0][2] -
+      orig[3][1] * orig[1][2] * orig[0][0] -
+      orig[3][2] * orig[1][0] * orig[0][1];
+    
+    out.values[3][0] = 
+      orig[0][1] * orig[1][2] * orig[3][3] +
+      orig[0][2] * orig[1][3] * orig[3][1] +
+      orig[0][3] * orig[1][1] * orig[3][2] -
+      orig[3][1] * orig[1][2] * orig[0][3] -
+      orig[3][2] * orig[1][3] * orig[0][1] -
+      orig[3][3] * orig[1][1] * orig[0][2];
+    
+    out.values[3][1] = 
+      orig[0][0] * orig[1][2] * orig[3][3] +
+      orig[0][2] * orig[1][3] * orig[3][0] +
+      orig[0][3] * orig[1][0] * orig[3][2] -
+      orig[3][0] * orig[1][2] * orig[0][3] -
+      orig[3][2] * orig[1][3] * orig[0][0] -
+      orig[3][3] * orig[1][0] * orig[0][2];
+    
+    out.values[3][2] = 
+      orig[0][0] * orig[1][1] * orig[3][3] +
+      orig[0][1] * orig[1][3] * orig[3][0] +
+      orig[0][3] * orig[1][0] * orig[3][1] -
+      orig[3][0] * orig[1][1] * orig[0][3] -
+      orig[3][1] * orig[1][3] * orig[0][0] -
+      orig[3][3] * orig[1][0] * orig[0][1];
+    
+    out.values[3][3] = 
+      orig[0][0] * orig[1][1] * orig[3][2] +
+      orig[0][1] * orig[1][2] * orig[3][0] +
+      orig[0][2] * orig[1][0] * orig[3][1] -
+      orig[3][0] * orig[1][1] * orig[0][2] -
+      orig[3][1] * orig[1][2] * orig[0][0] -
+      orig[3][2] * orig[1][0] * orig[0][1];
+    
+    float det = 
+      out.values[0][0] * orig[0][0] -
+      out.values[0][1] * orig[0][1] +
+      out.values[0][2] * orig[0][2] -
+      out.values[0][3] * orig[0][3];
+    
+    if(det == 0) return null;
+    else return out.scale(1 / det);
+  }
+  
+  /**
+   * Multiplies all of the values of this matrix by the given amount.
+   * 
+   * @param amt The amount to scale the {@link Matrix4} by.
+   * @return A reference to this {@link Matrix4}.
+   */
+  public final Matrix4 scale(float amt) {
+    return scale(amt, this);
+  }
+  
+  /**
+   * Multiplies all of the values of this matrix by the given amount and
+   * places the results in the given out {@link Matrix4}.
+   * 
+   * @param amt The amount to scale the {@link Matrix4} by.
+   * @param out The {@link Matrix4} to place the result in.
+   * @return A reference to the out parameter.
+   */
+  public final Matrix4 scale(float amt, Matrix4 out) {
+    for(int i = 0; i < 4; i++)
+      for(int j = 0; j < 4; j++)
+        out.values[i][j] = amt * values[i][j];
+    
+    return out;
+  }
+  
+  /**
    * Returns a copy of this {@link Matrix4} as a {@link ReadableMatrix4}
    * with no mutator methods.  Both of these matrices share the same data and
    * the {@link ReadableMatrix4} will be changed when the original is changed.

@@ -14,7 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
-import taiga.code.opengl.Camera;
 import taiga.code.opengl.Renderable;
 import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.HardcodedValues;

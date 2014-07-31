@@ -2,6 +2,7 @@ package taiga.gpvm.render;
 
 import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
+import taiga.code.math.Matrix4;
 import taiga.code.util.DataNode;
 
 /**
@@ -68,7 +69,7 @@ public class ColoredSky extends SkyBoxRenderer {
   }
 
   @Override
-  protected void renderSky() {
+  protected void renderSky(Matrix4 proj) {
     GL11.glClearColor(red, green, blue, 1f);
     GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
   }

@@ -1,4 +1,4 @@
-package taiga.code.opengl;
+package taiga.gpvm.render;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;

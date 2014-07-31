@@ -28,7 +28,7 @@ public abstract class SkyBoxRenderer extends Renderable {
   
   @Override
   protected final void renderSelf(int pass, Matrix4 proj) {
-    if(pass == HardcodedValues.SKY_LAYER) renderSky();
+    if(pass == HardcodedValues.SKY_LAYER) renderSky(proj);
   }
   
   @Override
@@ -37,6 +37,8 @@ public abstract class SkyBoxRenderer extends Renderable {
   /**
    * Renders the sky for a given world.  This will only be called on the first
    * rendering pass.
+   * 
+   * @param proj The projection matrix that will be used for the scene.
    */
-  protected abstract void renderSky();
+  protected abstract void renderSky(Matrix4 proj);
 }
