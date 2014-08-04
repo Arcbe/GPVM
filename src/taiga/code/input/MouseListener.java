@@ -7,9 +7,9 @@
 package taiga.code.input;
 
 /**
- *
+ * 
  * @author russell
  */
 public interface MouseListener {
-  
+  public void handleEvent(MouseButtonEvent event);
 }

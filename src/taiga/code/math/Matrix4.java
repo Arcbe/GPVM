@@ -84,139 +84,119 @@ public class Matrix4 extends ReadableMatrix4 implements Serializable {
       orig = values;
     }
     
+    //first half of the matrix
+    float tmp0 = orig[2][2] * orig[3][3];
+    float tmp1 = orig[2][3] * orig[3][2];
+    float tmp2 = orig[2][1] * orig[3][3];
+    float tmp3 = orig[2][3] * orig[3][1];
+    float tmp4 = orig[2][1] * orig[3][2];
+    float tmp5 = orig[2][2] * orig[3][1];
+    float tmp6 = orig[2][0] * orig[3][3];
+    float tmp7 = orig[2][3] * orig[3][0];
+    float tmp8 = orig[2][0] * orig[3][2];
+    float tmp9 = orig[2][2] * orig[3][0];
+    float tmp10 = orig[2][0] * orig[3][1];
+    float tmp11 = orig[2][1] * orig[3][0];
+    
     out.values[0][0] = 
-      orig[1][1] * orig[2][2] * orig[3][3] +
-      orig[1][2] * orig[2][3] * orig[3][1] +
-      orig[1][3] * orig[2][1] * orig[3][2] -
-      orig[3][1] * orig[2][2] * orig[1][3] -
-      orig[3][2] * orig[2][3] * orig[1][1] -
-      orig[3][3] * orig[2][1] * orig[1][2];
-    
-    out.values[0][1] = 
-      orig[1][0] * orig[2][2] * orig[3][3] +
-      orig[1][2] * orig[2][3] * orig[3][0] +
-      orig[1][3] * orig[2][0] * orig[3][2] -
-      orig[3][0] * orig[2][2] * orig[1][3] -
-      orig[3][2] * orig[2][3] * orig[1][0] -
-      orig[3][3] * orig[2][0] * orig[1][2];
-    
-    out.values[0][2] = 
-      orig[1][0] * orig[2][1] * orig[3][3] +
-      orig[1][1] * orig[2][3] * orig[3][0] +
-      orig[1][3] * orig[2][0] * orig[3][1] -
-      orig[3][0] * orig[2][1] * orig[1][3] -
-      orig[3][1] * orig[2][3] * orig[1][0] -
-      orig[3][3] * orig[2][0] * orig[1][1];
-    
-    out.values[0][3] = 
-      orig[1][0] * orig[2][1] * orig[3][2] +
-      orig[1][1] * orig[2][2] * orig[3][0] +
-      orig[1][2] * orig[2][0] * orig[3][1] -
-      orig[3][0] * orig[2][1] * orig[1][2] -
-      orig[3][1] * orig[2][2] * orig[1][0] -
-      orig[3][2] * orig[2][0] * orig[1][1];
+      orig[1][1] * (tmp0 - tmp1) +
+      orig[1][2] * (tmp3 - tmp2) +
+      orig[1][3] * (tmp4 - tmp5);
     
     out.values[1][0] = 
-      orig[0][1] * orig[2][2] * orig[3][3] +
-      orig[0][2] * orig[2][3] * orig[3][1] +
-      orig[0][3] * orig[2][1] * orig[3][2] -
-      orig[3][1] * orig[2][2] * orig[0][3] -
-      orig[3][2] * orig[2][3] * orig[0][1] -
-      orig[3][3] * orig[2][1] * orig[0][2];
-    
-    out.values[1][1] = 
-      orig[0][0] * orig[2][2] * orig[3][3] +
-      orig[0][2] * orig[2][3] * orig[3][0] +
-      orig[0][3] * orig[2][0] * orig[3][2] -
-      orig[3][0] * orig[2][2] * orig[0][3] -
-      orig[3][2] * orig[2][3] * orig[0][0] -
-      orig[3][3] * orig[2][0] * orig[0][2];
-    
-    out.values[1][2] = 
-      orig[0][0] * orig[2][1] * orig[3][3] +
-      orig[0][1] * orig[2][3] * orig[3][0] +
-      orig[0][3] * orig[2][0] * orig[3][1] -
-      orig[3][0] * orig[2][1] * orig[0][3] -
-      orig[3][1] * orig[2][3] * orig[0][0] -
-      orig[3][3] * orig[2][0] * orig[0][1];
-    
-    out.values[1][3] = 
-      orig[0][0] * orig[2][1] * orig[3][2] +
-      orig[0][1] * orig[2][2] * orig[3][0] +
-      orig[0][2] * orig[2][0] * orig[3][1] -
-      orig[3][0] * orig[2][1] * orig[0][2] -
-      orig[3][1] * orig[2][2] * orig[0][0] -
-      orig[3][2] * orig[2][0] * orig[0][1];
+      orig[1][0] * (tmp1 - tmp0) +
+      orig[1][2] * (tmp6 - tmp7) +
+      orig[1][3] * (tmp9 - tmp8);
     
     out.values[2][0] = 
-      orig[0][1] * orig[1][2] * orig[3][3] +
-      orig[0][2] * orig[1][3] * orig[3][1] +
-      orig[0][3] * orig[1][1] * orig[3][2] -
-      orig[3][1] * orig[1][2] * orig[0][3] -
-      orig[3][2] * orig[1][3] * orig[0][1] -
-      orig[3][3] * orig[1][1] * orig[0][2];
-    
-    out.values[2][1] = 
-      orig[0][0] * orig[1][2] * orig[3][3] +
-      orig[0][2] * orig[1][3] * orig[3][0] +
-      orig[0][3] * orig[1][0] * orig[3][2] -
-      orig[3][0] * orig[1][2] * orig[0][3] -
-      orig[3][2] * orig[1][3] * orig[0][0] -
-      orig[3][3] * orig[1][0] * orig[0][2];
-    
-    out.values[2][2] = 
-      orig[0][0] * orig[1][1] * orig[3][3] +
-      orig[0][1] * orig[1][3] * orig[3][0] +
-      orig[0][3] * orig[1][0] * orig[3][1] -
-      orig[3][0] * orig[1][1] * orig[0][3] -
-      orig[3][1] * orig[1][3] * orig[0][0] -
-      orig[3][3] * orig[1][0] * orig[0][1];
-    
-    out.values[2][3] = 
-      orig[0][0] * orig[1][1] * orig[3][2] +
-      orig[0][1] * orig[1][2] * orig[3][0] +
-      orig[0][2] * orig[1][0] * orig[3][1] -
-      orig[3][0] * orig[1][1] * orig[0][2] -
-      orig[3][1] * orig[1][2] * orig[0][0] -
-      orig[3][2] * orig[1][0] * orig[0][1];
+      orig[1][0] * (tmp2 - tmp3) +
+      orig[1][1] * (tmp7 - tmp6) +
+      orig[1][3] * (tmp10 - tmp11);
     
     out.values[3][0] = 
-      orig[0][1] * orig[1][2] * orig[3][3] +
-      orig[0][2] * orig[1][3] * orig[3][1] +
-      orig[0][3] * orig[1][1] * orig[3][2] -
-      orig[3][1] * orig[1][2] * orig[0][3] -
-      orig[3][2] * orig[1][3] * orig[0][1] -
-      orig[3][3] * orig[1][1] * orig[0][2];
+      orig[1][0] * (tmp5 - tmp4) +
+      orig[1][1] * (tmp8 - tmp9) +
+      orig[1][2] * (tmp11 - tmp10);
+    
+    out.values[0][1] = 
+      orig[0][1] * (tmp1 - tmp0) +
+      orig[0][2] * (tmp2 - tmp3) +
+      orig[0][3] * (tmp5 - tmp4);
+    
+    out.values[1][1] = 
+      orig[0][0] * (tmp0 - tmp1) +
+      orig[0][2] * (tmp7 - tmp6) +
+      orig[0][3] * (tmp8 - tmp9);
+    
+    out.values[2][1] = 
+      orig[0][0] * (tmp3 - tmp2) +
+      orig[0][1] * (tmp6 - tmp7) +
+      orig[0][3] * (tmp11 - tmp10);
     
     out.values[3][1] = 
-      orig[0][0] * orig[1][2] * orig[3][3] +
-      orig[0][2] * orig[1][3] * orig[3][0] +
-      orig[0][3] * orig[1][0] * orig[3][2] -
-      orig[3][0] * orig[1][2] * orig[0][3] -
-      orig[3][2] * orig[1][3] * orig[0][0] -
-      orig[3][3] * orig[1][0] * orig[0][2];
+      orig[0][0] * (tmp4 - tmp5) +
+      orig[0][1] * (tmp9 - tmp8) +
+      orig[0][2] * (tmp10 - tmp11);
+    
+    //second half of the matrix
+    tmp0 = orig[0][2] * orig[1][3];
+    tmp1 = orig[0][3] * orig[1][2];
+    tmp2 = orig[0][1] * orig[1][3];
+    tmp3 = orig[0][3] * orig[1][1];
+    tmp4 = orig[0][1] * orig[1][2];
+    tmp5 = orig[0][2] * orig[1][1];
+    tmp6 = orig[0][0] * orig[1][3];
+    tmp7 = orig[0][3] * orig[1][0];
+    tmp8 = orig[0][0] * orig[1][2];
+    tmp9 = orig[0][2] * orig[1][0];
+    tmp10 = orig[0][0] * orig[1][1];
+    tmp11 = orig[0][1] * orig[1][0];
+    
+    out.values[0][2] = 
+      orig[3][1] * (tmp0 - tmp1) +
+      orig[3][2] * (tmp3 - tmp2) +
+      orig[3][3] * (tmp4 - tmp5);
+    
+    out.values[1][2] = 
+      orig[3][0] * (tmp1 - tmp0) +
+      orig[3][2] * (tmp6 - tmp7) +
+      orig[3][3] * (tmp9 - tmp8);
+    
+    out.values[2][2] = 
+      orig[3][0] * (tmp2 - tmp3) +
+      orig[3][1] * (tmp7 - tmp6) +
+      orig[3][3] * (tmp10 - tmp11);
     
     out.values[3][2] = 
-      orig[0][0] * orig[1][1] * orig[3][3] +
-      orig[0][1] * orig[1][3] * orig[3][0] +
-      orig[0][3] * orig[1][0] * orig[3][1] -
-      orig[3][0] * orig[1][1] * orig[0][3] -
-      orig[3][1] * orig[1][3] * orig[0][0] -
-      orig[3][3] * orig[1][0] * orig[0][1];
+      orig[3][0] * (tmp5 - tmp4) +
+      orig[3][1] * (tmp8 - tmp9) +
+      orig[3][2] * (tmp11 - tmp10);
+    
+    out.values[0][3] = 
+      orig[2][1] * (tmp1 - tmp0) +
+      orig[2][2] * (tmp2 - tmp3) +
+      orig[2][3] * (tmp5 - tmp4);
+    
+    out.values[1][3] = 
+      orig[2][0] * (tmp0 - tmp1) +
+      orig[2][2] * (tmp7 - tmp6) +
+      orig[2][3] * (tmp8 - tmp9);
+    
+    out.values[2][3] = 
+      orig[2][0] * (tmp3 - tmp2) +
+      orig[2][1] * (tmp6 - tmp7) +
+      orig[2][3] * (tmp11 - tmp10);
     
     out.values[3][3] = 
-      orig[0][0] * orig[1][1] * orig[3][2] +
-      orig[0][1] * orig[1][2] * orig[3][0] +
-      orig[0][2] * orig[1][0] * orig[3][1] -
-      orig[3][0] * orig[1][1] * orig[0][2] -
-      orig[3][1] * orig[1][2] * orig[0][0] -
-      orig[3][2] * orig[1][0] * orig[0][1];
+      orig[2][0] * (tmp4 - tmp5) +
+      orig[2][1] * (tmp9 - tmp8) +
+      orig[2][2] * (tmp10 - tmp11);
     
     float det = 
-      out.values[0][0] * orig[0][0] -
-      out.values[0][1] * orig[0][1] +
-      out.values[0][2] * orig[0][2] -
-      out.values[0][3] * orig[0][3];
+      out.values[0][0] * orig[0][0] +
+      out.values[1][0] * orig[0][1] +
+      out.values[2][0] * orig[0][2] +
+      out.values[3][0] * orig[0][3];
     
     if(det == 0) return null;
     else return out.scale(1 / det);

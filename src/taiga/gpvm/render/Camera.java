@@ -1,9 +1,7 @@
 package taiga.gpvm.render;
 
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
+import taiga.code.math.Matrix4;
 
 /**
  * This class creates the viewing matrix for OpenGL rendering.
@@ -15,28 +13,8 @@ public abstract class Camera {
   /**
    * Setups up the OpenGL projection matrix with this camera.
    */
-  public void setupProjectioMatrix() {
-    Vector3f position = getPosition();
-    Vector3f direction = getDirection();
-    Vector3f up = getUpVector();
-    
-    float fov = getFOV();
-    float near = getNearPlane();
-    float far = getFarPlane();
-    
-    GL11.glMatrixMode(GL11.GL_PROJECTION);
-    GL11.glLoadIdentity();
-    GLU.gluPerspective(fov, (float) Display.getHeight()/ (float)Display.getWidth(), near, far);
-    GLU.gluLookAt(
-            position.x, 
-            position.y, 
-            position.z, 
-            position.x + direction.x,
-            position.y + direction.y,
-            position.z + direction.z,
-            up.x,
-            up.y,
-            up.z);
+  public Matrix4 getProjection() {
+    return null;
   }
   
   /**

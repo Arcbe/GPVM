@@ -71,4 +71,28 @@ public class MouseButtonEvent {
     this.dy = dy;
     this.time = time;
   }
+  
+  @Override
+  public String toString() {
+    StringBuilder result = new StringBuilder();
+    
+    result.append("[button=");
+    result.append(button);
+    result.append(", state=");
+    result.append(state);
+    result.append(", (X,Y)=(");
+    result.append(x);
+    result.append(", ");
+    result.append(y);
+    result.append(", (dX,dY)=(");
+    result.append(dx);
+    result.append(", ");
+    result.append(dy);
+    result.append(", dZ=");
+    result.append(dwheel);
+    result.append("]");
+    
+    
+    return result.toString();
+  }
 }

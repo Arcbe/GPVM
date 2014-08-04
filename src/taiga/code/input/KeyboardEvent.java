@@ -50,4 +50,19 @@ public class KeyboardEvent {
     
     consumed = false;
   }
+  
+  @Override
+  public String toString() {
+    StringBuilder result = new StringBuilder();
+    
+    result.append("[Key=");
+    result.append(character);
+    result.append(", pressed=");
+    result.append(state);
+    result.append(", repeat=");
+    result.append(repeat);
+    result.append("]");
+    
+    return result.toString();
+  }
 }

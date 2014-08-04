@@ -26,16 +26,35 @@ public class InputSystem extends HotkeyTable implements Updateable {
   public InputSystem(String name) {
     super(name);
     
-    listeners = new HashSet<>();
+    keylist = new HashSet<>();
+    mouselist = new HashSet<>();
+    mouseglist = new HashSet<>();
   }
   
   /**
-   * Sets whether the mouse pointer should be captured by the window or not.
+   * Sets whether the mouse should grab the cursor.  If false then the cursor
+   * will not be moved by the mouse, and events will send deltas instead of positions.
    * 
    * @param cap Whether to capture the mouse.
    */
-  public void setCaptureMouse(boolean cap) {
-    
+  public void setGrabMouse(boolean cap) {
+    Mouse.setGrabbed(cap);
+  }
+  
+  public void addMouseListener(MouseListener list) {
+    mouselist.add(list);
+  }
+  
+  public void removeMouseListener(MouseListener list) {
+    mouselist.remove(list);
+  }
+  
+  public void addGrabbedMouseListener(MouseListener list) {
+    mouseglist.add(list);
+  }
+  
+  public void removeGrabbedMouseListener(MouseListener list) {
+    mouseglist.remove(list);
   }
 
   @Override
@@ -62,6 +81,14 @@ public class InputSystem extends HotkeyTable implements Updateable {
         Mouse.getEventDX(),
         Mouse.getEventDY(),
         Mouse.getEventNanoseconds());
+      
+      if(Mouse.isGrabbed()) {
+        for(MouseListener list : mouseglist)
+          list.handleEvent(event);
+      } else {
+        for(MouseListener list : mouselist)
+          list.handleEvent(event);
+      }
     }
   }
   
@@ -82,7 +109,7 @@ public class InputSystem extends HotkeyTable implements Updateable {
         Keyboard.getEventKeyState(), 
         Keyboard.isRepeatEvent());
       
-      for(KeyboardListener list : listeners)
+      for(KeyboardListener list : keylist)
         list.handleEvent(event);
       
       //if the event is consumed then go on to the next one.
@@ -92,7 +119,9 @@ public class InputSystem extends HotkeyTable implements Updateable {
     }
   }
   
-  private final Collection<KeyboardListener> listeners;
+  private final Collection<KeyboardListener> keylist;
+  private final Collection<MouseListener> mouselist;
+  private final Collection<MouseListener> mouseglist;
   
   private static final String locprefix = InputSystem.class.getName().toLowerCase();
   

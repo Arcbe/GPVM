@@ -198,6 +198,10 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
   
   private final Map<String, KeyAction> keyactions;
   private final Map<Integer, Collection<KeyAction>> keybindings;
+
+  @Override
+  public void handleEvent(MouseButtonEvent event) {
+  }
   
   private static class KeyAction {
     public final KeyboardListener list;

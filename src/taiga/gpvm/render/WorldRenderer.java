@@ -7,9 +7,7 @@ package taiga.gpvm.render;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
@@ -106,10 +104,15 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
   }
 
   @Override
+  protected Matrix4 processProjection(Matrix4 proj, int pass) {
+    return camera.getProjection();
+  }
+  
+  
+
+  @Override
   protected void renderSelf(int pass, Matrix4 proj) {
     if(camera == null) return;
-    
-    camera.setupProjectioMatrix();
     
     GL11.glMatrixMode(GL11.GL_MODELVIEW);
     GL11.glPushMatrix();
