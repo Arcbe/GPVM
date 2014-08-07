@@ -11,11 +11,13 @@ import static taiga.gpvm.HardcodedValues.GAMEMANAGER_NAME;
 import taiga.code.io.DataFileManager;
 import taiga.code.opengl.WindowListener;
 import taiga.code.io.SettingManager;
+import taiga.code.opengl.Camera;
 import taiga.code.opengl.GraphicsSystem;
 import taiga.code.yaml.YAMLDataReader;
 import taiga.gpvm.entity.EntityManager;
 import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.Universe;
+import taiga.gpvm.map.World;
 import taiga.gpvm.registry.EntityRegistry;
 import taiga.gpvm.registry.EntityRenderingRegistry;
 import taiga.gpvm.schedule.WorldUpdater;
@@ -121,6 +123,19 @@ public final class GameManager extends RegisteredSystem implements WindowListene
       uni.addListener(gamescreen);
       updater.addWorldChangeListener(gamescreen);
     }
+  }
+  
+  /**
+   * Sets the {@link Camera} that will be used to render the game {@link World}.
+   * This is a convenience method and will simply set the {@link Camera} on the
+   * {@link GameScreen}.
+   * 
+   * @param cam The {@link Camera} to use for rendering the {@link World}.
+   */
+  public void setWorldCamera(Camera cam) {
+    GameScreen screen = getObject(HardcodedValues.GRAPHICS_SYSTEM_NAME, HardcodedValues.GAME_SCREEN_NAME);
+    
+    if(screen != null) screen.setCamera(cam);
   }
 
   @Override

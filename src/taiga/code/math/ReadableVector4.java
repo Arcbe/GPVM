@@ -73,6 +73,16 @@ public class ReadableVector4 extends ReadableVector3 {
   }
   
   /**
+   * Returns the dot product of two {@link ReadableVector4}s.
+   * 
+   * @param other The second {@link ReadableVector4} in the dot product.
+   * @return The dot product of the two {@link ReadableVector4}.
+   */
+  public final float dot(ReadableVector4 other) {
+    return super.dot(other) + w * other.w;
+  }
+  
+  /**
    * The z coordinate.
    */
   protected float w;

@@ -5,6 +5,7 @@ import taiga.code.input.InputSystem;
 import taiga.code.input.KeyboardEvent;
 import taiga.code.input.KeyboardListener;
 import taiga.code.io.SettingManager;
+import taiga.code.math.Vector3;
 import taiga.code.opengl.GraphicsSystem;
 import taiga.gpvm.map.FixedSizeManager;
 import taiga.gpvm.map.FlatWorldGenerator;
@@ -67,23 +68,22 @@ public class Main {
     InputSystem input = game.getObject(HardcodedValues.INPUT_SYSTEM_NAME);
     
     //create the camera for the game screen
-    WorldRenderer worldview = screen.getObject("test-world");
-    final MobileCamera cam = new MobileCamera(new Vector3f(),
-      new Vector3f(0,0,1),
-      new Vector3f(1, 1, -2f),
-      new Vector3f(-1, -1, 20), 
+    final MobileCamera cam = new MobileCamera(new Vector3(),
+      new Vector3(0,0,1),
+      new Vector3(1, 1, -2f),
+      new Vector3(-1, -1, 20), 
       100, 1, 1000);
     graphics.addUpdateable(cam);
-    worldview.setCamera(cam);
+    game.setWorldCamera(cam);
     
     input.addAction("move-z", new KeyboardListener() {
 
       @Override
       public void handleEvent(KeyboardEvent event) {
         if(event.state)
-          cam.velocity.z = -.1f;
+          cam.velocity.setZ(-.1f);
         else
-          cam.velocity.z = 0;
+          cam.velocity.setZ(0);
       }
     });
     input.addAction("move+z", new KeyboardListener() {
@@ -91,9 +91,9 @@ public class Main {
       @Override
       public void handleEvent(KeyboardEvent event) {
         if(event.state)
-          cam.velocity.z = +.1f;
+          cam.velocity.setZ(.1f);
         else
-          cam.velocity.z = 0;
+          cam.velocity.setZ(0);
       }
     });
     input.addAction("move-y", new KeyboardListener() {
@@ -101,9 +101,9 @@ public class Main {
       @Override
       public void handleEvent(KeyboardEvent event) {
         if(event.state)
-          cam.velocity.y = -.1f;
+          cam.velocity.setY(-.1f);
         else
-          cam.velocity.y = 0;
+          cam.velocity.setY(0);
       }
     });
     input.addAction("move+y", new KeyboardListener() {
@@ -111,9 +111,9 @@ public class Main {
       @Override
       public void handleEvent(KeyboardEvent event) {
         if(event.state)
-          cam.velocity.y = +.1f;
+          cam.velocity.setY(.1f);
         else
-          cam.velocity.y = 0;
+          cam.velocity.setY(0);
       }
     });
     input.addAction("move-x", new KeyboardListener() {
@@ -121,9 +121,9 @@ public class Main {
       @Override
       public void handleEvent(KeyboardEvent event) {
         if(event.state)
-          cam.velocity.x = -.1f;
+          cam.velocity.setX(.1f);
         else
-          cam.velocity.x = 0;
+          cam.velocity.setX(0);
       }
     });
     input.addAction("move+x", new KeyboardListener() {
@@ -131,9 +131,9 @@ public class Main {
       @Override
       public void handleEvent(KeyboardEvent event) {
         if(event.state)
-          cam.velocity.x = +.1f;
+          cam.velocity.setX(.1f);
         else
-          cam.velocity.x = 0;
+          cam.velocity.setX(0);
       }
     });
     

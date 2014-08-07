@@ -291,7 +291,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * @return The desired {@link RegisteredObject} or null if it could not be found.
    */
   @SuppressWarnings("unchecked")
-  public <T extends RegisteredObject> T getObject(String[] path) {
+  public <T extends RegisteredObject> T getObject(String ... path) {
     if(path.length == 0) try {
       return (T) this;
     } catch(ClassCastException ex) {

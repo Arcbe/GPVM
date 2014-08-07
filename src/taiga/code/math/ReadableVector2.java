@@ -23,7 +23,7 @@ package taiga.code.math;
  * 
  * @author Russell Smith
  */
-public class ReadableVector2 {
+public class ReadableVector2 implements Cloneable {
   /**
    * Constructs a {@link ReadableVector2} set to the origin.
    */
@@ -78,6 +78,30 @@ public class ReadableVector2 {
    */
   public final float lenSquared2D() {
     return x * x + y * y;
+  }
+  
+  /**
+   * Returns the dot product of two {@link ReadableVector2}s.
+   * 
+   * @param other The second {@link ReadableVector2} in the dot product.
+   * @return The dot product of the two {@link ReadableVector2}.
+   */
+  public final float dot(ReadableVector2 other) {
+    return x * other.x + y * other.y;
+  }
+  
+  /**
+   * Returns a clone of this {@link ReadableVector2}, or a subclass.
+   * 
+   * @param <T> The class of the current {@link ReadableVector2}.
+   * @return A clone of this {@link ReadableVector2}.
+   */
+  public <T extends ReadableVector2> T getClone() {
+    try {
+      return (T) clone();
+    } catch (CloneNotSupportedException ex) {
+      throw new RuntimeException(ex);
+    }
   }
   
   /**

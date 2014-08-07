@@ -7,7 +7,7 @@
 package taiga.gpvm.render;
 
 import java.util.logging.Logger;
-import org.lwjgl.util.vector.Vector3f;
+import taiga.code.math.Vector3;
 import taiga.code.util.Updateable;
 
 /**
@@ -22,13 +22,13 @@ public class MobileCamera extends StationaryCamera implements Updateable {
    * parallel to the facing, z is perpendicular in the plane of the facing and
    * and up direction, and y is perpendicular to all the other {@link Vector3f}s.
    */
-  public final Vector3f velocity;
+  public final Vector3 velocity;
 
   /**
    * Creates a new {@link MobileCamera} with no velocity and default parameters.
    */
   public MobileCamera() {
-    this.velocity = new Vector3f();
+    this.velocity = new Vector3();
   }
 
   /**
@@ -36,7 +36,7 @@ public class MobileCamera extends StationaryCamera implements Updateable {
    * 
    * @param velocity The velocity for the camera.
    */
-  public MobileCamera(Vector3f velocity) {
+  public MobileCamera(Vector3 velocity) {
     this.velocity = velocity;
   }
 
@@ -51,7 +51,7 @@ public class MobileCamera extends StationaryCamera implements Updateable {
    * @param near The near plane of the viewing frustum.
    * @param far The far plane of the viewing frustum.
    */
-  public MobileCamera(Vector3f velocity, Vector3f up, Vector3f direction, Vector3f position, float fov, float near, float far) {
+  public MobileCamera(Vector3 velocity, Vector3 up, Vector3 direction, Vector3 position, float fov, float near, float far) {
     super(up, direction, position, fov, near, far);
     this.velocity = velocity;
   }
@@ -62,16 +62,15 @@ public class MobileCamera extends StationaryCamera implements Updateable {
    * 
    * @return The {@link Vector3f} of the upward direction of the screen.
    */
-  public Vector3f getScreenUp() {
-    Vector3f result = new Vector3f(direction);
+  public Vector3 getScreenUp() {
+    Vector3 result = direction.getClone();
     
     //normalize the direction
-    float comp = Vector3f.dot(direction, up) / direction.lengthSquared();
+    float comp = direction.dot(up) / direction.lenSquare3D();
     
     result.scale(-comp);
     
-    Vector3f.add(result, up, result);
-    return result;
+    return result.add(up);
   }
   
   /**
@@ -79,31 +78,30 @@ public class MobileCamera extends StationaryCamera implements Updateable {
    * 
    * @return The right direction relative to the facing of the {@link MobileCamera}.
    */
-  public Vector3f getRightDir() {
-    Vector3f result = new Vector3f(direction);
+  public Vector3 getRightDir() {
+    Vector3 result = direction.getClone();
     
-    Vector3f.cross(result, up, result);
-    
-    return result;
+    return result.cross(up);
   }
   
   @Override
   public void update() {
-    Vector3f zvec = getScreenUp();
-    Vector3f yvec = getRightDir();
-    Vector3f xvec = new Vector3f(direction);
+    //TODO: change this to use the view matrix.
+    Vector3 zvec = getScreenUp();
+    Vector3 yvec = getRightDir();
+    Vector3 xvec = direction.getClone();
     
-    zvec.normalise();
-    yvec.normalise();
-    xvec.normalise();
+    zvec.normalize();
+    yvec.normalize();
+    xvec.normalize();
     
-    zvec.scale(velocity.z);
-    yvec.scale(velocity.y);
-    xvec.scale(velocity.x);
+    zvec.scale(velocity.getX());
+    yvec.scale(velocity.getY());
+    xvec.scale(velocity.getZ());
     
-    Vector3f.add(position, zvec, position);
-    Vector3f.add(position, yvec, position);
-    Vector3f.add(position, xvec, position);
+    position.add(zvec);
+    position.add(yvec);
+    position.add(xvec);
   }
 
   private static final String locprefix = MobileCamera.class.getName().toLowerCase();

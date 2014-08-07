@@ -1,6 +1,10 @@
 package taiga.gpvm.render;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.opengl.Display;
+import taiga.code.math.Matrix4;
+import taiga.code.math.Matrix4Utils;
+import taiga.code.math.Vector3;
+import taiga.code.opengl.PerspectiveCamera;
 
 /**
  * A simple camera that just stores the acts as a storage for the various
@@ -8,45 +12,35 @@ import org.lwjgl.util.vector.Vector3f;
  * 
  * @author russell
  */
-public class StationaryCamera extends Camera {
+public class StationaryCamera extends PerspectiveCamera {
 
   /**
    * The up direction of the {@link StationaryCamera}.
    */
-  public final Vector3f up;
+  public final Vector3 up;
   /**
    * The direction the {@link StationaryCamera} is looking.
    */
-  public final Vector3f direction;
+  public final Vector3 direction;
   /**
    * The position of the {@link StationaryCamera}.
    */
-  public final Vector3f position;
-  /**
-   * The field of view.
-   */
-  public float fov;
-  /**
-   * The near plane of the viewing frustum.
-   */
-  public float near;
-  /**
-   * The far plane of the viewing frustum.
-   */
-  public float far;
+  public final Vector3 position;
 
   /**
-   * Creates a new {@link StationaryCamera} with a 60 degree viewing angle and
+   * Creates a new {@link StationaryCamera} with a pi/3 viewing angle and
    * 1 and 100 for the near and far planes respectively.
    */
   public StationaryCamera() {
-    fov = 60;
-    near = 1;
-    far = 100;
+    setFOV((float) Math.PI / 3);
+    setFar(1);
+    setFar(100);
+    setAspect((float) Display.getWidth() / (float) Display.getHeight());
     
-    up = new Vector3f();
-    direction = new Vector3f();
-    position = new Vector3f();
+    up = new Vector3();
+    direction = new Vector3();
+    position = new Vector3();
+    view = new Matrix4();
   }
 
   /**
@@ -59,55 +53,19 @@ public class StationaryCamera extends Camera {
    * @param near The near plane of the viewing frustum.
    * @param far The far plane of the viewing frustum.
    */
-  public StationaryCamera(Vector3f up, Vector3f direction, Vector3f position, float fov, float near, float far) {
+  public StationaryCamera(Vector3 up, Vector3 direction, Vector3 position, float fov, float near, float far) {
+    super(fov, near, far, (float) Display.getWidth() / (float) Display.getHeight());
+    
     this.up = up;
     this.direction = direction;
     this.position = position;
-    this.fov = fov;
-    this.near = near;
-    this.far = far;
+    view = new Matrix4();
+  }
+
+  @Override
+  public Matrix4 getViewMatrix() {
+    return Matrix4Utils.lookAt(position, up, direction, view);
   }
   
-  @Override
-  public Vector3f getUpVector() {
-    if(up == null) {
-      return new Vector3f(0,0,1);
-    } else {
-      return up;
-    }
-  }
-
-  @Override
-  public Vector3f getPosition() {
-    if(position == null) {
-      return new Vector3f();
-    } else {
-      return position;
-    }
-  }
-
-  @Override
-  public Vector3f getDirection() {
-    if(direction == null) {
-      return new Vector3f(1,0,0);
-    } else {
-      return direction;
-    }
-  }
-
-  @Override
-  public float getFOV() {
-    return fov;
-  }
-
-  @Override
-  public float getNearPlane() {
-    return near;
-  }
-
-  @Override
-  public float getFarPlane() {
-    return far;
-  }
-  
+  private final Matrix4 view;
 }

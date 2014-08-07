@@ -8,7 +8,9 @@ package taiga.gpvm.screens;
 
 import java.util.logging.Logger;
 import taiga.code.math.Matrix4;
+import taiga.code.opengl.Camera;
 import taiga.code.opengl.RenderableSwitcher;
+import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.UniverseListener;
 import taiga.gpvm.map.World;
@@ -31,6 +33,14 @@ public class GameScreen extends RenderableSwitcher implements UniverseListener, 
     super(HardcodedValues.GAME_SCREEN_NAME);
     
     setPasses(HardcodedValues.NUM_GRAPHICS_LAYERS);
+  }
+  
+  public void setCamera(Camera cam) {
+    for(RegisteredObject obj : this) {
+      if(obj instanceof WorldRenderer) {
+        ((WorldRenderer)obj).cam = cam;
+      }
+    }
   }
 
   @Override

@@ -12,7 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
-import taiga.code.opengl.Renderable;
+import taiga.code.opengl.Camera;
+import taiga.code.opengl.SceneRoot;
 import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.entity.Entity;
@@ -32,7 +33,7 @@ import taiga.gpvm.schedule.WorldChangeListener;
  * 
  * @author russell
  */
-public final class WorldRenderer extends Renderable implements WorldListener, WorldChangeListener {
+public final class WorldRenderer extends SceneRoot implements WorldListener, WorldChangeListener {
   /**
    * Creates a new {@link WorldRenderer} that will render the given {@link World}.
    * 
@@ -49,10 +50,6 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
     world.addListener(this);
     for(Region reg : world.getRegions())
       regionLoaded(reg);
-  }
-  
-  public void setCamera(Camera cam) {
-    camera = cam;
   }
   
   private static final int drawdistance = 4;
@@ -105,10 +102,10 @@ public final class WorldRenderer extends Renderable implements WorldListener, Wo
 
   @Override
   protected Matrix4 processProjection(Matrix4 proj, int pass) {
+    if(camera == null) return proj;
+    
     return camera.getProjection();
   }
-  
-  
 
   @Override
   protected void renderSelf(int pass, Matrix4 proj) {
