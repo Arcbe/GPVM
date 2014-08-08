@@ -78,9 +78,9 @@ public final class Vector3 extends ReadableVector3 {
   
   public Vector3 cross(ReadableVector3 other, Vector3 out) {
     float tx = y * other.z - other.y * z;
-    float ty = x * other.z - other.x * z;
+    float ty = other.x * z - x * other.z;
     float tz = x * other.y - other.x * y;
     
-    return out.setX(tx).setY(ty).setZ(ty);
+    return out.setX(tx).setY(ty).setZ(tz);
   }
 }

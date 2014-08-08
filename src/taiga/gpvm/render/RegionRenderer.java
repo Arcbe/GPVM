@@ -223,64 +223,6 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
   private final Map<Class<? extends TileRenderer>, Boolean> dirtyents;
   private final Map<Class<? extends TileRenderer>, TileRenderer> instances;
   
-  private static VertexArrayBatch grid;
-  
-  private static VertexArrayBatch getGrid() {
-//    if(grid != null) 
-      return grid;
-    
-//    //construct the vertices for the grid.
-//    ArrayList<ByteColorVertex> vertices = new ArrayList<>();
-//   
-//    for(byte i = 0; i <= Region.REGION_SIZE; i++) {
-//      //bottom
-//      vertices.add(new ByteColorVertex(i, (byte)0, (byte)0, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, (byte)0, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex((byte)0, i, (byte)0, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, (byte)0, Color.GREEN.getRGB()));
-//      
-//      //top
-//      vertices.add(new ByteColorVertex(i, (byte)0, Region.REGION_SIZE, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, Region.REGION_SIZE, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex((byte)0, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
-//      
-//      //front
-//      vertices.add(new ByteColorVertex(i, (byte)0, (byte)0, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(i, (byte)0, Region.REGION_SIZE, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex((byte)0, (byte)0, i, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, (byte)0, i, Color.GREEN.getRGB()));
-//      
-//      //back
-//      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, (byte)0, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(i, Region.REGION_SIZE, Region.REGION_SIZE, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex((byte)0, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
-//      
-//      //left
-//      vertices.add(new ByteColorVertex((byte)0, i, (byte)0, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex((byte)0, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex((byte)0, (byte)0, i, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex((byte)0, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
-//      
-//      //right
-//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, (byte)0, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, i, Region.REGION_SIZE, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, (byte)0, i, Color.GREEN.getRGB()));
-//      vertices.add(new ByteColorVertex(Region.REGION_SIZE, Region.REGION_SIZE, i, Color.GREEN.getRGB()));
-//    }
-//    
-//    RawBatch bat = new RawBatch();
-//    bat.rendermode = GL11.GL_LINES;
-//    bat.vertices = new ByteColorVertex[vertices.size()];
-//    vertices.toArray(bat.vertices);
-//    
-//    grid = new VertexArrayBatch();
-//    grid.compile(bat);
-//    
-//    return grid;
-  }
-  
   private static final String locprefix = RegionRenderer.class.getName().toLowerCase();
   
   private static final Logger log = Logger.getLogger(locprefix,

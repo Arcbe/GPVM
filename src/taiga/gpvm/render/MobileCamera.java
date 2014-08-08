@@ -79,25 +79,25 @@ public class MobileCamera extends StationaryCamera implements Updateable {
    * @return The right direction relative to the facing of the {@link MobileCamera}.
    */
   public Vector3 getRightDir() {
-    Vector3 result = direction.getClone();
+    Vector3 result = up.getClone();
     
-    return result.cross(up);
+    return result.cross(direction);
   }
   
   @Override
   public void update() {
     //TODO: change this to use the view matrix.
-    Vector3 zvec = getScreenUp();
-    Vector3 yvec = getRightDir();
-    Vector3 xvec = direction.getClone();
+    Vector3 xvec = getRightDir();
+    Vector3 yvec = getScreenUp();
+    Vector3 zvec = direction.getClone();
     
-    zvec.normalize();
-    yvec.normalize();
     xvec.normalize();
+    yvec.normalize();
+    zvec.normalize();
     
-    zvec.scale(velocity.getX());
+    xvec.scale(velocity.getX());
     yvec.scale(velocity.getY());
-    xvec.scale(velocity.getZ());
+    zvec.scale(velocity.getZ());
     
     position.add(zvec);
     position.add(yvec);

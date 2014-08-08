@@ -71,7 +71,7 @@ public class Main {
     final MobileCamera cam = new MobileCamera(new Vector3(),
       new Vector3(0, 0, 1),
       new Vector3(1, 1, 0),
-      new Vector3(0, 0, 1), 
+      new Vector3(0, 0, 0), 
       (float) Math.PI / 3f, .1f, 1000);
     graphics.addUpdateable(cam);
     game.setWorldCamera(cam);
@@ -121,7 +121,7 @@ public class Main {
       @Override
       public void handleEvent(KeyboardEvent event) {
         if(event.state)
-          cam.velocity.setX(.1f);
+          cam.velocity.setX(-.1f);
         else
           cam.velocity.setX(0);
       }
@@ -137,10 +137,10 @@ public class Main {
       }
     });
     
-    input.addKeyBinding("Q", "move+x");
-    input.addKeyBinding("E", "move-x");
-    input.addKeyBinding("A", "move-y");
-    input.addKeyBinding("D", "move+y");
+    input.addKeyBinding("Q", "move+y");
+    input.addKeyBinding("E", "move-y");
+    input.addKeyBinding("A", "move-x");
+    input.addKeyBinding("D", "move+x");
     input.addKeyBinding("W", "move+z");
     input.addKeyBinding("S", "move-z");
   }
