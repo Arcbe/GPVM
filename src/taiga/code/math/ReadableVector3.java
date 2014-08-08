@@ -83,4 +83,18 @@ public class ReadableVector3 extends ReadableVector2 {
    * The z coordinate.
    */
   protected float z;
+  
+  @Override
+  public String toString() {
+    StringBuilder result = new StringBuilder();
+    result.append("<");
+    result.append(x);
+    result.append(", ");
+    result.append(y);
+    result.append(", ");
+    result.append(z);
+    result.append(">");
+    
+    return result.toString();
+  }
 }

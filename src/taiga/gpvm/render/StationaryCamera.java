@@ -4,6 +4,7 @@ import org.lwjgl.opengl.Display;
 import taiga.code.math.Matrix4;
 import taiga.code.math.Matrix4Utils;
 import taiga.code.math.Vector3;
+import taiga.code.math.Vector4;
 import taiga.code.opengl.PerspectiveCamera;
 
 /**
@@ -60,6 +61,29 @@ public class StationaryCamera extends PerspectiveCamera {
     this.direction = direction;
     this.position = position;
     view = new Matrix4();
+  }
+  
+  public void recenterOnScreenPoint(float x, float y) {
+    Vector4 vec = screenPointToEyeVector(x, y);
+    //vec.scale(1f / vec.getW());
+    Vector3 result = new Vector3();
+    
+    Matrix4 view = getViewMatrix();
+    result.setX(
+      vec.getX() * view.getValue(0, 0) + 
+      vec.getY() * view.getValue(1, 0) +
+      vec.getZ() * view.getValue(2, 0));
+    result.setY(
+      vec.getX() * view.getValue(0, 1) + 
+      vec.getY() * view.getValue(1, 1) +
+      vec.getZ() * view.getValue(2, 1));
+    result.setZ(
+      vec.getX() * view.getValue(0, 2) + 
+      vec.getY() * view.getValue(1, 2) +
+      vec.getZ() * view.getValue(2, 2));
+    
+    direction.add(result);
+    direction.scale(.5f);
   }
 
   @Override

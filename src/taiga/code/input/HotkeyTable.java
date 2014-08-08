@@ -7,10 +7,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import taiga.code.registration.ReusableObject;
 
 /**
@@ -32,7 +32,7 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
     super(name);
     
     keyactions = new HashMap<>();
-    keybindings = new TreeMap<>();
+    keybindings = new HashMap<>();
   }
   
   /**
@@ -42,12 +42,11 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
    * @param actions The name for the {@link KeyListener}s to add.
    */
   public void addKeyBinding(String key, String ... actions) {
-    Collection<KeyAction> bindings = getBindings(key);
+    Collection<ButtonAction> bindings = getBindings(key);
     if(bindings == null) return;
     
-    int index = Keyboard.getKeyIndex(key);
     for(String act : actions) {
-      KeyAction action = keyactions.get(act);
+      ButtonAction action = keyactions.get(act);
       
       //make sure that it is a valid action
       if(action == null) {
@@ -56,13 +55,13 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
       }
       
       //Make sure the action is not already bound to this key
-      if(action.keysbound.contains(index)) {
+      if(action.keysbound.contains(key)) {
         log.log(Level.WARNING, KEY_ACTION_ALREADY_BOUND, new Object[] {act, key});
         continue;
       }
       
       //finally bind the action.
-      action.keysbound.add(index);
+      action.keysbound.add(key);
       bindings.add(action);
       
       log.log(Level.CONFIG, KEY_BINDING_ADDED, new Object[] {act, key});
@@ -78,13 +77,12 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
    * @param actions The name given to the {@link KeyListener}s to remove.
    */
   public void removeKeyBinding(String key, String ... actions) {
-    Collection<KeyAction> bindings = getBindings(key);
+    Collection<ButtonAction> bindings = getBindings(key);
     if(bindings == null) return;
     
-    int index = Keyboard.getKeyIndex(key);
-    for(KeyAction act : bindings) {
-      if(act.keysbound.contains(index)) {
-        act.keysbound.remove(index);
+    for(ButtonAction act : bindings) {
+      if(act.keysbound.contains(key)) {
+        act.keysbound.remove(key);
         bindings.remove(act);
         
         log.log(Level.CONFIG, REMOVED_KEY_BINDING, new Object[]{key, act});
@@ -93,20 +91,19 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
   }
   
   /**
-   * Removes all {@link KeyListener}s bound to the key with the given name.  If
-   * the key does not exist or there are no {@link KeyListener}s bound then this
+   * Removes all {@link ButtonListener}s bound to the key with the given name.  If
+   * the key does not exist or there are no {@link ButtonListener}s bound then this
    * method will do nothing.
    * 
-   * @param key The name of the key to clear of bound {@link KeyListener}s.
+   * @param key The name of the key to clear of bound {@link ButtonListener}s.
    */
   public void removeAllBindings(String key) {
     
-    Collection<KeyAction> bindings = getBindings(key);
+    Collection<ButtonAction> bindings = getBindings(key);
     if(bindings == null) return;
     
-    int index = Keyboard.getKeyIndex(key);
-    for(KeyAction act : bindings) {
-      act.keysbound.remove(index);
+    for(ButtonAction act : bindings) {
+      act.keysbound.remove(key);
     }
     
     bindings.clear();
@@ -116,15 +113,15 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
   
   /**
    * Adds a {@link KeyListener} to the list of available {@link KeyListener}s with
-   * the given name.  The {@link KeyListener} can then be bound to a key using the
+   * the given name.  The {@link ButtonListener} can then be bound to a key using the
    * {@link HotkeyTable#addKeyBinding(java.lang.String, java.lang.String...) }
    * method.
    * 
-   * @param name The name that can be used to reference the new {@link KeyListener}.
+   * @param name The name that can be used to reference the new {@link ButtonListener}.
    * @param list The {@link KeyListener} to add to this {@link HotkeyTable}.
    */
-  public void addAction(String name, KeyboardListener list) {
-    KeyAction action = new KeyAction(list, name);
+  public void addAction(String name, ButtonListener list) {
+    ButtonAction action = new ButtonAction(list, name);
     keyactions.put(name, action);
     
     log.log(Level.CONFIG, KEY_ACTION_ADDED, name);
@@ -132,17 +129,17 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
   
   /**
    * Removes the {@link KeyListener} with the given name after un-binding it from
-   * any keys it is bound to. If there is no {@link KeyListener} with the given
+   * any keys it is bound to. If there is no {@link ButtonListener} with the given
    * name then this method will not do anything.
    * 
-   * @param name The name of the {@link KeyListener} to remove.
+   * @param name The name of the {@link ButtonListener} to remove.
    */
   public void removeAction(String name) {
-    KeyAction action = keyactions.remove(name);
+    ButtonAction action = keyactions.remove(name);
     if(action == null) return;
     
-    for(int index : action.keysbound) {
-      Collection<KeyAction> bindings = getBindings(index);
+    for(String key : action.keysbound) {
+      Collection<ButtonAction> bindings = getBindings(key);
       assert bindings != null;
       
       bindings.remove(action);
@@ -157,13 +154,33 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
 
   @Override
   public void handleEvent(KeyboardEvent event) {
-    int index = event.key;
-    Collection<KeyAction> bindings = getBindings(index);
-    if(bindings == null) return;
+    //ignore repeat events for bindings
+    if(event.repeat) return;
     
-    for(KeyAction action : bindings) {
-      action.list.handleEvent(event);
-    }
+    String key = Keyboard.getKeyName(event.key);
+    Collection<ButtonAction> bindings = getBindings(key);
+    if(bindings.isEmpty()) return;
+    
+    if(event.state)
+      for(ButtonAction act : bindings)
+        act.list.buttonPressed(key);
+    else
+      for(ButtonAction act: bindings)
+        act.list.buttonReleased(key);
+  }
+
+  @Override
+  public void handleEvent(MouseButtonEvent event) {
+    String key = Mouse.getButtonName(event.button);
+    Collection<ButtonAction> bindings = getBindings(key);
+    if(bindings.isEmpty()) return;
+    
+    if(event.state)
+      for(ButtonAction act : bindings)
+        act.list.buttonPressed(key);
+    else
+      for(ButtonAction act : bindings)
+        act.list.buttonReleased(key);
   }
 
   @Override
@@ -172,43 +189,27 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
     keybindings.clear();
   }
   
-  private Collection<KeyAction> getBindings(String key) {
-    return getBindings(Keyboard.getKeyIndex(key), key);
-  }
-  
-  private Collection<KeyAction> getBindings(int index) {
-    return getBindings(index, Keyboard.getKeyName(index));
-  }
-  
-  private Collection<KeyAction> getBindings(int index, String key) {
-    if(index == Keyboard.KEY_NONE) {
-      log.log(Level.WARNING, INVALID_KEY_NAME, key);
-      return null;
-    }
+  private Collection<ButtonAction> getBindings(String key) {
     
     //get or create a collection of actions for binding.
-    Collection<KeyAction> bindings = keybindings.get(index);
+    Collection<ButtonAction> bindings = keybindings.get(key);
     if(bindings == null) {
       bindings = new HashSet();
-      keybindings.put(index, bindings);
+      keybindings.put(key, bindings);
     }
     
     return bindings;
   }
   
-  private final Map<String, KeyAction> keyactions;
-  private final Map<Integer, Collection<KeyAction>> keybindings;
-
-  @Override
-  public void handleEvent(MouseButtonEvent event) {
-  }
+  private final Map<String, ButtonAction> keyactions;
+  private final Map<String, Collection<ButtonAction>> keybindings;
   
-  private static class KeyAction {
-    public final KeyboardListener list;
-    public final Collection<Integer> keysbound;
+  private static class ButtonAction {
+    public final ButtonListener list;
+    public final Collection<String> keysbound;
     public final String name;
 
-    public KeyAction(KeyboardListener list, String name) {
+    public ButtonAction(ButtonListener list, String name) {
       this.list = list;
       this.keysbound = new ArrayList<>();
       this.name = name;

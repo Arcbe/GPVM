@@ -65,6 +65,44 @@ public class ReadableMatrix4 {
   }
   
   /**
+   * Transforms the given {@link ReadableVector4} with this {@link Matrix4}.
+   * The {@link ReadableVector4} is pre multiplied as a column vectored by this
+   * {@link Matrix4}.
+   * 
+   * @param vec The {@link ReadableVector4} to transform.
+   * @param out The {@link Vector4} to place the result.
+   * @return A reference to the out parameter.
+   */
+  public Vector4 transform(ReadableVector4 vec, Vector4 out) {
+    float x = 
+      values[0][0] * vec.getX() +
+      values[0][1] * vec.getY() +
+      values[0][2] * vec.getZ() +
+      values[0][3] * vec.getW();
+    float y =
+      values[1][0] * vec.getX() +
+      values[1][1] * vec.getY() +
+      values[1][2] * vec.getZ() +
+      values[1][3] * vec.getW();
+    float z = 
+      values[2][0] * vec.getX() +
+      values[2][1] * vec.getY() +
+      values[2][2] * vec.getZ() +
+      values[2][3] * vec.getW();
+    float w =
+      values[3][0] * vec.getX() +
+      values[3][1] * vec.getY() +
+      values[3][2] * vec.getZ() +
+      values[3][3] * vec.getW();
+    
+    out.x = x;
+    out.y = y;
+    out.z = z;
+    out.w = w;
+    return out;
+  }
+  
+  /**
    * Returns the value of a specific cell.
    * 
    * @param row The row of the cell.

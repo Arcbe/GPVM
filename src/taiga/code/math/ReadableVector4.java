@@ -17,6 +17,9 @@
 
 package taiga.code.math;
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+
 /**
  * A 4D vector that provides only read operations.  However, subclasses may
  * change the vector.
@@ -41,7 +44,7 @@ public class ReadableVector4 extends ReadableVector3 {
    */
   public ReadableVector4(float x, float y, float z, float w) {
     super(x, y, z);
-    this.z = z;
+    this.w = w;
   }
   
   /**
@@ -83,7 +86,41 @@ public class ReadableVector4 extends ReadableVector3 {
   }
   
   /**
+   * Stores this {@link Vector4} in the given {@link ByteBuffer}.
+   * 
+   * @param buffer The {@link ByteBuffer} to store this {@link Vector4} in.
+   */
+  public void store(ByteBuffer buffer) {
+    store(buffer.asFloatBuffer());
+  }
+  
+  /**
+   * Stores this {@link Vector4} in the given {@link FloatBuffer}.
+   * 
+   * @param buffer The {@link FloatBuffer} to store this {@link Vector4} in.
+   */
+  public void store(FloatBuffer buffer) {
+    buffer.put(x).put(y).put(z).put(w);
+  }
+  
+  /**
    * The z coordinate.
    */
   protected float w;
+  
+  @Override
+  public String toString() {
+    StringBuilder result = new StringBuilder();
+    result.append("<");
+    result.append(x);
+    result.append(", ");
+    result.append(y);
+    result.append(", ");
+    result.append(z);
+    result.append(", ");
+    result.append(w);
+    result.append(">");
+    
+    return result.toString();
+  }
 }

@@ -1,9 +1,11 @@
 package taiga.gpvm;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
+import taiga.code.input.ButtonListener;
 import taiga.code.input.InputSystem;
-import taiga.code.input.KeyboardEvent;
-import taiga.code.input.KeyboardListener;
+import taiga.code.input.MouseButtonEvent;
+import taiga.code.input.MouseListener;
 import taiga.code.io.SettingManager;
 import taiga.code.math.Vector3;
 import taiga.code.opengl.GraphicsSystem;
@@ -19,7 +21,6 @@ import taiga.gpvm.registry.TileEntry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.ColoredSky;
 import taiga.gpvm.render.MobileCamera;
-import taiga.gpvm.render.WorldRenderer;
 import taiga.gpvm.screens.GameScreen;
 import taiga.gpvm.util.geom.Coordinate;
 
@@ -76,64 +77,98 @@ public class Main {
     graphics.addUpdateable(cam);
     game.setWorldCamera(cam);
     
-    input.addAction("move-z", new KeyboardListener() {
+    input.addAction("move-z", new ButtonListener() {
 
       @Override
-      public void handleEvent(KeyboardEvent event) {
-        if(event.state)
-          cam.velocity.setZ(-.1f);
-        else
-          cam.velocity.setZ(0);
+      public void buttonPressed(String name) {
+        cam.velocity.setZ(-.1f);
+      }
+      
+      @Override
+      public void buttonReleased(String name) {
+        cam.velocity.setZ(0);
       }
     });
-    input.addAction("move+z", new KeyboardListener() {
+    input.addAction("move+z", new ButtonListener() {
 
       @Override
-      public void handleEvent(KeyboardEvent event) {
-        if(event.state)
-          cam.velocity.setZ(.1f);
-        else
-          cam.velocity.setZ(0);
+      public void buttonPressed(String name) {
+        cam.velocity.setZ(.1f);
+      }
+      
+      @Override
+      public void buttonReleased(String name) {
+        cam.velocity.setZ(0);
       }
     });
-    input.addAction("move-y", new KeyboardListener() {
+    input.addAction("move-y", new ButtonListener() {
 
       @Override
-      public void handleEvent(KeyboardEvent event) {
-        if(event.state)
-          cam.velocity.setY(-.1f);
-        else
-          cam.velocity.setY(0);
+      public void buttonPressed(String name) {
+        cam.velocity.setY(-.1f);
+      }
+      
+      @Override
+      public void buttonReleased(String name) {
+        cam.velocity.setY(0);
       }
     });
-    input.addAction("move+y", new KeyboardListener() {
+    input.addAction("move+y", new ButtonListener() {
 
       @Override
-      public void handleEvent(KeyboardEvent event) {
-        if(event.state)
-          cam.velocity.setY(.1f);
-        else
-          cam.velocity.setY(0);
+      public void buttonPressed(String name) {
+        cam.velocity.setY(.1f);
+      }
+      
+      @Override
+      public void buttonReleased(String name) {
+        cam.velocity.setY(0);
       }
     });
-    input.addAction("move-x", new KeyboardListener() {
+    input.addAction("move-x", new ButtonListener() {
 
       @Override
-      public void handleEvent(KeyboardEvent event) {
-        if(event.state)
-          cam.velocity.setX(-.1f);
-        else
-          cam.velocity.setX(0);
+      public void buttonPressed(String name) {
+        cam.velocity.setX(-.1f);
+      }
+      
+      @Override
+      public void buttonReleased(String name) {
+        cam.velocity.setX(0);
       }
     });
-    input.addAction("move+x", new KeyboardListener() {
+    input.addAction("move+x", new ButtonListener() {
 
       @Override
-      public void handleEvent(KeyboardEvent event) {
-        if(event.state)
-          cam.velocity.setX(.1f);
-        else
-          cam.velocity.setX(0);
+      public void buttonPressed(String name) {
+        cam.velocity.setX(.1f);
+      }
+      
+      @Override
+      public void buttonReleased(String name) {
+        cam.velocity.setX(0);
+      }
+    });
+    input.addAction("grab-mouse", new ButtonListener() {
+
+      @Override
+      public void buttonPressed(String name) {
+        Mouse.setGrabbed(true);
+      }
+
+      @Override
+      public void buttonReleased(String name) {
+        Mouse.setGrabbed(false);
+      }
+    });
+    input.addGrabbedMouseListener(new MouseListener() {
+
+      @Override
+      public void handleEvent(MouseButtonEvent event) {
+        float x = 4f * (float) event.dx / (float) Display.getWidth();
+        float y = 4f * (float) event.dy / (float) Display.getWidth();
+        
+        cam.recenterOnScreenPoint(x, y);
       }
     });
     
@@ -143,6 +178,7 @@ public class Main {
     input.addKeyBinding("D", "move+x");
     input.addKeyBinding("W", "move+z");
     input.addKeyBinding("S", "move-z");
+    input.addKeyBinding("BUTTON0", "grab-mouse");
   }
   
   public static GameManager createGame() throws Exception {

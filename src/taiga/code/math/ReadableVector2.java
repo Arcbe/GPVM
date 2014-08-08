@@ -112,4 +112,16 @@ public class ReadableVector2 implements Cloneable {
    * The y coordinate.
    */
   protected float y;
+  
+  @Override
+  public String toString() {
+    StringBuilder result = new StringBuilder();
+    result.append("<");
+    result.append(x);
+    result.append(", ");
+    result.append(y);
+    result.append(">");
+    
+    return result.toString();
+  }
 }

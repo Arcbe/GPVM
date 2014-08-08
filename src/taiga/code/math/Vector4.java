@@ -26,26 +26,23 @@ import java.nio.FloatBuffer;
  * 
  * @author Russell Smith
  */
-public final class Vector4 implements Serializable {
-  /**
-   * The coordinates for the 4 axis of the vector space.
-   */
-  public final float[] values;
-
+public final class Vector4 extends ReadableVector4 implements Serializable {
   /**
    * Creates a new {@link Vector4}.
    */
   public Vector4() {
-    this.values = new float[4];
   }
   
   /**
    * Creates a new {@link Vector4} using the given array for its values.
    * 
-   * @param src The array to use for the values of this {@link Vector4}.
+   * @param x The x component of this {@link Vector4}.
+   * @param y The y component of this {@link Vector4}.
+   * @param z The z component of this {@link Vector4}.
+   * @param w The w component of this {@link Vector4}.
    */
-  public Vector4(float[] src) {
-    values = src;
+  public Vector4(float x, float y, float z, float w) {
+    super(x, y, z, w);
   }
   
   /**
@@ -64,20 +61,6 @@ public final class Vector4 implements Serializable {
    */
   public float length() {
     return (float) Math.sqrt(lengthSquare());
-  }
-  
-  /**
-   * Returns the dot product of this {@link Vector4} and the given {@link Vector4}.
-   * 
-   * @param other The {@link Vector4} to calculate the dot product with.
-   * @return The dot product of the two {@link Vector4}s.
-   */
-  public float dot(Vector4 other) {
-    float result = 0;
-    for(int i = 0; i < 4; i++)
-      result += values[i] * other.values[i];
-    
-    return result;
   }
   
   /**
@@ -123,9 +106,11 @@ public final class Vector4 implements Serializable {
    * @return A reference to this {@link Vector4}.
    */
   public Vector4 scale(float factor, Vector4 out) {
-    for(int i = 0; i < 4; i++)
-      out.values[i] = factor * values[i];
-      
+    out.x = x * factor;
+    out.y = y * factor;
+    out.z = z * factor;
+    out.w = w * factor;
+    
     return out;
   }
   
@@ -148,8 +133,10 @@ public final class Vector4 implements Serializable {
    * @return A reference to the out parameter.
    */
   public Vector4 sub(Vector4 other, Vector4 out) {
-    for(int i = 0; i < 4; i++) 
-      out.values[i] = values[i] - other.values[i];
+    out.x = x - other.x;
+    out.y = y - other.y;
+    out.z = z - other.z;
+    out.w = w - other.w;
     
     return out;
   }
@@ -173,28 +160,12 @@ public final class Vector4 implements Serializable {
    * @return A reference to the out parameter.
    */
   public Vector4 add(Vector4 other, Vector4 out) {
-    for(int i = 0; i < 4; i++) 
-      out.values[i] = values[i] + other.values[i];
+    out.x = x + other.x;
+    out.y = y + other.y;
+    out.z = z + other.z;
+    out.w = w + other.w;
     
     return out;
-  }
-  
-  /**
-   * Stores this {@link Vector4} in the given {@link ByteBuffer}.
-   * 
-   * @param buffer The {@link ByteBuffer} to store this {@link Vector4} in.
-   */
-  public void store(ByteBuffer buffer) {
-    store(buffer.asFloatBuffer());
-  }
-  
-  /**
-   * Stores this {@link Vector4} in the given {@link FloatBuffer}.
-   * 
-   * @param buffer The {@link FloatBuffer} to store this {@link Vector4} in.
-   */
-  public void store(FloatBuffer buffer) {
-    buffer.put(values);
   }
   
   /**
@@ -212,7 +183,9 @@ public final class Vector4 implements Serializable {
    * @param buffer The {@link FloatBuffer} to load values from.
    */
   public void load(FloatBuffer buffer) {
-    for(int i = 0; i < 4; i++)
-      values[i] = buffer.get();
+    x = buffer.get();
+    y = buffer.get();
+    z = buffer.get();
+    w = buffer.get();
   }
 }

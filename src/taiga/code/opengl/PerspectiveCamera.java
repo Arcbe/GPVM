@@ -20,6 +20,7 @@ package taiga.code.opengl;
 import org.lwjgl.opengl.Display;
 import taiga.code.math.Matrix4;
 import taiga.code.math.Matrix4Utils;
+import taiga.code.math.Vector4;
 
 public abstract class PerspectiveCamera implements Camera {
 
@@ -54,6 +55,26 @@ public abstract class PerspectiveCamera implements Camera {
   public void setFOV(float field) {
     fov = field;
     proj = null;
+  }
+  
+  /**
+   * Converts the given screen coordinate into the vector for the closest
+   * possible eye coordinate that would map to the given screen coordinate.
+   * 
+   * @param x The x component of the screen coordinate.
+   * @param y The y component of the screen coordinate.
+   * @return The eye space vector for the given screen coordinate.
+   */
+  public Vector4 screenPointToEyeVector(float x, float y) {
+    if(x > 1)
+      x /= (float) Display.getWidth();
+    if(y > 1)
+      y /= (float) Display.getHeight();
+    
+    Vector4 out = new Vector4(x, y, 1, 1);
+    Matrix4 invtrans = getProjection().invert(new Matrix4());
+    invtrans.transform(out, out);
+    return out;
   }
   
   @Override

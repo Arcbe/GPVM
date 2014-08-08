@@ -89,6 +89,8 @@ public class InputSystem extends HotkeyTable implements Updateable {
         for(MouseListener list : mouselist)
           list.handleEvent(event);
       }
+      
+      handleEvent(event);
     }
   }
   

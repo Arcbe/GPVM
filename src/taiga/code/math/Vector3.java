@@ -44,11 +44,11 @@ public final class Vector3 extends ReadableVector3 {
     return this;
   }
   
-  public Vector3 add(Vector3 other) {
+  public Vector3 add(ReadableVector3 other) {
     return add(other, this);
   }
   
-  public Vector3 add(Vector3 other, Vector3 out) {
+  public Vector3 add(ReadableVector3 other, Vector3 out) {
     out.x = x + other.x;
     out.y = y + other.y;
     out.z = z + other.z;

@@ -27,7 +27,7 @@ import java.nio.FloatBuffer;
  * 
  * @author Russell Smith
  */
-public class Matrix4 extends ReadableMatrix4 implements Serializable {
+public final class Matrix4 extends ReadableMatrix4 implements Serializable {
 
   /**
    * Creates a new identity {@link Matrix4}.
