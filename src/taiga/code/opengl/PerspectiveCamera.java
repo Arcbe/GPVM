@@ -58,8 +58,12 @@ public abstract class PerspectiveCamera implements Camera {
   
   @Override
   public Matrix4 getProjection() {
+    if(!Float.isFinite(aspect)) {
+      aspect = (float) Display.getWidth() / (float) Display.getHeight();
+    }
+    
     if(proj == null) {
-      proj = Matrix4Utils.perspective(fov, aspect, near, far, proj);
+      proj = Matrix4Utils.perspective(fov, aspect, near, far, new Matrix4());
     }
       
     return proj;

@@ -139,11 +139,29 @@ public class ReadableMatrix4 {
    * The buffer is not reset or otherwise changed other than storing the values.
    * 
    * @param buffer The {@link FloatBuffer} to store this {@link Matrix4} in.
+   * 
    * @return A reference to the given {@link FloatBuffer}.
    */
   public final FloatBuffer store(FloatBuffer buffer) {
-    for(int i = 0; i < 4; i++)
-      buffer.put(values[i]);
+    return store(buffer, true);
+  }
+  
+  /**
+   * Stores this {@link Matrix4} in the given {@link FloatBuffer}.
+   * The buffer is not reset or otherwise changed other than storing the values.
+   * 
+   * @param buffer The {@link FloatBuffer} to store this {@link Matrix4} in.
+   * @param row Selects whether the {@link Matrix4} is stored as row major or column order.
+   * @return A reference to the given {@link FloatBuffer}.
+   */
+  public final FloatBuffer store(FloatBuffer buffer, boolean row) {
+    if(row)
+      for(int i = 0; i < 4; i++)
+        buffer.put(values[i]);
+    else
+      for(int j = 0; j < 4; j++)
+        for(int i = 0; i < 4; i++)
+          buffer.put(values[i][j]);
     
     return buffer;
   }

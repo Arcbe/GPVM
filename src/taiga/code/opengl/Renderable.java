@@ -169,7 +169,7 @@ public abstract class Renderable extends RegisteredObject {
   public void setGLMatrix(int matrixmode, ReadableMatrix4 mat) {
     FloatBuffer buffer = matbuffer.get();
     buffer.rewind();
-    mat.store(buffer);
+    mat.store(buffer, false);
     buffer.flip();
     
     GL11.glMatrixMode(matrixmode);

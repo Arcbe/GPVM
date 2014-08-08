@@ -26,13 +26,13 @@ public class Matrix4Utils {
     diry *= factor;
     dirz *= factor;
     
-    out.setValue(2, 0, dirx);
-    out.setValue(2, 1, diry);
-    out.setValue(2, 2, dirz);
+    out.setValue(2, 0, -dirx);
+    out.setValue(2, 1, -diry);
+    out.setValue(2, 2, -dirz);
     
-    float ux = diry * upz - upy * dirz;
-    float uy = upx * dirz - dirx * upz;
-    float uz = dirx * upy - upx * diry;
+    float ux = upy * dirz - diry * upz;
+    float uy = dirx * upz - upx * dirz;
+    float uz = upx * diry - dirx * upy;
     
     factor = 1f / (float) Math.sqrt(ux * ux + uy * uy + uz * uz);
     ux *= factor;
@@ -43,17 +43,30 @@ public class Matrix4Utils {
     out.setValue(0, 1, uy);
     out.setValue(0, 2, uz);
     
-    upx = uy * dirz - diry * uz;
-    upy = dirx * uz - ux * dirz;
-    upz = ux * diry - dirx * uy;
+    upx = diry * uz - uy * dirz;
+    upy = ux * dirz - dirx * uz;
+    upz = dirx * uy - ux * diry;
     
     out.setValue(1, 0, upx);
     out.setValue(1, 1, upy);
     out.setValue(1, 2, upz);
     
-    out.setValue(0, 3, eyex);
-    out.setValue(1, 3, eyey);
-    out.setValue(2, 3, eyez);
+    float ex = 
+      out.getValue(0, 0) * eyex +
+      out.getValue(0, 1) * eyey +
+      out.getValue(0, 2) * eyez;
+    float ey = 
+      out.getValue(1, 0) * eyex +
+      out.getValue(1, 1) * eyey +
+      out.getValue(1, 2) * eyez;
+    float ez = 
+      out.getValue(2, 0) * eyex +
+      out.getValue(2, 1) * eyey +
+      out.getValue(2, 2) * eyez;
+    
+    out.setValue(0, 3, -ex);
+    out.setValue(1, 3, -ey);
+    out.setValue(2, 3, -ez);
     
     return out;
   }
@@ -91,7 +104,7 @@ public class Matrix4Utils {
   public static Matrix4 perspective(float fovy, float aspect, float near, float far, Matrix4 out) {
     float f = near * (float) Math.tan(fovy / 2);
     
-    return frustum(-f / aspect, f / aspect, -f, f, near, far, out);
+    return frustum(-f * aspect, f * aspect, -f, f, near, far, out);
   }
   
   

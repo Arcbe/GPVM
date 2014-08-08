@@ -69,10 +69,10 @@ public class Main {
     
     //create the camera for the game screen
     final MobileCamera cam = new MobileCamera(new Vector3(),
-      new Vector3(0,0,1),
-      new Vector3(1, 1, -2f),
-      new Vector3(-1, -1, 20), 
-      100, 1, 1000);
+      new Vector3(0, 0, 1),
+      new Vector3(1, 1, 0),
+      new Vector3(0, 0, 1), 
+      (float) Math.PI / 3f, .1f, 1000);
     graphics.addUpdateable(cam);
     game.setWorldCamera(cam);
     

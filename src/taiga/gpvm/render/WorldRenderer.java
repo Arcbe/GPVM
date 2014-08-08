@@ -4,13 +4,16 @@
  */
 package taiga.gpvm.render;
 
+import java.nio.FloatBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 import taiga.code.math.Matrix4;
 import taiga.code.opengl.Camera;
 import taiga.code.opengl.SceneRoot;
@@ -58,7 +61,6 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   private final Collection<Coordinate> viewables;
   private final Map<EntityRenderer, Collection<Entity>> entrend;
   private final Map<Coordinate, RegionRenderer> renderers;
-  private volatile Camera camera;
   
   private EntityRenderingRegistry entreg;
   private EntityManager entmng;
@@ -93,6 +95,8 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
 
   @Override
   protected void updateSelf() {
+    super.updateSelf();
+    
     updateRendFrustrum();
     collectEntities();
     
@@ -101,18 +105,23 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   }
 
   @Override
-  protected Matrix4 processProjection(Matrix4 proj, int pass) {
-    if(camera == null) return proj;
-    
-    return camera.getProjection();
-  }
-
-  @Override
   protected void renderSelf(int pass, Matrix4 proj) {
-    if(camera == null) return;
+    
+    applyProjection(proj);
+    applyGlobalModelView();
+    
+    proj = new Matrix4(new float[][]{
+      {1, 0, 0, 0},
+      {0, 0, 1, 0},
+      {0, -1, 0, 0},
+      {0, 0, 0, 1}
+    });
     
     GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    GL11.glPushMatrix();
+//    GL11.glLoadMatrix((FloatBuffer) proj.store(BufferUtils.createFloatBuffer(16), false).flip());
+//    GL11.glLoadIdentity();
+//    GLU.gluLookAt(0, 0, 0, 0, 1, 0, 0, 0, 1);
+//    GLU.gluLookAt(0, 0, 5, 1, 1, 4, 0, 0, 1);
     
     for(Map.Entry<EntityRenderer, Collection<Entity>> val : entrend.entrySet()) {
       val.getKey().render(val.getValue(), pass);
@@ -120,13 +129,12 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
     
     for(RegionRenderer reg : renderers.values()) {
       Coordinate coor = reg.getLocation();
-      GL11.glLoadIdentity();
       GL11.glTranslatef(coor.x, coor.y, coor.z);
       
       reg.render(pass, proj);
+      
+      GL11.glTranslatef(-coor.x, -coor.y, -coor.z);
     }
-    
-    GL11.glPopMatrix();
   }
 
   @Override
