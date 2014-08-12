@@ -16,6 +16,7 @@ import taiga.code.opengl.GraphicsSystem;
 import taiga.code.yaml.YAMLDataReader;
 import taiga.gpvm.entity.EntityManager;
 import taiga.gpvm.event.MapEventManager;
+import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.World;
 import taiga.gpvm.registry.EntityRegistry;
@@ -24,6 +25,8 @@ import taiga.gpvm.schedule.WorldUpdater;
 import taiga.gpvm.registry.TileRenderingRegistry;
 import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.registry.TileRegistry;
+import taiga.gpvm.render.SkyBoxRenderer;
+import taiga.gpvm.render.WorldRenderer;
 import taiga.gpvm.screens.GameScreen;
 
 /**
@@ -136,6 +139,22 @@ public final class GameManager extends RegisteredSystem implements WindowListene
     GameScreen screen = getObject(HardcodedValues.GRAPHICS_SYSTEM_NAME, HardcodedValues.GAME_SCREEN_NAME);
     
     if(screen != null) screen.setCamera(cam);
+  }
+  
+  public World createWorld(String name, MapGenerator gen) {
+    Universe uni = getObject(HardcodedValues.UNIVERSE_NAME);
+    if(uni == null) {
+      return null;
+    }
+    
+    return uni.addWorld(name, gen);
+  }
+  
+  public void setWorldSky(String name, SkyBoxRenderer sky) {
+    WorldRenderer world = getObject(HardcodedValues.GRAPHICS_SYSTEM_NAME, HardcodedValues.GAME_SCREEN_NAME, name);
+    if(world == null) return;
+    
+    world.addChild(sky);
   }
 
   @Override

@@ -13,9 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
 import taiga.code.math.Matrix4;
-import taiga.code.opengl.Camera;
 import taiga.code.opengl.SceneRoot;
 import taiga.code.registration.RegisteredObject;
 import taiga.gpvm.HardcodedValues;
@@ -110,15 +108,7 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
     applyProjection(proj);
     applyGlobalModelView();
     
-    proj = new Matrix4(new float[][]{
-      {1, 0, 0, 0},
-      {0, 0, 1, 0},
-      {0, -1, 0, 0},
-      {0, 0, 0, 1}
-    });
-    
-    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//    GL11.glLoadMatrix((FloatBuffer) proj.store(BufferUtils.createFloatBuffer(16), false).flip());
+    GL11.glMatrixMode(GL11.GL_PROJECTION);
 //    GL11.glLoadIdentity();
 //    GLU.gluLookAt(0, 0, 0, 0, 1, 0, 0, 0, 1);
 //    GLU.gluLookAt(0, 0, 5, 1, 1, 4, 0, 0, 1);
@@ -127,11 +117,18 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
       val.getKey().render(val.getValue(), pass);
     }
     
+    Matrix4 rendproj = proj.mul(getGlobalTransform(), new Matrix4());
+    GL11.glLoadMatrix((FloatBuffer) rendproj.store(BufferUtils.createFloatBuffer(16), false).flip());
+    
+    GL11.glLoadIdentity();
+    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+    GL11.glLoadIdentity();
+    
     for(RegionRenderer reg : renderers.values()) {
       Coordinate coor = reg.getLocation();
       GL11.glTranslatef(coor.x, coor.y, coor.z);
       
-      reg.render(pass, proj);
+      reg.render(pass, rendproj);
       
       GL11.glTranslatef(-coor.x, -coor.y, -coor.z);
     }

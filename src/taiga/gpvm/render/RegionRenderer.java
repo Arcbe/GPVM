@@ -209,7 +209,7 @@ public final class RegionRenderer extends RegisteredObject implements RegionList
     }
   }
 
-  protected void render(int pass, Matrix4 proj) {    
+  protected void render(int pass, Matrix4 proj) {
     for(TileRenderer rend : instances.values())
       rend.render(pass, proj);
   }

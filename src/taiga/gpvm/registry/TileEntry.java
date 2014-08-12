@@ -23,7 +23,7 @@ public class TileEntry extends RegistryEntry {
    * The name of the tile within the name space of the mod.  The get name method
    * will return the name prepended with the modname and separated by a '.'.
    */
-  public final String name;
+  public final String simplename;
   
   /**
    * Whether the tile is opaque.  This should only be true if the tile completely
@@ -48,7 +48,7 @@ public class TileEntry extends RegistryEntry {
   public TileEntry(String modname, String name, boolean opaque, boolean solid) {
     super(modname + "." + name);
     this.modname = modname;
-    this.name = name;
+    this.simplename = name;
     this.opaque = opaque;
     this.solid = solid;
   }
@@ -63,7 +63,7 @@ public class TileEntry extends RegistryEntry {
     
     builder.append(modname);
     builder.append('.');
-    builder.append(name);
+    builder.append(simplename);
     
     return builder.toString();
   } 

@@ -69,7 +69,8 @@ public class Main {
     InputSystem input = game.getObject(HardcodedValues.INPUT_SYSTEM_NAME);
     
     //create the camera for the game screen
-    final MobileCamera cam = new MobileCamera(new Vector3(),
+    final MobileCamera cam = new MobileCamera(
+      new Vector3(),
       new Vector3(0, 0, 1),
       new Vector3(1, 1, 0),
       new Vector3(0, 0, 0), 
