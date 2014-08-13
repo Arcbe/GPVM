@@ -11,7 +11,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
 import taiga.code.math.ReadableMatrix4;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 
 /**
  * Base class for renderable objects.  {@link Renderable}s can be added to a
@@ -20,7 +20,7 @@ import taiga.code.registration.RegisteredObject;
  * 
  * @author russell
  */
-public abstract class Renderable extends RegisteredObject {
+public abstract class Renderable extends NamedObject {
   
   /**
    * Controls whether this {@link Renderable} should render and update itself.
@@ -51,7 +51,7 @@ public abstract class Renderable extends RegisteredObject {
     
     updateSelf();
     
-    for(RegisteredObject obj : this) {
+    for(NamedObject obj : this) {
       if(obj != null && obj instanceof Renderable) {
         ((Renderable)obj).update();
       }
@@ -74,7 +74,7 @@ public abstract class Renderable extends RegisteredObject {
     
     renderSelf(pass, proj);
     
-    for(RegisteredObject obj : this) {
+    for(NamedObject obj : this) {
       if(obj != null && obj instanceof Renderable) {
         ((Renderable)obj).render(pass, proj);
       }
@@ -91,7 +91,7 @@ public abstract class Renderable extends RegisteredObject {
    * @return The number of rendering passes needed.
    */
   public int getNumberOfPasses() {
-    for(RegisteredObject obj : this) {
+    for(NamedObject obj : this) {
       if(obj != null && obj instanceof Renderable) {
         int newpasses = ((Renderable)obj).getNumberOfPasses();
         if(newpasses > minpasses) minpasses = newpasses;
@@ -239,25 +239,25 @@ public abstract class Renderable extends RegisteredObject {
   protected void uninitializeSelf() {}
 
   @Override
-  protected void dettached(RegisteredObject parent) {
+  protected void dettached(NamedObject parent) {
     super.dettached(parent);
     initialized = false;
   }
   
   @Override
-  protected void attached(RegisteredObject parent) {
+  protected void attached(NamedObject parent) {
     super.attached(parent);
     updateGlobalTransform();
   }
   
   private void updateGlobalTransform() {
-    RegisteredObject obj = getParent();
+    NamedObject obj = getParent();
     if(!(obj instanceof Renderable)) return;
     
     ((Renderable)obj).globaltrans.mul(localtrans, globaltrans);
     
     //now that we are updated update the children.
-    for(RegisteredObject o : this)
+    for(NamedObject o : this)
       if(o instanceof Renderable)
         ((Renderable)o).updateGlobalTransform();
   }

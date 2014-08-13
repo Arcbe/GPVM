@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.code.text.TextLocalizer;
 
 /**
@@ -25,7 +25,7 @@ import taiga.code.text.TextLocalizer;
  * 
  * @author russell
  */
-public class DataFileManager extends RegisteredObject {
+public class DataFileManager extends NamedObject {
   /**
    * The name that {@link DataFileManager}s are registered with.
    */
@@ -56,7 +56,7 @@ public class DataFileManager extends RegisteredObject {
       throw new FileNotFoundException(TextLocalizer.localize(FILE_NOT_FOUND, file));
     }
     
-    for(RegisteredObject obj : this) {
+    for(NamedObject obj : this) {
       if(obj != null && obj instanceof DataFileReader) {
         DataFileReader reader = (DataFileReader)obj;
         

@@ -5,7 +5,7 @@
 package taiga.gpvm.map;
 
 import taiga.gpvm.HardcodedValues;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.gpvm.util.geom.Coordinate;
 
 /**
@@ -13,7 +13,7 @@ import taiga.gpvm.util.geom.Coordinate;
  * 
  * @author russell
  */
-public abstract class MapGenerator extends RegisteredObject {
+public abstract class MapGenerator extends NamedObject {
 
   /**
    * Creates a new {@link MapGenerator}.

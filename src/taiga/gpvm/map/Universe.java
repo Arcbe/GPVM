@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import taiga.code.networking.NetworkManager;
 import taiga.code.networking.NetworkedObject;
 import taiga.code.networking.Packet;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.code.registration.ReusableObject;
 import taiga.code.util.ByteUtils;
 import taiga.gpvm.util.geom.Coordinate;
@@ -86,7 +86,7 @@ public final class Universe extends ReusableObject {
   }
   
   private void clearWorlds() {
-    for(RegisteredObject obj : this) {
+    for(NamedObject obj : this) {
       if(!(obj instanceof World)) continue;
       World world = (World) obj;
       
@@ -106,7 +106,7 @@ public final class Universe extends ReusableObject {
     short newid = 0;
     LinkedList<World> worlds = new LinkedList<>();
     
-    for(RegisteredObject obj : this)
+    for(NamedObject obj : this)
       if(obj instanceof World)
         worlds.add((World) obj);
     

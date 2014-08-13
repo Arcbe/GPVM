@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import taiga.code.io.DataFileManager;
 import taiga.code.util.DataNode;
 import taiga.code.registration.MissingObjectException;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.gpvm.map.Tile;
 import taiga.gpvm.render.TileRenderer;
 
@@ -178,7 +178,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
     if(tiles == null)
       throw new MissingObjectException();
     
-    for(RegisteredObject val : data) {
+    for(NamedObject val : data) {
       if(!(val instanceof DataNode)) continue;
       DataNode cur = (DataNode) val;
 
@@ -190,7 +190,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
       DataNode renddata = null;
       Class<? extends TileRenderer> rendclass = null;
 
-      for(RegisteredObject obj : cur) {
+      for(NamedObject obj : cur) {
         if(!(obj instanceof DataNode)) continue;
         DataNode dataval = (DataNode)obj;
 

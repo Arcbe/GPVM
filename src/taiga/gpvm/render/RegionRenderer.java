@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.math.Matrix4;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.gpvm.registry.TileRenderingRegistry;
 
 /**
@@ -21,7 +21,7 @@ import taiga.gpvm.registry.TileRenderingRegistry;
  * 
  * @author russell
  */
-public final class RegionRenderer extends RegisteredObject implements RegionListener {
+public final class RegionRenderer extends NamedObject implements RegionListener {
   /**
    * The prefix for the name of the {@link RegionRenderer}.
    */

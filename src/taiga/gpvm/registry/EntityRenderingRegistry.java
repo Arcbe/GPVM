@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import taiga.code.io.DataFileManager;
 import taiga.code.util.DataNode;
 import taiga.code.registration.MissingObjectException;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.gpvm.HardcodedValues;
 import static taiga.gpvm.HardcodedValues.NAMESPACE_SEPERATOR;
 import static taiga.gpvm.HardcodedValues.RENDERER_CLASS_FIELD;
@@ -174,7 +174,7 @@ public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
     if(entities == null)
       throw new MissingObjectException();
     
-    for(RegisteredObject val : data) {
+    for(NamedObject val : data) {
       if(!(val instanceof DataNode)) continue;
       DataNode cur = (DataNode) val;
 
@@ -186,7 +186,7 @@ public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
       DataNode renddata = null;
       Class<? extends EntityRenderer> rendclass = null;
 
-      for(RegisteredObject obj : cur) {
+      for(NamedObject obj : cur) {
         if(!(obj instanceof DataNode)) continue;
         DataNode dataval = (DataNode)obj;
 

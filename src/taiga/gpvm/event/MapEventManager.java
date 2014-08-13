@@ -1,6 +1,6 @@
 package taiga.gpvm.event;
 
-import taiga.code.registration.RegisteredSystem;
+import taiga.code.registration.NamedSystem;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.schedule.WorldChange;
 import taiga.gpvm.schedule.WorldChangeListener;
@@ -15,7 +15,7 @@ import taiga.gpvm.schedule.WorldUpdater;
  * 
  * @author russell
  */
-public class MapEventManager extends RegisteredSystem implements WorldChangeListener {
+public class MapEventManager extends NamedSystem implements WorldChangeListener {
 
   public MapEventManager() {
     super(HardcodedValues.MAP_EVENT_MANAGER_NAME);

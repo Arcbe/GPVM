@@ -14,14 +14,14 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import taiga.code.geom.AABox;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.code.util.Updateable;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.registry.EntityEntry;
 import taiga.gpvm.util.geom.Coordinate;
 
-public class EntityManager extends RegisteredObject implements Updateable {
+public class EntityManager extends NamedObject implements Updateable {
 
   public EntityManager() {
     super(HardcodedValues.ENTITY_MANAGER_NAME);

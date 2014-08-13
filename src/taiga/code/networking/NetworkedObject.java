@@ -1,7 +1,7 @@
 package taiga.code.networking;
 
 import java.net.InetAddress;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 
 /**
  * An {@link Object} that is can communicate with a matching object over a network.
@@ -12,7 +12,7 @@ import taiga.code.registration.RegisteredObject;
  * 
  * @author russell
  */
-public abstract class NetworkedObject extends RegisteredObject {
+public abstract class NetworkedObject extends NamedObject {
 
   /**
    * Creates a new {@link NetworkedObject} with th given name.

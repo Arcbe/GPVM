@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import taiga.code.registration.RegisteredSystem;
+import taiga.code.registration.NamedSystem;
 import taiga.code.text.TextLocalizer;
 
 /**
@@ -23,7 +23,7 @@ import taiga.code.text.TextLocalizer;
  * @param <T> The type of {@link RegistryEntry} that this {@link Registry} will
  * store.
  */
-public class Registry<T extends RegistryEntry> extends RegisteredSystem {
+public class Registry<T extends RegistryEntry> extends NamedSystem {
 
   /**
    * Creates a new {@link Registry} with the given name.

@@ -10,8 +10,8 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import taiga.code.math.Matrix4;
-import taiga.code.registration.RegisteredObject;
-import taiga.code.registration.RegisteredSystem;
+import taiga.code.registration.NamedObject;
+import taiga.code.registration.NamedSystem;
 import taiga.code.util.Setting;
 import taiga.code.util.Updateable;
 
@@ -21,7 +21,7 @@ import taiga.code.util.Updateable;
  * 
  * @author russell
  */
-public class GraphicsSystem extends RegisteredSystem implements Runnable {
+public class GraphicsSystem extends NamedSystem implements Runnable {
   /**
    * Default setting for vertical synchronization.
    */
@@ -256,7 +256,7 @@ public class GraphicsSystem extends RegisteredSystem implements Runnable {
   }
   
   private void update() {
-    for(RegisteredObject obj : this) {
+    for(NamedObject obj : this) {
       if(obj != null && obj instanceof Renderable)
         ((Renderable)obj).update();
     }
@@ -271,7 +271,7 @@ public class GraphicsSystem extends RegisteredSystem implements Runnable {
     
     //get the number of passes
     int passes = 0;
-    for(RegisteredObject obj : this) {
+    for(NamedObject obj : this) {
       if(obj != null && obj instanceof Renderable) {
         int npasses = ((Renderable)obj).getNumberOfPasses();
         if(passes < npasses) passes = npasses;
@@ -280,7 +280,7 @@ public class GraphicsSystem extends RegisteredSystem implements Runnable {
     
     //now do the passes
     for(int i = 0; i < passes; i++) {
-      for(RegisteredObject obj : this) {
+      for(NamedObject obj : this) {
         if(obj != null && obj instanceof Renderable)
           ((Renderable)obj).render(i, proj);
       }

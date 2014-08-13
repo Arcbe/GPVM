@@ -7,14 +7,14 @@
 package taiga.code.util;
 
 import java.text.MessageFormat;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 
 /**
  * A simple way to store data as a tree of {@link gpvm.registry.RegisteredObject}s.
  * 
  * @author russell
  */
-public class DataNode extends RegisteredObject {
+public class DataNode extends NamedObject {
   /**
    * The data contained in this node.  Is there is no data directly associated
    * with this {@link DataNode} then this field will be null indicating that

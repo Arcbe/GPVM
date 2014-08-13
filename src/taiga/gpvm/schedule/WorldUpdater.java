@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.networking.NetworkedObject;
 import taiga.code.networking.Packet;
-import taiga.code.registration.RegisteredSystem;
+import taiga.code.registration.NamedSystem;
 import taiga.code.util.Updateable;
 import taiga.gpvm.util.geom.Coordinate;
 import taiga.gpvm.HardcodedValues;
@@ -33,7 +33,7 @@ import taiga.gpvm.map.WorldMutator;
  * 
  * @author russell
  */
-public class WorldUpdater extends RegisteredSystem implements UniverseListener {
+public class WorldUpdater extends NamedSystem implements UniverseListener {
 
   /**
    * Creates a new {@link WorldUpdater}

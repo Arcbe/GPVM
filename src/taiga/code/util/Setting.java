@@ -8,7 +8,7 @@ package taiga.code.util;
 
 import java.lang.ref.WeakReference;
 import java.util.Set;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 
 /**
  * A single named value.
@@ -16,7 +16,7 @@ import taiga.code.registration.RegisteredObject;
  * @author russell
  * @param <T> The class for the value of this {@link Setting}
  */
-public class Setting<T> extends RegisteredObject {
+public class Setting<T> extends NamedObject {
   /**
    * A text description of this setting.
    */

@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.networking.Packet;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.code.registration.ReusableObject;
 import taiga.code.util.ByteUtils;
 import taiga.gpvm.HardcodedValues;
@@ -148,7 +148,7 @@ public final class World extends ReusableObject {
       }
       
       //otherwise get the generator and generate the region.
-      RegisteredObject obj = getObject(HardcodedValues.MAP_GENERATOR_NAME);
+      NamedObject obj = getObject(HardcodedValues.MAP_GENERATOR_NAME);
       
       if(obj == null || !(obj instanceof MapGenerator)) {
         log.log(Level.WARNING, NO_GENERATOR, getFullName());

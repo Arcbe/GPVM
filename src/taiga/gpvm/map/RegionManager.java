@@ -1,6 +1,6 @@
 package taiga.gpvm.map;
 
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.gpvm.HardcodedValues;
 
 /**
@@ -9,7 +9,7 @@ import taiga.gpvm.HardcodedValues;
  * 
  * @author russell
  */
-public abstract class RegionManager extends RegisteredObject {
+public abstract class RegionManager extends NamedObject {
   /**
    * Creates a new {@link RegionManager}.
    */
@@ -40,7 +40,7 @@ public abstract class RegionManager extends RegisteredObject {
   }
   
   @Override
-  protected void attached(RegisteredObject par) {
+  protected void attached(NamedObject par) {
     if(par instanceof World)
       mapAttached((World) par);
   }

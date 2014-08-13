@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.code.text.TextLocalizer;
 import taiga.code.util.ByteUtils;
 
@@ -19,7 +19,7 @@ import taiga.code.util.ByteUtils;
  * 
  * @author russell
  */
-public abstract class NetworkManager extends RegisteredObject {
+public abstract class NetworkManager extends NamedObject {
   /**
    * The charset that will be used to encode {@link Strings} into bytes.
    */
@@ -60,7 +60,7 @@ public abstract class NetworkManager extends RegisteredObject {
     ArrayList<NetworkedObject> rawobjs = new ArrayList<>();
     objects.clear();
     
-    RegisteredObject root = this;
+    NamedObject root = this;
     while(root.getParent() != null)
       root = root.getParent();
     
@@ -230,14 +230,14 @@ public abstract class NetworkManager extends RegisteredObject {
     log.log(Level.INFO, IDS_SYNCHRONIZED);
   }
   
-  private void scan(RegisteredObject root, List<NetworkedObject> list) {
+  private void scan(NamedObject root, List<NetworkedObject> list) {
     if(root instanceof NetworkedObject) {
       log.log(Level.INFO, FOUND_OBJECT, root.getFullName());
       
       list.add((NetworkedObject) root);
     }
     
-    for(RegisteredObject obj : root)
+    for(NamedObject obj : root)
       scan(obj, list);
   }
   

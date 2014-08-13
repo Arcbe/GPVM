@@ -5,7 +5,7 @@
 package taiga.gpvm;
 
 import taiga.code.input.InputSystem;
-import taiga.code.registration.RegisteredSystem;
+import taiga.code.registration.NamedSystem;
 
 import static taiga.gpvm.HardcodedValues.GAMEMANAGER_NAME;
 import taiga.code.io.DataFileManager;
@@ -37,7 +37,7 @@ import taiga.gpvm.screens.GameScreen;
  * 
  * @author russell
  */
-public final class GameManager extends RegisteredSystem implements WindowListener {
+public final class GameManager extends NamedSystem implements WindowListener {
 
   @Override
   public void resetObject() {}

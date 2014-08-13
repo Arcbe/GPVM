@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import taiga.code.math.Matrix4;
 import taiga.code.opengl.Camera;
 import taiga.code.opengl.RenderableSwitcher;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.UniverseListener;
 import taiga.gpvm.map.World;
@@ -36,7 +36,7 @@ public class GameScreen extends RenderableSwitcher implements UniverseListener, 
   }
   
   public void setCamera(Camera cam) {
-    for(RegisteredObject obj : this) {
+    for(NamedObject obj : this) {
       if(obj instanceof WorldRenderer) {
         ((WorldRenderer)obj).cam = cam;
       }

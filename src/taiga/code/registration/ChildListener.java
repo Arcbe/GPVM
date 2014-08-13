@@ -18,8 +18,8 @@
 package taiga.code.registration;
 
 /**
- * A listener for children of {@link RegisteredObject}s. This can be added to a
- * {@link RegisteredObject} to be notified when a child is added or removed, or
+ * A listener for children of {@link NamedObject}s. This can be added to a
+ * {@link NamedObject} to be notified when a child is added or removed, or
  * alternatively to be notified when it is added or removed from a parent.
  *
  * @author russell
@@ -27,18 +27,18 @@ package taiga.code.registration;
 public interface ChildListener {
 
   /**
-   * Called when a child is added to the {@link RegisteredObject}.
+   * Called when a child is added to the {@link NamedObject}.
    *
    * @param parent The parent that the child is added to.
    * @param child The child that was added.
    */
-  public void childAdded(RegisteredObject parent, RegisteredObject child);
+  public void childAdded(NamedObject parent, NamedObject child);
 
   /**
-   * Called when a child is removed from a {@link RegisteredObject}.
+   * Called when a child is removed from a {@link NamedObject}.
    *
-   * @param parent The {@link RegisteredObject} that had a child removed.
-   * @param child The {@link RegisteredObject} that was removed.
+   * @param parent The {@link NamedObject} that had a child removed.
+   * @param child The {@link NamedObject} that was removed.
    */
-  public void childRemoved(RegisteredObject parent, RegisteredObject child);
+  public void childRemoved(NamedObject parent, NamedObject child);
 }

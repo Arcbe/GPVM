@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.util.DataNode;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 
 /**
  * Creates GUIs using a {@link DataNode} allowing them to be loaded from
@@ -50,7 +50,7 @@ public class GUICreator {
   public static Component createGUI(DataNode data, ClassLoader loader) throws GUIException {
     DataNode aliasnode = data.getChild(FIELD_NAME_ALIAS);
     
-    for(RegisteredObject obj : data) {
+    for(NamedObject obj : data) {
       if(!obj.name.equals(FIELD_NAME_ALIAS) && obj instanceof DataNode)
         try {
           return createElement((DataNode) obj, loader);
@@ -79,7 +79,7 @@ public class GUICreator {
     
     Component comp = loadComponent(data, loader);
     
-    for(RegisteredObject obj : data) {
+    for(NamedObject obj : data) {
       if(obj instanceof DataNode)
         comp.addChild((DataNode) obj);
     }
@@ -87,7 +87,7 @@ public class GUICreator {
     return comp;
   }
   
-  private static RegisteredObject createMeta(DataNode data, ClassLoader loader, Map<String,String> alias) {
+  private static NamedObject createMeta(DataNode data, ClassLoader loader, Map<String,String> alias) {
     String name = data.name;
     
     String classname = data.getValueByName(FIELD_NAME_CLASS);
@@ -106,8 +106,8 @@ public class GUICreator {
       return null;
     }
     
-    RegisteredObject result;
-    Constructor<? extends RegisteredObject> cons;
+    NamedObject result;
+    Constructor<? extends NamedObject> cons;
     try {
       cons = compclass.getConstructor(String.class, DataNode.class);
     } catch (NoSuchMethodException | SecurityException e) {

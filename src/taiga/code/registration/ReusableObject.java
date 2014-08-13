@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  * allocations by allowing the same {@link Object} to used multiple times.
  * @author russell
  */
-public abstract class ReusableObject extends RegisteredObject {
+public abstract class ReusableObject extends NamedObject {
 
   /**
    * Creates a new {@link ReusableObject} with the given name.
@@ -32,7 +32,7 @@ public abstract class ReusableObject extends RegisteredObject {
    */
   public final void reset() {
     //reset all of the children
-    for(RegisteredObject obj : this)
+    for(NamedObject obj : this)
       if(obj != null && obj instanceof ReusableObject)
         ((ReusableObject)obj).reset();
     

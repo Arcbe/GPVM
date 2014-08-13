@@ -10,14 +10,14 @@ import taiga.code.util.DataNode;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 
 /**
  * Base class for reading data files.  This provides a simple interface for
  * reading in files and determining what files an implementation can read.
  * @author russell
  */
-public abstract class DataFileReader extends RegisteredObject {
+public abstract class DataFileReader extends NamedObject {
 
   /**
    * Creates a new {@link DataFileReader}.

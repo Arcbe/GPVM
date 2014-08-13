@@ -15,7 +15,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
 import taiga.code.opengl.SceneRoot;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.entity.Entity;
 import taiga.gpvm.entity.EntityManager;
@@ -64,7 +64,7 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   private EntityManager entmng;
   
   @Override
-  protected void attached(RegisteredObject parent) {
+  protected void attached(NamedObject parent) {
     entreg = getObject(HardcodedValues.ENTITY_RENDERING_REGISTRY_NAME);
     entmng = getObject(HardcodedValues.ENTITY_MANAGER_NAME);
     

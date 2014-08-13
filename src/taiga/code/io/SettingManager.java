@@ -5,13 +5,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.io.DataFileManager;
 import taiga.code.util.DataNode;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.code.registration.ReusableObject;
 import taiga.code.util.Setting;
 
 /**
  * Manages a collection of {@link Setting}s.  This class can be added to a tree
- * of {@link RegisteredObject}s and also has methods for loading and saving the
+ * of {@link NamedObject}s and also has methods for loading and saving the
  * {@link Setting}s.
  * 
  * @author russell
@@ -35,7 +35,7 @@ public class SettingManager extends ReusableObject {
    * @param file The file to load {@link Setting}s from.
    */
   public void loadSettings(String file) {
-    RegisteredObject obj = getObject(DataFileManager.DATAFILEMANAGER_NAME);
+    NamedObject obj = getObject(DataFileManager.DATAFILEMANAGER_NAME);
     if(obj == null || !(obj instanceof DataFileManager)) {
       log.log(Level.WARNING, NO_DFMANAGER);
       return;
@@ -50,7 +50,7 @@ public class SettingManager extends ReusableObject {
         return;
       }
       
-      for(RegisteredObject cur : node) {
+      for(NamedObject cur : node) {
         if(cur == null || !(cur instanceof DataNode)) continue;
         
         addChild(addData((DataNode)cur));
@@ -68,7 +68,7 @@ public class SettingManager extends ReusableObject {
    * @return The {@link Setting} or null.
    */
   public <V> Setting<V> getSetting(String name) {
-    RegisteredObject set = getObject(name);
+    NamedObject set = getObject(name);
     if(set == null || !(set instanceof Setting)) return null;
     
     return (Setting) set;
@@ -82,7 +82,7 @@ public class SettingManager extends ReusableObject {
   private <V> Setting<V> addData(DataNode node) {
     Setting result = new Setting(node.name, node.data);
     
-    for(RegisteredObject obj : node) {
+    for(NamedObject obj : node) {
       if(obj != null && obj instanceof DataNode) {
         Setting child = addData((DataNode) obj);
         

@@ -18,14 +18,14 @@
 package taiga.code.registration;
 
 /**
- * An {@link Exception} thrown when a {@link RegisteredObject} cannot be found in
- * a registration tree.
+ * An {@link Exception} thrown when a {@link NamedObject} cannot be found in
+ * a naming tree.
  * 
  * @author russell
  */
 public class MissingObjectException extends RuntimeException {
   /**
-   * Creates a new {@link MissingObjectException} with a default message.
+   * Creates a new {@link MissingObjectException} without a message.
    */
   public MissingObjectException() {
     super();

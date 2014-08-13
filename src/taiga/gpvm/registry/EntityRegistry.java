@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.io.DataFileManager;
 import taiga.code.util.DataNode;
-import taiga.code.registration.RegisteredObject;
+import taiga.code.registration.NamedObject;
 import taiga.gpvm.HardcodedValues;
 
 public class EntityRegistry extends NetworkRegistry<EntityEntry> {
@@ -71,7 +71,7 @@ public class EntityRegistry extends NetworkRegistry<EntityEntry> {
     
     if(data == null) return;
     
-    for(RegisteredObject val : data) {
+    for(NamedObject val : data) {
       if(!(val instanceof DataNode)) continue;
       DataNode cur = (DataNode) val;
 
@@ -80,7 +80,7 @@ public class EntityRegistry extends NetworkRegistry<EntityEntry> {
         continue;
       }
       
-      for(RegisteredObject obj : data) {
+      for(NamedObject obj : data) {
         if(!(obj instanceof DataNode)) continue;
         DataNode field = (DataNode) obj;
         

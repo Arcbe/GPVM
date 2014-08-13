@@ -17,14 +17,18 @@
 
 package taiga.code.registration;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -33,37 +37,43 @@ import java.util.regex.Pattern;
 import taiga.code.text.TextLocalizer;
 
 /**
- * {@link RegisteredObject}s form a tree of objects within a program.  This tree
- * can then be traversed and find an object given the full name or relative name
+ * {@link NamedObject}s forms a naming tree of objects.  This tree can 
+ * then be traversed and find an object given the full name or relative name
  * from any object within the tree.
+ * 
+ * Serialization of a {@link NamedObject} will only serialize children and not
+ * the parent, if any.  Any serializable {@link ChildListener}s will also be
+ * serialized.
  * 
  * @author russell
  */
-public class RegisteredObject implements Iterable<RegisteredObject>{
+public class NamedObject implements Iterable<NamedObject>, Serializable {
 
   /**
-   * A simple combination of a {@link RegisteredObject} with a {@link Method}
+   * A simple combination of a {@link NamedObject} with a {@link Method}
    * that allows for easy invocation of the {@link Method} through the reflection
    * API.
    */
-  public class RegisteredObjectMethod {
+  public final class NamedObjectMethod {
     public final Method method;
-    public final RegisteredObject target;
+    public final NamedObject target;
 
     /**
-     * Creates a new {@link RegisteredObjectMethod} with the given method and
+     * Creates a new {@link NamedObjectMethod} with the given method and
      * target.
      * 
      * @param method The {@link Method} that will be executed.
-     * @param target The target {@link RegisteredObject} for the {@link Method}.
+     * @param target The target {@link NamedObject} for the {@link Method}.
      */
-    public RegisteredObjectMethod(Method method, RegisteredObject target) {
+    public NamedObjectMethod(Method method, NamedObject target) {
       this.method = method;
       this.target = target;
+      
+      log.log(Level.FINER, GET_METHOD, new Object[] {target, method.toGenericString()});
     }
     
     /**
-     * Invokes the {@link Method} on the target {@link RegisteredObject} using
+     * Invokes the {@link Method} on the target {@link NamedObject} using
      * the supplied parameters.
      * 
      * @param params The parameters for the {@link Method} invocation.
@@ -76,6 +86,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
      * throws an {@link InvocationTargetException}.
      */
     public Object invoke(Object ... params) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+      log.log(Level.FINEST, EXECUTE_METHOD, new Object[] {target, method.toGenericString()});
       return method.invoke(target, params);
     }
   }
@@ -86,10 +97,16 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   public static final String SEPARATOR = ".";
   
   /**
-   * The name for this {@link RegisteredObject}.  This will be used to identify
-   * this {@link RegisteredObject} within the registration tree.
+   * The name for this {@link NamedObject}.  This will be used to identify
+   * this {@link NamedObject} within the registration tree.
    */
   public final String name;
+  
+  public NamedObject() {
+    name = null;
+    childlist = new HashSet<>();
+    children = new HashMap<>();
+  }
 
   /**
    * Creates a new {@link RegisteredObject} with the given name.  Each {@link
@@ -98,13 +115,12 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * 
    * @param name The name for the new {@link RegisteredObject}
    */
-  public RegisteredObject(String name) {
+  public NamedObject(String name) {
     if(!checkName(name))
       throw new IllegalArgumentException(TextLocalizer.localize(ILLEGAL_NAME, name));
     
     this.name = name;
-    childlist = new ArrayList<>();
-    parlist = new ArrayList<>();
+    childlist = new HashSet<>();
     
     log.log(Level.FINEST, CREATION, name);
   }
@@ -112,8 +128,8 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   /**
    * Returns the full name of this object including all parents.  Each name will
    * be appended to previous separated by a '.' in order from root to this
-   * {@link RegisteredObject}.  This name can be used to access this object from
-   * any other object within the same tree of {@link RegisteredObject}s.
+   * {@link NamedObject}.  This name can be used to access this object from
+   * any other object within the same tree of {@link NamedObject}s.
    * 
    * @return The full name of this object.
    */
@@ -123,16 +139,16 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   }
   
   /**
-   * Returns the parent of this {@link RegisteredObject} if any.
+   * Returns the parent of this {@link NamedObject} if any.
    * 
    * @return The parent of this object.
    */
-  public RegisteredObject getParent() {
+  public NamedObject getParent() {
     return parent;
   }
   
   /**
-   * Retrieves the child of this {@link RegisteredObject} with the given
+   * Retrieves the child of this {@link NamedObject} with the given
    * name if there is one, otherwise this returns null.
    * 
    * @param <T> The type for the returned child
@@ -140,11 +156,12 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * @return The desired child or null.
    */
   @SuppressWarnings("unchecked")
-  public <T extends RegisteredObject> T getChild(String name) {
+  public <T extends NamedObject> T getChild(String name) {
     if(children == null) return null;
     
     try {
-      return (T) children.get(name);
+      T result = (T) children.get(name);
+      return result;
     } catch(ClassCastException ex) {
       log.log(Level.WARNING, WRONG_CHILD_CLASS, new Object[]{name});
       
@@ -159,7 +176,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * 
    * @return 
    */
-  public Collection<RegisteredObject> getChildren() {
+  public Collection<NamedObject> getChildren() {
     if(children == null)
       children = new HashMap<>();
     
@@ -167,18 +184,18 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   }
   
   /**
-   * Adds a child to this {@link RegisteredObject}.  The child will be added to
+   * Adds a child to this {@link NamedObject}.  The child will be added to
    * the first available slot in this object and can be index by the id returned
    * by this method.
    * 
    * @param <T> The return type for this method.
    * @param child The child to add.
-   * @return A reference to the input {@link RegisteredObject} or null if the child
+   * @return A reference to the input {@link NamedObject} or null if the child
    * could not be added.
    * @throws NullPointerException Thrown if the child is null.
    */
   @SuppressWarnings("unchecked")
-  public <T extends RegisteredObject> T addChild(RegisteredObject child) {
+  public <T extends NamedObject> T addChild(NamedObject child) {
     if(child == null) return null;
     
     //check to make sure that this child does not already have a parent. kidnapping is
@@ -189,19 +206,14 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
       return null;
     }
     
-    if(children == null) {
-      children = new HashMap<>();
-      children.put(child.name, child);
-    } else {
-      //make sure that the child is not already added.  No cloning either.
-      if(children.get(child.name) != null) {
-        log.log(Level.WARNING, ALREADY_ADDED, new Object[]{getFullName(), child.name});
-        
-        return null;
-      }
-      
-      children.put(child.name, child);
+    //make sure that the child is not already added.  No cloning either.
+    if(children.get(child.name) != null) {
+      log.log(Level.WARNING, ALREADY_ADDED, new Object[]{getFullName(), child.name});
+
+      return null;
     }
+
+    children.put(child.name, child);
     
     log.log(Level.FINE, ADDED_CHILD, new Object[]{getFullName(), child.name});
     child.parent = this;
@@ -219,15 +231,12 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   }
   
   /**
-   * Removes a child from this {@link RegisteredObject}.
+   * Removes a child from this {@link NamedObject}.
    * 
    * @param child The child to remove.
    * @return Whether the removal was successful.
    */
-  public boolean removeChild(RegisteredObject child) {
-    if(children == null) return false;
-    
-    log.log(Level.FINE, REMOVED_CHILD, new Object[]{getFullName(), child.name});
+  public boolean removeChild(NamedObject child) {
     
     boolean result = children.containsKey(child.name);
     
@@ -236,19 +245,20 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
         child.parent = null;
 
       fireChildRemoved(child);
+      log.log(Level.FINE, REMOVED_CHILD, new Object[]{getFullName(), child.name});
     }
     
     return result;
   }
   
   /**
-   * Removes all children from this {@link RegisteredObject}.  A child removed
+   * Removes all children from this {@link NamedObject}.  A child removed
    * event will be generated for each child removed this way.
    */
   public void removeAllChildren() {
     if(children == null) return;
     
-    for(RegisteredObject child : this)
+    for(NamedObject child : this)
       removeChild(child);
   }
   
@@ -262,36 +272,55 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   }
   
   /**
-   * Retrieves the {@link RegisteredObject} with the given name. This name can
+   * Adds a {@link ChildListener} to this {@link NamedObject} that will
+   * be notified if a child is added or removed.
+   * 
+   * @param clist The {@link ChildListener} to add.
+   */
+  public void addChildListener(ChildListener clist) {
+    childlist.add(clist);
+  }
+  
+  /**
+   * Removes a {@link ChildListener} from this {@link NamedObject}.
+   * 
+   * @param clist The {@link ChildListener} to remove.
+   */
+  public void removeChildListener(ChildListener clist) {
+    childlist.remove(clist);
+  }
+  
+  /**
+   * Retrieves the {@link NamedObject} with the given name. This name can
    * be the full name of the object, or it can be relative.  For relative names
    * it checks to see if it is relative to this object then passes it to its
    * parent and so on until it reaches the root. An empty {@link String} will
-   * return this {@link RegisteredObject}.
+   * return this {@link NamedObject}.
    * 
-   * @param <T> The type of {@link RegisteredObject} to return.
-   * @param name The name of the {@link RegisteredObject} to retrieve.
+   * @param <T> The type of {@link NamedObject} to return.
+   * @param name The name of the {@link NamedObject} to retrieve.
    * @return The object with the given name or null if no object can be found.
    */
-  public <T extends RegisteredObject> T getObject(String name) {
+  public <T extends NamedObject> T getObject(String name) {
     if(!name.contains(SEPARATOR)) return getObject(new String[]{name});
     return getObject(name.split(SEPARATOR, -1));
   }
   
   /**
-   * Retrieves the {@link RegisteredObject} with the given name.  This name can
+   * Retrieves the {@link NamedObject} with the given name.  This name can
    * be the full name of the object, or it can be a relative path.  Each {@link String}
-   * in the array will be treated as the name of an individual {@link RegisteredObject}
-   * on the path.  For relative names it checks this {@link RegisteredObject}
-   * for a child with the given name, the moves on to the parent of {@link RegisteredObject}
+   * in the array will be treated as the name of an individual {@link NamedObject}
+   * on the path.  For relative names it checks this {@link NamedObject}
+   * for a child with the given name, the moves on to the parent of {@link NamedObject}
    * and so on in this fashion.  An empty array will simply return this
-   * {@link RegisteredObject}.
+   * {@link NamedObject}.
    * 
-   * @param <T> The type of the {@link RegisteredObject} to return.
+   * @param <T> The type of the {@link NamedObject} to return.
    * @param path A array of names for the path to the desired object.
-   * @return The desired {@link RegisteredObject} or null if it could not be found.
+   * @return The desired {@link NamedObject} or null if it could not be found.
    */
   @SuppressWarnings("unchecked")
-  public <T extends RegisteredObject> T getObject(String ... path) {
+  public <T extends NamedObject> T getObject(String ... path) {
     if(path.length == 0) try {
       return (T) this;
     } catch(ClassCastException ex) {
@@ -306,6 +335,22 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     else return null;
   }
   
+  /**
+   * Executes a method from a {@link NamedObject}.  The method is found by
+   * first getting the {@link NamedObject} using everything before the last
+   * separator in the name.  The remaining string beyond the last separator is
+   * the name of the desired method.
+   * 
+   * @param name The full name for the desired method in this {@link NamedObject}'s
+   *  naming tree.
+   * @param params The parameters to use in executing the desired method.
+   * @return The return value if any from the executed method.
+   * @throws NoSuchMethodException Thrown if the method cannot be found.
+   * @throws IllegalAccessException Thrown if the permission checks fail.
+   * @throws IllegalArgumentException Thrown if one of the arguments given is invalid.
+   * @throws InvocationTargetException Thrown if there is an {@link Exception}
+   *  encountered while executing the desired method.
+   */
   public Object executeMethod(String name, Object ... params) throws
     NoSuchMethodException,
     IllegalAccessException,
@@ -327,17 +372,34 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     return executeMethod(path, params);
   }
   
+  /**
+   * Executes a method from a {@link NamedObject}.  The method is found by
+   * first getting the {@link NamedObject} using all but the last element of
+   * the path to traverse the naming tree.  The last element is used as the name
+   * of the desired method.
+   * 
+   * @param path The names used to traverse the naming tree followed by the
+   * name of the method.
+   * @param params The parameters to use in executing the desired method.
+   * @return The return value if any from the executed method.
+   * @throws NoSuchMethodException Thrown if the method cannot be found.
+   * @throws IllegalAccessException Thrown if the permission checks fail.
+   * @throws IllegalArgumentException Thrown if one of the arguments given is invalid.
+   * @throws InvocationTargetException Thrown if there is an {@link Exception}
+   *  encountered while executing the desired method.
+   */
   public Object executeMethod(String[] path, Object ... params) throws 
     NoSuchMethodException, 
     IllegalAccessException, 
-    IllegalArgumentException, InvocationTargetException {
+    IllegalArgumentException, 
+    InvocationTargetException {
     
     Class<?>[] paramtypes = new Class<?>[params.length];
     for(int i = 0; i < paramtypes.length; i++) {
       paramtypes[i] = params[i].getClass();
     }
     
-    RegisteredObjectMethod meth = getMethod(path, paramtypes);
+    NamedObjectMethod meth = getMethod(path, paramtypes);
     if(meth == null)
       throw new NoSuchMethodException(); //TODO: add detail message.
     
@@ -345,31 +407,31 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   }
   
   /**
-   * Retrieves a {@link RegisteredObjectMethod} from the registration path with the given
+   * Retrieves a {@link NamedObjectMethod} from the registration path with the given
    * signature.  The last name in the path is the name of the method
-   * while the rest of the path is the name of the {@link RegisteredObject}
+   * while the rest of the path is the name of the {@link NamedObject}
    * that will be used in {@link RegisteredObject#getObject(java.lang.String) }
-   * to retrieve the {@link RegisteredObject} containing the desired {@link Method}.
+   * to retrieve the {@link NamedObject} containing the desired {@link Method}.
    * 
    * @param name the name of the desired {@link Method} with the name of the
-   * containing {@link RegisteredObject} and the {@link RegisteredObject#SEPARATOR}
+   * containing {@link NamedObject} and the {@link RegisteredObject#SEPARATOR}
    * prepended.
    * @param paramtypes The {@link Class}es for the parameters of the desired
    * {@link Method}.
    * @return The method with the given signature or null if no such method
    * can be found.
    */
-  public RegisteredObjectMethod getMethod(String name, Class<?> ... paramtypes) {
+  public NamedObjectMethod getMethod(String name, Class<?> ... paramtypes) {
     if(!name.contains(SEPARATOR)) return getMethod(new String[]{name}, paramtypes);
     return getMethod(name.split(SEPARATOR), paramtypes);
   }
   
   /**
-   * Retrieves a {@link RegisteredObjectMethod} from the registration path with the given
+   * Retrieves a {@link NamedObjectMethod} from the registration path with the given
    * signature.  The last {@link String} in the array is the name of the method
    * while the rest of the array is the name of the {@link Registered} that will be used
    * in {@link RegisteredObject#getObject(java.lang.String[]) } to retrieve the
-   * {@link RegisteredObject} containing the desired {@link Method}.
+   * {@link NamedObject} containing the desired {@link Method}.
    * 
    * @param path An array of names for the path to the array, the last name being
    * the simple name of the desired {@link Method}.
@@ -378,17 +440,17 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
    * @return The method with the given signature or null if no such method
    * can be found.
    */
-  public RegisteredObjectMethod getMethod(String[] path, Class<?> ... paramtypes) {    
+  public NamedObjectMethod getMethod(String[] path, Class<?> ... paramtypes) {    
     String[] objpath = new String[path.length - 1];
     System.arraycopy(path, 0, objpath, 0, objpath.length);
     
-    RegisteredObject obj = getObject(objpath);
+    NamedObject obj = getObject(objpath);
     if(obj == null) return null;
     
     try {
       //look for a method with the exact signature.
       Method meth = obj.getClass().getMethod(path[path.length - 1], paramtypes);
-      return new RegisteredObjectMethod(meth, obj);
+      return new NamedObjectMethod(meth, obj);
       
     } catch(NoSuchMethodException ex) {
       //look for methods that use super types of the given parameters.
@@ -405,7 +467,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
         }
         
         if(works) {
-          return new RegisteredObjectMethod(meth, obj);
+          return new NamedObjectMethod(meth, obj);
         }
       }
       
@@ -414,45 +476,91 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     }
   }
   
+  @Override
   public String toString() {
     return getFullName();
   }
 
   /**
-   * This returns an unmodifiable iterator over the children of this {@link RegisteredObject}.
+   * This returns an unmodifiable iterator over the children of this {@link NamedObject}.
    * The removal and registering methods should be used instead of this method
    * for adding or removing children.
    * 
    * @return 
    */
   @Override
-  public Iterator<RegisteredObject> iterator() {
+  public Iterator<NamedObject> iterator() {
     return getChildren().iterator();
   }
   
   /**
-   * Called when this {@link RegisteredObject} is attached to registration tree.
+   * Checks to see if the names of this {@link NamedObject} and its children
+   * are the same as the given {@link NamedObject}.
    * 
-   * @param parent The parent of this {@link RegisteredObject} in the tree.
+   * @param obj The object to check.
+   * @return Whether both {@link NamedObject}s are the root of identical naming
+   * trees.
    */
-  protected void attached(RegisteredObject parent) {}
+  @Override
+  public boolean equals(Object obj) {
+    if(!(obj instanceof NamedObject)) return false;
+    
+    NamedObject other = (NamedObject)obj;
+    if(!other.name.equals(name)) return false;
+    for(NamedObject o : other)
+      if(!children.containsKey(o.name) ||
+        !children.get(o.name).equals(o))
+        return false;
+    
+    return true;
+  }
   
   /**
-   * Called when this {@link RegisteredObject} is removed from its registration tree.
+   * Called when this {@link NamedObject} is attached to registration tree.
    * 
-   * @param parent The {@link RegisteredObject} that was the parent of this one.
+   * @param parent The parent of this {@link NamedObject} in the tree.
    */
-  protected void dettached(RegisteredObject parent) {}
+  protected void attached(NamedObject parent) {}
   
-  private RegisteredObject parent;
+  /**
+   * Called when this {@link NamedObject} is removed from its registration tree.
+   * 
+   * @param parent The {@link NamedObject} that was the parent of this one.
+   */
+  protected void dettached(NamedObject parent) {}
   
-  private Map<String, RegisteredObject> children;
-  private List<ChildListener> childlist;
-  private List<ChildListener> parlist;
+  private transient NamedObject parent;
+  private Map<String, NamedObject> children;
+  private transient Collection<ChildListener> childlist;
   
-  private RegisteredObject getObject(String[] path, int index) {
+  private static final long serialVersionUID = 100L;
+  
+  private void readObject(ObjectInputStream input) throws
+    ClassNotFoundException,
+    IOException {
+    input.defaultReadObject();
+    
+    //get any listeners.
+    Iterable<ChildListener> lists = (Iterable<ChildListener>) input.readObject();
+    for(ChildListener list : lists)
+      addChildListener(list);
+  }
+  
+  private void writeObject(ObjectOutputStream out) throws IOException {
+    out.defaultWriteObject();
+    
+    //collect all of the 
+    Collection<ChildListener> seriallist = new ArrayList<>();
+    for(ChildListener list : childlist)
+      if(list instanceof Serializable)
+        seriallist.add(list);
+    
+    out.writeObject(seriallist);
+  }
+  
+  private NamedObject getObject(String[] path, int index) {
     if(path.length <= index || children == null) return null;
-    RegisteredObject obj;
+    NamedObject obj;
     
     obj = children.get(path[index]);
     if(obj == null) return null;
@@ -470,14 +578,14 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
     return NAME_REGEX.matcher(name).matches();
   }
   
-  private void fireChildAdded(RegisteredObject child) {
+  private void fireChildAdded(NamedObject child) {
     for(ChildListener list : childlist)
       list.childAdded(this, child);
     
     child.attached(this);
   }
   
-  private void fireChildRemoved(RegisteredObject child) {
+  private void fireChildRemoved(NamedObject child) {
     for(ChildListener list : childlist)
       list.childRemoved(this, child);
     
@@ -487,7 +595,7 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   private static final Pattern NAME_REGEX = Pattern.compile("[^\n./\\\\]+?$",
     Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
   
-  private static final String locprefix = RegisteredObject.class.getName().toLowerCase();
+  private static final String locprefix = NamedObject.class.getName().toLowerCase();
   
   private static final String CREATION = locprefix + ".created";
   private static final String EXISTING_PARENT = locprefix + ".existing_parent";
@@ -496,7 +604,9 @@ public class RegisteredObject implements Iterable<RegisteredObject>{
   private static final String REMOVED_CHILD = locprefix + ".removed_child";
   private static final String WRONG_CHILD_CLASS = locprefix + ".wrong_child_class";
   private static final String ILLEGAL_NAME = locprefix + ".illegal_name";
+  private static final String GET_METHOD = locprefix + ".get_method";
+  private static final String EXECUTE_METHOD = locprefix + ".execute_method";
   
-  private static final Logger log = Logger.getLogger(RegisteredObject.class.getName(),
+  private static final Logger log = Logger.getLogger(NamedObject.class.getName(),
     System.getProperty("taiga.code.logging.text"));
 }
