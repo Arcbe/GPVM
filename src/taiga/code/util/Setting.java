@@ -14,9 +14,8 @@ import taiga.code.registration.NamedObject;
  * A single named value.
  * 
  * @author russell
- * @param <T> The class for the value of this {@link Setting}
  */
-public class Setting<T> extends NamedObject {
+public class Setting extends DataNode {
   /**
    * A text description of this setting.
    */
@@ -38,19 +37,10 @@ public class Setting<T> extends NamedObject {
    * @param name The name of the {@link Setting}
    * @param val The initial value.
    */
-  public Setting(String name, T val) {
+  public Setting(String name, Object val) {
     super(name);
     
-    value = val;
-  }
-  
-  /**
-   * Returns the current value for this {@link Setting}.
-   * 
-   * @return The current value;
-   */
-  public T getValue() {
-    return value;
+    data = val;
   }
   
   /**
@@ -58,8 +48,8 @@ public class Setting<T> extends NamedObject {
    * 
    * @param val The new value.
    */
-  public void setValue(T val) {
-    value = val;
+  public void setValue(Object val) {
+    data = val;
     
     for(SettingListener list : listeners)
       list.settingChanged(this);
@@ -87,7 +77,5 @@ public class Setting<T> extends NamedObject {
     listeners.remove(list);
   }
   
-  private T value;
-  //TODO: make this use weak references.
   private Set<SettingListener> listeners;
 }

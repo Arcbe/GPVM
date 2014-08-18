@@ -28,9 +28,21 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
   public static final boolean DEFAULT_VSYNC = false;
   
   /**
+   * The name of that will be used to look for a vsync setting in the 
+   * naming tree.
+   */
+  public static final String SETTING_VSYNC = "vsync";
+  
+  /**
    * Default setting for full screen.
    */
   public static final boolean DEFAULT_FULLSCREEN = false;
+  
+  /**
+   * The name of that will be used to look for a full screen setting in 
+   * the naming tree.
+   */
+  public static final String SETTING_FULLSCREEN = "fullscreen";
   
   /**
    * Default vertical resolution.
@@ -38,10 +50,32 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
   public static final int DEFAULT_RES_HEIGHT = 600;
   
   /**
+   * The name of that will be used to look for a vertical resolution 
+   * setting in the naming tree.
+   */
+  public static final String SETTING_RES_HEIGHT = "resolution-height";
+  
+  /**
    * Default horizontal resolution.
    */
   public static final int DEFAULT_RES_WIDTH = 800;
+  
+  /**
+   * The name of that will be used to look for a horizontal resolution 
+   * setting in the naming tree.
+   */
+  public static final String SETTING_RES_WIDTH = "resolution-width";
+  
+  /**
+   * Default target frame rate for the screen.
+   */
+  public static final int DEFAULT_TARGET_FRAME_RATE = -1;
 
+  /**
+   * The name of that will be used to look for a fps setting in the naming tree.
+   */
+  public static final String SETTING_FPS = "fps";
+  
   /**
    * Creates a new {@link GraphicsSystem} with the given name and default settings.
    * 
@@ -54,6 +88,8 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
     res_y = DEFAULT_RES_HEIGHT;
     fullscreen = DEFAULT_FULLSCREEN;
     vsync = DEFAULT_VSYNC;
+    target_fps = DEFAULT_TARGET_FRAME_RATE;
+    
     reset = true;
     running = false;
     gthread = null;
@@ -100,9 +136,73 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
   public void removeUpdateable(Updateable up) {
     updaters.remove(up);
   }
+  
+  /**
+   * Changes the resolution for the window if it is created, or sets the
+   * resolution that will be used upon creation.  A value of 0 or less in
+   * either argument will indicate that value should not be changed.  A change in
+   * resolution will require the window to be reset.
+   * 
+   * @param width The horizontal resolution for the window.
+   * @param height The vertical resolution for the window.
+   */
+  public void setResolution(int width, int height) {
+    boolean change = false;
+    
+    if(width > 0 && width != res_x) {
+      change = true;
+      res_x = width;
+    }
+    
+    if(height > 0 && height != res_y) {
+      change = true;
+      res_y = height;
+    }
+    
+    if(change) {
+      reset();
+    }
+  }
+  
+  /**
+   * Sets whether the window should be full screen.  If a window is already
+   * create this will reset the {@link GraphicsSystem}.
+   * 
+   * @param fs Whether the window should be full screen.
+   */
+  public void setFullscreen(boolean fs) {
+    if(fs != fullscreen) {
+      fullscreen = fs;
+      reset();
+    }
+  }
+  
+  /**
+   * Sets whether vertical synchronization should be used.  This has no
+   * effect unless full screen mode is used. This will not cause a reset to the
+   * {@link GraphicsSystem}.
+   * 
+   * @param vs Whether to enable vsync.
+   */
+  public void setVsync(boolean vs) {
+    vsync = vs;
+    Display.setVSyncEnabled(vsync);
+  }
+  
+  /**
+   * Sets the desired frames per second for the {@link GraphicsSystem}.
+   * This is a best effort attempt and not guaranteed.  This will not cause a 
+   * reset of the {@link GraphicsSystem}.  A value of zero or less indicates that
+   * no frame rate limiting should be applied.
+   * 
+   * @param fps The target fps or -1 for unlimited.
+   */
+  public void setTargetFPS(int fps) {
+    target_fps = fps;
+  }
 
   @Override
-  protected void startSystem() {
+  protected synchronized void startSystem() {
     if(running) {
       if(!gthread.isAlive()) {
         log.log(Level.SEVERE, GRAPHICS_THREAD_DIED);
@@ -116,25 +216,125 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
     gthread = new Thread(this, getFullName());
     gthread.start();
   }
-
-  @Override
-  protected void stopSystem() {
+  
+  /**
+   * Loads settings for the {@link GraphicsSystem} from the naming tree.
+   * Settings will be collected from the {@link NamedObject} with the given name.
+   * Any setting that is not found will not be changed from its current value.
+   * 
+   * @param settings The name of the {@link NamedObject} that contains the settings.
+   */
+  public void loadSettings(String ... settings) {
+    loadSettings(getObject(settings));
+  }
+  
+  /**
+   * Loads settings for the {@link GraphicsSystem} from the naming tree.
+   * Settings will be collected from the {@link NamedObject} with the given name.
+   * Any setting that is not found will not be changed from its current value.
+   * This will cause a reset of the {@link GraphicsSystem} if any values that
+   * require it change.
+   * 
+   * @param settings The name of the {@link NamedObject} that contains the settings.
+   */
+  public void loadSettings(String settings) {
+    loadSettings(getObject(settings));
+  }
+  
+  /**
+   * Loads settings for the {@link GraphicsSystem} from the naming tree.
+   * Settings will be collected from the {@link NamedObject} with the given name.
+   * Any setting that is not found will not be changed from its current value.
+   * This will cause a reset of the {@link GraphicsSystem} if any values that
+   * require it change.
+   * 
+   * @param obj The {@link NamedObject} that contains the settings to load.
+   */
+  public void loadSettings(NamedObject obj) {
+    if(obj == null) {
+      log.log(Level.WARNING, NO_SETTINGS);
+      return;
+    }
+    
+    Setting cur;
+    
+    //Resolution width
+    if((cur = obj.getObject(SETTING_RES_WIDTH)) == null) {
+      log.log(Level.WARNING, MISSING_SETTING, SETTING_RES_WIDTH);
+    } else if(cur.data instanceof Number) {
+      res_x = ((Number)cur.data).intValue();
+    } else {
+      log.log(Level.WARNING, WRONG_SETTING_TYPE, SETTING_RES_WIDTH);
+    }
+    
+    //Resolution height
+    if((cur = obj.getObject(SETTING_RES_HEIGHT)) == null) {
+      log.log(Level.WARNING, MISSING_SETTING, SETTING_RES_HEIGHT);
+    } else if(cur.data instanceof Number) {
+      res_y = ((Number)cur.data).intValue();
+    } else {
+      log.log(Level.WARNING, WRONG_SETTING_TYPE, SETTING_RES_HEIGHT);
+    }
+    
+    //full screen
+    if((cur = obj.getObject(SETTING_FULLSCREEN)) == null) {
+      log.log(Level.WARNING, MISSING_SETTING, SETTING_FULLSCREEN);
+    } else if(cur.data instanceof Boolean) {
+      fullscreen = ((Boolean)cur.data);
+    } else {
+      log.log(Level.WARNING, WRONG_SETTING_TYPE, SETTING_FULLSCREEN);
+    }
+    
+    //vsync
+    if((cur = obj.getObject(SETTING_VSYNC)) == null) {
+      log.log(Level.WARNING, MISSING_SETTING, SETTING_VSYNC);
+    } else if(cur.data instanceof Boolean) {
+      vsync = ((Boolean)cur.data);
+    } else {
+      log.log(Level.WARNING, WRONG_SETTING_TYPE, SETTING_VSYNC);
+    }
+    
+    //fps
+    if((cur = obj.getObject(SETTING_FPS)) == null) {
+      log.log(Level.WARNING, MISSING_SETTING, SETTING_FPS);
+    } else if(cur.data instanceof Number) {
+      target_fps = ((Number)cur.data).intValue();
+    } else {
+      log.log(Level.WARNING, WRONG_SETTING_TYPE, SETTING_FPS);
+    }
+    
+    //TODO: make this only called when needed.
+    reset();
   }
 
   @Override
-  protected void resetObject() {
-    synchronized (this) {
-      reset = true;
-      
-      if(!running) {
-        updateSettings();
-      } else {
-        while(running && !reset) {
-          try {
-            this.wait();
-          } catch (InterruptedException ex) {}
-        }
-      }
+  protected synchronized void stopSystem() {
+    Thread gt = gthread;
+    
+    running = false;
+    gthread = null;
+    
+    try {
+      if(Thread.currentThread() != gt)
+        gt.join();
+    } catch (InterruptedException ex) {
+      log.log(Level.SEVERE, STOP_SYSTEM_EX, ex);
+    }
+  }
+
+  @Override
+  protected synchronized void resetObject() {
+    reset = true;
+    
+    //if the graphics thread called this return now to prevent locking.
+    if(Thread.currentThread() == gthread)
+      return;
+    
+    //wait for the system to reset.
+    while(running && !reset) {
+      try {
+        this.wait();
+      } catch(InterruptedException ex) {}
     }
   }
 
@@ -152,8 +352,7 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
         //create the window if needed.
         if(reset) {
           log.log(Level.INFO, CREATING_WINDOW);
-
-          updateSettings();
+          
           createWindow();
           reset = false;
           
@@ -167,11 +366,15 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
         update();
         render();
         
-        Display.update();
+        if(target_fps <= 0)
+          Display.update();
+        else
+          Display.sync(target_fps);
         
       } while(running && !Display.isCloseRequested());
+       
     } catch(LWJGLException ex) {
-      
+      log.log(Level.SEVERE, UNHANDLED_EX, ex);
     } finally {
       running = false;
       Display.destroy();
@@ -182,66 +385,24 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
 
   /**
    * Called before each frame between updating and rendering.
+   * 
+   * @return The {@link Matrix4} to use for projection of 3d coordinates. A null
+   * value will indicate that the identity {@link Matrix4} should be used.
    */
   protected Matrix4 rendering() { return null; }
   
-  private boolean fullscreen;
-  private boolean vsync;
-  private int res_x;
-  private int res_y;
   private volatile boolean reset;
   private volatile boolean running;
+  
+  private boolean fullscreen;
+  private boolean vsync;
+  private int target_fps;
+  private int res_x;
+  private int res_y;
+  
   private Thread gthread;
   private final Collection<WindowListener> listeners;
   private final Collection<Updateable> updaters;
-  private String settings;
-  
-  public void updateSettings() {
-    updateSettings(settings);
-  }
-  
-  public void updateSettings(String sets) {
-    if(sets == null || getObject(sets) == null) {
-      log.log(Level.WARNING, NO_SETTINGS);
-      return;
-    }
-    
-    //Resolution height
-    Setting cur = getObject( MessageFormat.format("{0}.{1}",
-      settings,
-      RESOLUTION_HEIGHT));
-    if(cur == null) {
-      log.log(Level.WARNING, MISSING_SETTING, RESOLUTION_HEIGHT);
-    } else if(cur.getValue() instanceof Number) {
-      res_y = ((Number)cur.getValue()).intValue();
-    } else {
-      log.log(Level.WARNING, WRONG_SETTING_TYPE, RESOLUTION_HEIGHT);;
-    }
-    
-    //Resolution width
-    cur = getObject( MessageFormat.format("{0}.{1}",
-      settings,
-      RESOLUTION_WIDTH));
-    if(cur == null) {
-      log.log(Level.WARNING, MISSING_SETTING, RESOLUTION_WIDTH);
-    } else if(cur.getValue() instanceof Number) {
-      res_x = ((Number)cur.getValue()).intValue();
-    } else {
-      log.log(Level.WARNING, WRONG_SETTING_TYPE, RESOLUTION_WIDTH);;
-    }
-    
-    //Fullscreen
-    cur = getObject( MessageFormat.format("{0}.{1}",
-      settings,
-      FULL_SCREEN));
-    if(cur == null) {
-      log.log(Level.WARNING, MISSING_SETTING, FULL_SCREEN);
-    } else if(cur.getValue() instanceof Boolean) {
-      fullscreen = (Boolean)cur.getValue();
-    } else {
-      log.log(Level.WARNING, WRONG_SETTING_TYPE, FULL_SCREEN);;
-    }
-  }
   
   private void createWindow() throws LWJGLException {
     DisplayMode mode = new DisplayMode(res_x, res_y);
@@ -299,23 +460,6 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
   
   private static final String locprefix = GraphicsSystem.class.getName().toLowerCase();
   
-  /**
-   * Identifiers for the vertical resolution setting within the registration tree.
-   */
-  public static final String RESOLUTION_HEIGHT = "res_height";
-  /**
-   * Identifiers for the horizontal resolution setting within the registration tree.
-   */
-  public static final String RESOLUTION_WIDTH = "res_width";
-  /**
-   * Identifiers for the fullscreen setting within the registration tree.
-   */
-  public static final String FULL_SCREEN = "full_screen";
-  /**
-   * Identifiers for the vertical synchronization setting within the registration tree.
-   */
-  public static final String VSYNC = "vsync";
-  
   private static final String GRAPHICS_THREAD_DIED = locprefix + ".graphics_thread_died";
   private static final String ALREADY_STARTED = locprefix + ".already_started";
   private static final String STARTING = locprefix + ".starting";
@@ -323,6 +467,8 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
   private static final String MISSING_SETTING = locprefix + ".missing_setting";
   private static final String WRONG_SETTING_TYPE = locprefix + ".wrong_setting_type";
   private static final String CREATING_WINDOW = locprefix + ".creating_window";
+  private static final String STOP_SYSTEM_EX = locprefix + ".stop_system_ex";
+  private static final String UNHANDLED_EX = locprefix + ".unhandled_ex";
   
   private static final Logger log = Logger.getLogger(locprefix, System.getProperty("taiga.code.logging.text"));
 }

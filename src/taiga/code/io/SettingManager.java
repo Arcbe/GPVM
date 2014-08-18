@@ -3,7 +3,6 @@ package taiga.code.io;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import taiga.code.io.DataFileManager;
 import taiga.code.util.DataNode;
 import taiga.code.registration.NamedObject;
 import taiga.code.registration.ReusableObject;
@@ -67,7 +66,7 @@ public class SettingManager extends ReusableObject {
    * @param name The name of the {@link Setting}
    * @return The {@link Setting} or null.
    */
-  public <V> Setting<V> getSetting(String name) {
+  public Setting getSetting(String name) {
     NamedObject set = getObject(name);
     if(set == null || !(set instanceof Setting)) return null;
     
@@ -79,7 +78,7 @@ public class SettingManager extends ReusableObject {
     removeAllChildren();
   }
   
-  private <V> Setting<V> addData(DataNode node) {
+  private Setting addData(DataNode node) {
     Setting result = new Setting(node.name, node.data);
     
     for(NamedObject obj : node) {

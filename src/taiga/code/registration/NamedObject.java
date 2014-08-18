@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -92,13 +93,13 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
   }
   
   /**
-   * The default name separator for names in a registration path.
+   * The default name separator for names in a naming tree.
    */
   public static final String SEPARATOR = ".";
   
   /**
    * The name for this {@link NamedObject}.  This will be used to identify
-   * this {@link NamedObject} within the registration tree.
+   * this {@link NamedObject} within the naming tree.
    */
   public final String name;
   
@@ -109,11 +110,11 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
   }
 
   /**
-   * Creates a new {@link RegisteredObject} with the given name.  Each {@link
-   * RegisteredObject} requires a name, so the argument must not be null or
+   * Creates a new {@link NamedObject} with the given name.  Each {@link
+   * NamedObject} requires a name, so the argument must not be null or
    * an empty {@link String}.
    * 
-   * @param name The name for the new {@link RegisteredObject}
+   * @param name The name for the new {@link NamedObject}
    */
   public NamedObject(String name) {
     if(!checkName(name))
@@ -121,6 +122,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
     
     this.name = name;
     childlist = new HashSet<>();
+    children = new HashMap<>();
     
     log.log(Level.FINEST, CREATION, name);
   }
@@ -133,7 +135,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * 
    * @return The full name of this object.
    */
-  public String getFullName() {
+  public final String getFullName() {
     if(parent == null) return name;
     else return parent.getFullName() + SEPARATOR + name;
   }
@@ -143,7 +145,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * 
    * @return The parent of this object.
    */
-  public NamedObject getParent() {
+  public final NamedObject getParent() {
     return parent;
   }
   
@@ -156,7 +158,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * @return The desired child or null.
    */
   @SuppressWarnings("unchecked")
-  public <T extends NamedObject> T getChild(String name) {
+  public final <T extends NamedObject> T getChild(String name) {
     if(children == null) return null;
     
     try {
@@ -176,7 +178,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * 
    * @return 
    */
-  public Collection<NamedObject> getChildren() {
+  public final Collection<NamedObject> getChildren() {
     if(children == null)
       children = new HashMap<>();
     
@@ -195,7 +197,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * @throws NullPointerException Thrown if the child is null.
    */
   @SuppressWarnings("unchecked")
-  public <T extends NamedObject> T addChild(NamedObject child) {
+  public final <T extends NamedObject> T addChild(NamedObject child) {
     if(child == null) return null;
     
     //check to make sure that this child does not already have a parent. kidnapping is
@@ -236,7 +238,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * @param child The child to remove.
    * @return Whether the removal was successful.
    */
-  public boolean removeChild(NamedObject child) {
+  public final boolean removeChild(NamedObject child) {
     
     boolean result = children.containsKey(child.name);
     
@@ -255,7 +257,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * Removes all children from this {@link NamedObject}.  A child removed
    * event will be generated for each child removed this way.
    */
-  public void removeAllChildren() {
+  public final void removeAllChildren() {
     if(children == null) return;
     
     for(NamedObject child : this)
@@ -265,7 +267,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
   /**
    * Removes this object from is parent and sets it as having no parent.
    */
-  public void removeParent() {
+  public final void removeParent() {
     if(parent != null) parent.removeChild(this);
     
     parent = null;
@@ -277,7 +279,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * 
    * @param clist The {@link ChildListener} to add.
    */
-  public void addChildListener(ChildListener clist) {
+  public final void addChildListener(ChildListener clist) {
     childlist.add(clist);
   }
   
@@ -286,7 +288,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * 
    * @param clist The {@link ChildListener} to remove.
    */
-  public void removeChildListener(ChildListener clist) {
+  public final void removeChildListener(ChildListener clist) {
     childlist.remove(clist);
   }
   
@@ -301,9 +303,9 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * @param name The name of the {@link NamedObject} to retrieve.
    * @return The object with the given name or null if no object can be found.
    */
-  public <T extends NamedObject> T getObject(String name) {
+  public final <T extends NamedObject> T getObject(String name) {
     if(!name.contains(SEPARATOR)) return getObject(new String[]{name});
-    return getObject(name.split(SEPARATOR, -1));
+    return getObject(name.split("\\" + SEPARATOR));
   }
   
   /**
@@ -320,7 +322,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * @return The desired {@link NamedObject} or null if it could not be found.
    */
   @SuppressWarnings("unchecked")
-  public <T extends NamedObject> T getObject(String ... path) {
+  public final <T extends NamedObject> T getObject(String ... path) {
     if(path.length == 0) try {
       return (T) this;
     } catch(ClassCastException ex) {
@@ -351,7 +353,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * @throws InvocationTargetException Thrown if there is an {@link Exception}
    *  encountered while executing the desired method.
    */
-  public Object executeMethod(String name, Object ... params) throws
+  public final Object executeMethod(String name, Object ... params) throws
     NoSuchMethodException,
     IllegalAccessException,
     IllegalArgumentException,
@@ -388,7 +390,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * @throws InvocationTargetException Thrown if there is an {@link Exception}
    *  encountered while executing the desired method.
    */
-  public Object executeMethod(String[] path, Object ... params) throws 
+  public final Object executeMethod(String[] path, Object ... params) throws 
     NoSuchMethodException, 
     IllegalAccessException, 
     IllegalArgumentException, 
@@ -407,30 +409,30 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
   }
   
   /**
-   * Retrieves a {@link NamedObjectMethod} from the registration path with the given
+   * Retrieves a {@link NamedObjectMethod} from the naming tree with the given
    * signature.  The last name in the path is the name of the method
    * while the rest of the path is the name of the {@link NamedObject}
-   * that will be used in {@link RegisteredObject#getObject(java.lang.String) }
+   * that will be used in {@link NamedObject#getObject(java.lang.String) }
    * to retrieve the {@link NamedObject} containing the desired {@link Method}.
    * 
    * @param name the name of the desired {@link Method} with the name of the
-   * containing {@link NamedObject} and the {@link RegisteredObject#SEPARATOR}
+   * containing {@link NamedObject} and the {@link NamedObject#SEPARATOR}
    * prepended.
    * @param paramtypes The {@link Class}es for the parameters of the desired
    * {@link Method}.
    * @return The method with the given signature or null if no such method
    * can be found.
    */
-  public NamedObjectMethod getMethod(String name, Class<?> ... paramtypes) {
+  public final NamedObjectMethod getMethod(String name, Class<?> ... paramtypes) {
     if(!name.contains(SEPARATOR)) return getMethod(new String[]{name}, paramtypes);
-    return getMethod(name.split(SEPARATOR), paramtypes);
+    return getMethod(name.split("\\" + SEPARATOR), paramtypes);
   }
   
   /**
-   * Retrieves a {@link NamedObjectMethod} from the registration path with the given
+   * Retrieves a {@link NamedObjectMethod} from the naming tree with the given
    * signature.  The last {@link String} in the array is the name of the method
-   * while the rest of the array is the name of the {@link Registered} that will be used
-   * in {@link RegisteredObject#getObject(java.lang.String[]) } to retrieve the
+   * while the rest of the array is the name of the {@link NamedObject} that will be used
+   * in {@link NamedObject#getObject(java.lang.String[]) } to retrieve the
    * {@link NamedObject} containing the desired {@link Method}.
    * 
    * @param path An array of names for the path to the array, the last name being
@@ -440,7 +442,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * @return The method with the given signature or null if no such method
    * can be found.
    */
-  public NamedObjectMethod getMethod(String[] path, Class<?> ... paramtypes) {    
+  public final NamedObjectMethod getMethod(String[] path, Class<?> ... paramtypes) {    
     String[] objpath = new String[path.length - 1];
     System.arraycopy(path, 0, objpath, 0, objpath.length);
     
@@ -486,10 +488,10 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    * The removal and registering methods should be used instead of this method
    * for adding or removing children.
    * 
-   * @return 
+   * @return An {@link Iterator} over the children of this {@link NamedObject}.
    */
   @Override
-  public Iterator<NamedObject> iterator() {
+  public final Iterator<NamedObject> iterator() {
     return getChildren().iterator();
   }
   
@@ -503,6 +505,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    */
   @Override
   public boolean equals(Object obj) {
+    if(obj == this) return true;
     if(!(obj instanceof NamedObject)) return false;
     
     NamedObject other = (NamedObject)obj;
@@ -513,6 +516,14 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
         return false;
     
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 79 * hash + Objects.hashCode(this.name);
+    hash = 79 * hash + Objects.hashCode(this.children);
+    return hash;
   }
   
   /**
