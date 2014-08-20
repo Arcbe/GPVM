@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
 import taiga.code.math.ReadableMatrix4;
 import taiga.code.registration.NamedObject;
+import taiga.code.util.UpdateableObject;
 
 /**
  * Base class for renderable objects.  {@link Renderable}s can be added to a
@@ -20,7 +21,7 @@ import taiga.code.registration.NamedObject;
  * 
  * @author russell
  */
-public abstract class Renderable extends NamedObject {
+public abstract class Renderable extends UpdateableObject {
   
   /**
    * Controls whether this {@link Renderable} should render and update itself.
@@ -37,25 +38,6 @@ public abstract class Renderable extends NamedObject {
     initialized = false;
     localtrans = new Matrix4();
     globaltrans = new Matrix4();
-  }
-  
-  /**
-   * Updates this {@link Renderable} and all of its children recursively.
-   */
-  public void update() {
-    if(!enabled) return;
-    if(!initialized) {
-      initializeSelf();
-      initialized = true;
-    }
-    
-    updateSelf();
-    
-    for(NamedObject obj : this) {
-      if(obj != null && obj instanceof Renderable) {
-        ((Renderable)obj).update();
-      }
-    }
   }
   
   /**
@@ -191,7 +173,17 @@ public abstract class Renderable extends NamedObject {
    * before rendering to allow {@link Renderable}s to calculate any changes to
    * the scene that might be needed.
    */
-  protected abstract void updateSelf();
+  protected void updateSelf() {
+    if(!enabled) return;
+    if(!initialized) {
+      initializeSelf();
+      initialized = true;
+    }
+    
+    updateRenderable();
+  }
+  
+  protected abstract void updateRenderable();
   
   /**
    * Method that allows this {@link Renderable} to render itself.  This is called

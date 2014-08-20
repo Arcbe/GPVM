@@ -32,7 +32,7 @@ public abstract class SkyBoxRenderer extends Renderable {
   }
   
   @Override
-  protected void updateSelf() {}
+  protected void updateRenderable() {}
   
   /**
    * Renders the sky for a given world.  This will only be called on the first

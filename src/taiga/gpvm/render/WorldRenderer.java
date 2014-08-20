@@ -92,8 +92,8 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   }
 
   @Override
-  protected void updateSelf() {
-    super.updateSelf();
+  protected void updateRenderable() {
+    super.updateRenderable();
     
     updateRendFrustrum();
     collectEntities();

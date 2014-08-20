@@ -44,7 +44,7 @@ public class GameScreen extends RenderableSwitcher implements UniverseListener, 
   }
 
   @Override
-  protected void updateSelf() {
+  protected void updateRenderable() {
   }
 
   @Override

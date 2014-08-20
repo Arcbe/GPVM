@@ -12,7 +12,6 @@ import java.nio.FloatBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
 import taiga.code.opengl.Drawable;
 import taiga.code.util.DataNode;
@@ -106,7 +105,7 @@ public class BackedComponent extends Component {
   }
 
   @Override
-  protected void updateSelf() {}
+  protected void updateRenderable() {}
 
   @Override
   protected void initializeSelf() {

@@ -29,7 +29,7 @@ public class RenderableSwitcher extends Renderable {
   }
 
   @Override
-  protected void updateSelf() {}
+  protected void updateRenderable() {}
 
   @Override
   protected void renderSelf(int pass, Matrix4 proj) {}

@@ -48,7 +48,7 @@ public abstract class SceneRoot extends Renderable {
   }
 
   @Override
-  protected void updateSelf() {
+  protected void updateRenderable() {
     Matrix4 view;
     if(cam != null && (view = cam.getViewMatrix()) != getLocalTransform())
       setLocalTransformation(view);

@@ -49,7 +49,7 @@ public class RegionalEntityRenderer extends Renderable {
   }
 
   @Override
-  protected void updateSelf() {
+  protected void updateRenderable() {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
