@@ -8,7 +8,6 @@ package taiga.code.opengl;
 
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
 import taiga.code.math.ReadableMatrix4;
 import taiga.code.registration.NamedObject;
@@ -125,37 +124,15 @@ public abstract class Renderable extends UpdateableObject {
   }
   
   /**
-   * Sets the OpenGL model-view matrix to the global transformation {@link Matrix4}
-   * for this {@link Renderable}.
+   * Releases all graphical resources used by this {@link Renderable}.
    */
-  public void applyGlobalModelView() {
-    setGLMatrix(GL11.GL_MODELVIEW, getGlobalTransform());
-  }
-  
-  /**
-   * Sets the OpenGL projection matrix to the given {@link Matrix4}.
-   * 
-   * @param proj The new projection matrix.
-   */
-  public void applyProjection(ReadableMatrix4 proj) {
-    setGLMatrix(GL11.GL_PROJECTION, proj);
-  }
-  
-  /**
-   * Sets the values for an Opengl matrix stack to the given value.  This
-   * will not push or pop the stack.
-   * 
-   * @param matrixmode Which matrix stack to set.
-   * @param mat The matrix to set the stack to.
-   */
-  public void setGLMatrix(int matrixmode, ReadableMatrix4 mat) {
-    FloatBuffer buffer = matbuffer.get();
-    buffer.rewind();
-    mat.store(buffer, false);
-    buffer.flip();
+  public void uninitalize() {
+    uninitializeSelf();
+    initialized = false;
     
-    GL11.glMatrixMode(matrixmode);
-    GL11.glLoadMatrix(buffer);
+    for(NamedObject obj : this)
+      if(obj instanceof Renderable)
+        ((Renderable)obj).uninitalize();
   }
   
   /**
@@ -168,11 +145,7 @@ public abstract class Renderable extends UpdateableObject {
     minpasses = passes;
   }
   
-  /**
-   * Method that allows this {@link Renderable} to update itself.  This is called
-   * before rendering to allow {@link Renderable}s to calculate any changes to
-   * the scene that might be needed.
-   */
+  @Override
   protected void updateSelf() {
     if(!enabled) return;
     if(!initialized) {
@@ -183,6 +156,12 @@ public abstract class Renderable extends UpdateableObject {
     updateRenderable();
   }
   
+  
+  /**
+   * Method that allows this {@link Renderable} to update itself.  This is called
+   * before rendering to allow {@link Renderable}s to calculate any changes to
+   * the scene that might be needed.
+   */
   protected abstract void updateRenderable();
   
   /**

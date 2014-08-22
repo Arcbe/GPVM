@@ -14,6 +14,8 @@ import java.util.List;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
+import taiga.code.math.ReadableMatrix4;
+import taiga.code.opengl.shaders.ShaderProgram;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Tile;
 import taiga.gpvm.registry.RenderingInfo;
@@ -122,10 +124,23 @@ public class ColorTileRenderer implements TileRenderer {
  }
 
   @Override
-  public void render(int pass, Matrix4 proj) {
+  public void render(int pass, ReadableMatrix4 proj, ReadableMatrix4 modelview) {
     if(verts == null || 
       color == null || 
       pass != HardcodedValues.OPAQUE_WORLD_LAYER) return;
+    
+    if(simplecolor == null) {
+      simplecolor = ShaderProgram.createSimpleColorShader();
+      projloc = simplecolor.getUniformLocation("projection");
+      mvloc = simplecolor.getUniformLocation("modelview");
+    }
+    
+    simplecolor.bind();
+    
+    simplecolor.setUniformMatrix(projloc, proj);
+    simplecolor.setUniformMatrix(mvloc, modelview);
+    
+    GL11.glPushClientAttrib(GL11.GL_VERTEX_ARRAY | GL11.GL_COLOR_ARRAY);
     
     GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
     GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
@@ -141,6 +156,14 @@ public class ColorTileRenderer implements TileRenderer {
     GL11.glColorPointer(4, true, 0, color);
     
     GL11.glDrawArrays(GL11.GL_QUADS, 0, verts.limit() / 3);
+    
+    GL11.glPopClientAttrib();
+  }
+  
+  public void release() {
+    if(simplecolor != null) simplecolor.unload();
+    color = null;
+    verts = null;
   }
 
   @Override
@@ -148,6 +171,9 @@ public class ColorTileRenderer implements TileRenderer {
     return ColorInfo.class;
   }
   
+  private static ShaderProgram simplecolor;
+  private static int projloc;
+  private static int mvloc;
   private ByteBuffer color;
   private IntBuffer verts;
 }

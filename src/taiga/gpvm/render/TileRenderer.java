@@ -8,6 +8,7 @@ package taiga.gpvm.render;
 
 import java.util.List;
 import taiga.code.math.Matrix4;
+import taiga.code.math.ReadableMatrix4;
 import taiga.gpvm.registry.RenderingInfo;
 import taiga.gpvm.registry.TileRenderingRegistry;
 
@@ -33,9 +34,15 @@ public interface TileRenderer {
    * Renders the tiles compiled with this {@link Object}.
    * 
    * @param pass The number of the current rendering pass.
-   * @param proj The projection current {@link Matrix}.
+   * @param proj The current projection {@link Matrix4}.
+   * @param modelview The current composite of the model and view matrices.
    */
-  public void render(int pass, Matrix4 proj);
+  public void render(int pass, ReadableMatrix4 proj, ReadableMatrix4 modelview);
+  
+  /**
+   * Releases any resources being used by this {@link TileRenderer}.
+   */
+  public void release();
   
   /**
    * Returns the class that this renderer uses to store information about how to

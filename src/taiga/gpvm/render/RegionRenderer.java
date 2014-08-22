@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.math.Matrix4;
+import taiga.code.math.ReadableMatrix4;
 import taiga.code.registration.NamedObject;
 import taiga.gpvm.registry.TileRenderingRegistry;
 
@@ -209,9 +210,9 @@ public final class RegionRenderer extends NamedObject implements RegionListener 
     }
   }
 
-  protected void render(int pass, Matrix4 proj) {
+  protected void render(int pass, ReadableMatrix4 proj, ReadableMatrix4 modelview) {
     for(TileRenderer rend : instances.values())
-      rend.render(pass, proj);
+      rend.render(pass, proj, modelview);
   }
   
   private boolean dirty;

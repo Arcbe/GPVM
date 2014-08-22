@@ -96,8 +96,8 @@ public class BackedComponent extends Component {
   protected final void drawComponent(Matrix4 proj) {
     final FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
     
-    applyProjection(proj);
-    applyGlobalModelView();
+//    applyProjection(proj);
+//    applyGlobalModelView();
     
     drawBackground();
     

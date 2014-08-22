@@ -105,9 +105,6 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   @Override
   protected void renderSelf(int pass, Matrix4 proj) {
     
-    applyProjection(proj);
-    applyGlobalModelView();
-    
     GL11.glMatrixMode(GL11.GL_PROJECTION);
 //    GL11.glLoadIdentity();
 //    GLU.gluLookAt(0, 0, 0, 0, 1, 0, 0, 0, 1);
@@ -117,18 +114,11 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
       val.getKey().render(val.getValue(), pass);
     }
     
-    Matrix4 rendproj = proj.mul(getGlobalTransform(), new Matrix4());
-    GL11.glLoadMatrix((FloatBuffer) rendproj.store(BufferUtils.createFloatBuffer(16), false).flip());
-    
-    GL11.glLoadIdentity();
-    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    GL11.glLoadIdentity();
-    
     for(RegionRenderer reg : renderers.values()) {
       Coordinate coor = reg.getLocation();
       GL11.glTranslatef(coor.x, coor.y, coor.z);
       
-      reg.render(pass, rendproj);
+      reg.render(pass, proj.asReadOnly(), getGlobalTransform());
       
       GL11.glTranslatef(-coor.x, -coor.y, -coor.z);
     }
