@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2014 Russell Smith
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package taiga.code.io;
@@ -13,7 +24,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.registration.NamedObject;
 import taiga.code.text.TextLocalizer;
@@ -44,42 +54,18 @@ public class DataFileManager extends NamedObject {
   }
   
   /**
-   * Attempts to read the given file using one of the attached {@link DataFileReader}.
-   * If none can read the file this method will simply return null.
-   * 
-   * @param file The {@link File} to read.
-   * @return The data read from the file or null.
-   * @throws IOException If there was an exception while reading from the file.
-   */
-  public DataNode readFile(File file) throws IOException {
-    if(!file.exists()) {
-      throw new FileNotFoundException(TextLocalizer.localize(FILE_NOT_FOUND, file));
-    }
-    
-    for(NamedObject obj : this) {
-      if(obj != null && obj instanceof DataFileReader) {
-        DataFileReader reader = (DataFileReader)obj;
-        
-        if(reader.canReadFile(file)) {
-          return reader.readFile(file);
-        }
-      }
-    }
-    
-    log.log(Level.WARNING, NO_READER, file);
-    return null;
-  }
-  
-  /**
-   * This method will try to find a {@link File} in the classpath before trying the working directory.
-   * If a {@link File} is found then this will load it into a {@link DataNode}.
+   * This method will try to find a {@link File} in using the current
+   * context {@link ClassLoader} for the {@link Thread} before trying the 
+   * current working directory if the {@link ClassLoader} did not have
+   * the file. If a {@link File} is found then this will load it into a {@link DataNode}.
    * 
    * @param fname The name of the file.
    * @return A {@link DataNode} for the data within the {@link File} or null.
    * @throws IOException Thrown if there is a problem loading the file.
    */
   public DataNode readFile(String fname) throws IOException {
-    URL loc = getClass().getClassLoader().getResource(fname);
+    ClassLoader context = Thread.currentThread().getContextClassLoader();
+    URL loc = context.getResource(fname);
     
     if(loc != null) {
       try {
@@ -88,7 +74,12 @@ public class DataFileManager extends NamedObject {
       } catch(URISyntaxException ex) {}
     }
     
-    return readFile(new File(fname));
+    try {
+      URI loci = new URI(fname);
+      return readFile(loci);
+    } catch(URISyntaxException ex) {
+      throw new FileNotFoundException(fname);
+    }
   }
   
   /**
@@ -99,14 +90,23 @@ public class DataFileManager extends NamedObject {
    * @return The data read from the file or null.
    * @throws IOException If there was an exception while reading from the file.
    */
-  public DataNode readFile(URI file) throws IOException, URISyntaxException {
-    return readFile(new File(file));
+  public DataNode readFile(URI file) throws IOException {
+    for(NamedObject obj : this) {
+      if(obj != null && obj instanceof DataFileReader) {
+        DataFileReader reader = (DataFileReader)obj;
+        
+        if(reader.canReadFile(file)) {
+          return reader.readFile(file);
+        }
+      }
+    }
+    
+    throw new IOException(TextLocalizer.localize(NO_READER, file));
   }
   
   private static final String locprefix = DataFileManager.class.getName().toLowerCase();
   
   private static final String NO_READER = locprefix+ ".no_reader";
-  private static final String FILE_NOT_FOUND = locprefix + ".file_not_found";
   
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));

@@ -21,7 +21,6 @@ import taiga.gpvm.registry.TileRenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.ColorTileRenderer;
 import taiga.gpvm.render.TileRenderer;
-import taiga.gpvm.render.SkyBoxRenderer;
 import taiga.gpvm.screens.GameScreen;
 
 /**
@@ -30,8 +29,8 @@ import taiga.gpvm.screens.GameScreen;
  */
 public class HardcodedValues {
   /**
-   * Separator character for object names.  This is used to separate namespaces
-   * from objects and other namespaces.
+   * Separator character for object names.  This is used to separate name spaces
+   * from objects and other name spaces.
    */
   public static final String NAMESPACE_SEPERATOR = ".";
   
@@ -68,10 +67,6 @@ public class HardcodedValues {
    * The name for the {@link EntityManager}s.
    */
   public static final String ENTITY_MANAGER_NAME = "entities";
-  /**
-   * The name for the {@link SkyBoxRenderer}.
-   */
-  public static final String SKY_REGISTRY_NAME = "skies";
   /**
    * The name for the {@link InputSystem}.
    */
@@ -126,28 +121,12 @@ public class HardcodedValues {
   public static final String MAP_EVENT_MANAGER_NAME = "map-events";
   //</editor-fold>
   
-  //field names for Tile Registry entries
+  //field names for data files
   //<editor-fold>
   /**
-   * Name for the solid attribute in tile data files.
+   * The field name for names in various data files.
    */
-  public static final String SOLID_FIELD = "solid";
-  /**
-   * Name for the opaque attribute in tile data files.
-   */
-  public static final String OPAQUE_FIELD = "opaque";
-  //</editor-fold>
-  
-  //field names for Rendering Registry
-  // <editor-fold>
-  /**
-   * Name for the rendering class field in rendering information data files.
-   */
-  public static final String RENDERER_CLASS_FIELD = "renderer";
-  /**
-   * Name for the rendering information data in rendering information data files.
-   */
-  public static final String RENDERING_INFO_FIELD = "rendering-info";
+  public static final String FIELD_NAME_NAME = "name";
   //</editor-fold>
   
   /**

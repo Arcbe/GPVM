@@ -45,6 +45,16 @@ public final class Matrix4 extends ReadableMatrix4 implements Serializable {
   }
   
   /**
+   * Copies the values from the given {@link ReadableMatrix4} into a new
+   * {@link Matrix4}.
+   * 
+   * @param other The {@link ReadableMatrix4} to copy.
+   */
+  public Matrix4(ReadableMatrix4 other) {
+    setValues(other);
+  }
+  
+  /**
    * Sets this {@link Matrix4} to the inverse of the given {@link ReadableMatrix4}.
    * 
    * @param other The {@link ReadableMatrix4} to get the inverse from.

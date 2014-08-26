@@ -4,16 +4,14 @@
  */
 package taiga.gpvm.render;
 
-import java.nio.FloatBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
+import taiga.code.math.Vector3;
+import taiga.code.math.Vector4;
 import taiga.code.opengl.SceneRoot;
 import taiga.code.registration.NamedObject;
 import taiga.gpvm.HardcodedValues;
@@ -24,8 +22,6 @@ import taiga.gpvm.map.Region;
 import taiga.gpvm.map.World;
 import taiga.gpvm.map.WorldListener;
 import taiga.gpvm.registry.EntityRenderingRegistry;
-import taiga.gpvm.registry.SkyEntry;
-import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.schedule.WorldChange;
 import taiga.gpvm.schedule.WorldChangeListener;
 
@@ -67,28 +63,6 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   protected void attached(NamedObject parent) {
     entreg = getObject(HardcodedValues.ENTITY_RENDERING_REGISTRY_NAME);
     entmng = getObject(HardcodedValues.ENTITY_MANAGER_NAME);
-    
-    SkyRegistry skies = getObject(HardcodedValues.SKY_REGISTRY_NAME);
-    
-    if(skies == null) {
-      log.log(Level.WARNING, NO_SKY_REGISTRY);
-      return;
-    }
-    
-    SkyEntry entry = skies.getEntry(name);
-    if(entry == null) {
-      log.log(Level.WARNING, NO_SKY_FOUND, name);
-      return;
-    }
-    
-    try {
-      SkyBoxRenderer rend = entry.getRenderer();
-      addChild(rend);
-      
-      log.log(Level.FINE, SKY_ADDED, new Object[] {rend, name});
-    } catch(ReflectiveOperationException ex) {
-      log.log(Level.WARNING, SKY_CREATION_EX, ex);
-    }
   }
 
   @Override
@@ -105,22 +79,25 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   @Override
   protected void renderSelf(int pass, Matrix4 proj) {
     
-    GL11.glMatrixMode(GL11.GL_PROJECTION);
-//    GL11.glLoadIdentity();
-//    GLU.gluLookAt(0, 0, 0, 0, 1, 0, 0, 0, 1);
-//    GLU.gluLookAt(0, 0, 5, 1, 1, 4, 0, 0, 1);
-    
     for(Map.Entry<EntityRenderer, Collection<Entity>> val : entrend.entrySet()) {
       val.getKey().render(val.getValue(), pass);
     }
     
+    Matrix4 global = new Matrix4(getGlobalTransform());
+    Vector3 offset = new Vector3(
+      global.getValue(0, 3),
+      global.getValue(1, 3),
+      global.getValue(2, 3));
     for(RegionRenderer reg : renderers.values()) {
       Coordinate coor = reg.getLocation();
-      GL11.glTranslatef(coor.x, coor.y, coor.z);
+      Vector4 loc = new Vector4(coor.x, coor.y, coor.z, 0f);
       
-      reg.render(pass, proj.asReadOnly(), getGlobalTransform());
+      global.transform(loc, loc);
+      global.setValue(0, 3, loc.getX() + offset.getX());
+      global.setValue(1, 3, loc.getY() + offset.getY());
+      global.setValue(2, 3, loc.getZ() + offset.getZ());
       
-      GL11.glTranslatef(-coor.x, -coor.y, -coor.z);
+      reg.render(pass, proj.asReadOnly(), global.asReadOnly());
     }
   }
 

@@ -1,12 +1,8 @@
 package taiga.gpvm.registry;
 
 import taiga.gpvm.HardcodedValues;
-import static taiga.gpvm.HardcodedValues.NAMESPACE_SEPERATOR;
-import static taiga.gpvm.HardcodedValues.RENDERER_CLASS_FIELD;
-import static taiga.gpvm.HardcodedValues.RENDERING_INFO_FIELD;
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -20,8 +16,10 @@ import taiga.gpvm.render.TileRenderer;
 
 /**
  * A {@link Registry} of information for rendering {@link Tile}s.  In additional
- * to the index provided by the super class an index by the {@link
- * TileEntry} for each {@link TileRenderingEntry} will also be maintained.
+ * to the index provided by the super class an index by the {@link TileEntry} 
+ * for each {@link TileRenderingEntry} will also be maintained.  The
+ * {@link Thread#getContextClassLoader() } will be used to load {@link Class}es
+ * for the {@link TileRenderingEntry}.
  * 
  * @author russell
  */
@@ -57,67 +55,14 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    * Loads a data file of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
    * 
    * @param in The name of the {@link File} to read in.
-   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
+   * @param namespace The name space that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
    * 
-   * @throws IOException Thrown if the file could not be read successfully.
-   * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link TileRenderer}.
-   * @throws MissingObjectException If there is no {@link DataFileManager} in the
-   *  registration tree or it could not be found.
+   * @throws Exception Thrown if there is a problem loading the
+   *  {@link Class} for a {@link TileRenderer}, or the {@link TileRegistry} cannot
+   *  be found.
    */
-  public void loadRenderingRegistryData(String in, String namespace) throws IOException,  ReflectiveOperationException, MissingObjectException {
-    loadRenderingRegistryData(in, namespace, getClass().getClassLoader());
-  }
-  
-  /**
-   * Loads a data file of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
-   * 
-   * @param in The {@link File} to read in.
-   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
-   *  to agree with the {@link TileRegistry} and prevent name conflicts.
-   * 
-   * @throws IOException Thrown if the file could not be read successfully.
-   * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link TileRenderer}.
-   * @throws MissingObjectException If there is no {@link DataFileManager} in the
-   *  registration tree or it could not be found.
-   */
-  public void loadRenderingRegistryData(File in, String namespace) throws IOException,  ReflectiveOperationException, MissingObjectException {
-    loadRenderingRegistryData(in, namespace, getClass().getClassLoader());
-  }
-  
-  /**
-   * Loads a {@link DataNode} of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
-   * 
-   * @param data The {@link DataNode} with the rendering information.
-   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
-   *  to agree with the {@link TileRegistry} and prevent name conflicts.
-   * 
-   * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link TileRenderer}.
-   * @throws MissingObjectException If there is no {@link DataFileManager} in the
-   *  registration tree or it could not be found.
-   */
-  public void loadRenderingRegistryData(DataNode data, String namespace) throws ReflectiveOperationException, MissingObjectException {
-    loadRenderingRegistryData(data, namespace, getClass().getClassLoader());
-  }
-  
-  /**
-   * Loads a data file of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
-   * 
-   * @param in The name of the {@link File} to read in.
-   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
-   *  to agree with the {@link TileRegistry} and prevent name conflicts.
-   * @param loader The {@link ClassLoader} to load the {@link TileRenderer} {@link Class} from.
-   * 
-   * @throws IOException Thrown if the file could not be read successfully.
-   * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link TileRenderer}.
-   * @throws MissingObjectException If there is no {@link DataFileManager} in the
-   *  registration tree or it could not be found.
-   */
-  public void loadRenderingRegistryData(String in, String namespace, ClassLoader loader) throws IOException,  ReflectiveOperationException, MissingObjectException {
+  public void loadRenderingRegistryData(String in, String namespace) throws Exception {
     DataFileManager dfio = (DataFileManager) getObject(DataFileManager.DATAFILEMANAGER_NAME);
     
     if(dfio == null) {
@@ -126,7 +71,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
     
     DataNode data = dfio.readFile(in);
     
-    loadRenderingRegistryData(data, namespace, loader);
+    loadRenderingRegistryData(data, namespace);
     
     log.log(Level.INFO, LOADED_FILE, in);
   }
@@ -137,15 +82,12 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    * @param in The {@link File} to read in.
    * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
-   * @param loader The {@link ClassLoader} to load the {@link TileRenderer} from.
    * 
-   * @throws IOException Thrown if the file could not be read successfully.
-   * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link TileRenderer}.
-   * @throws MissingObjectException If there is no {@link DataFileManager} in the
-   *  registration tree or it could not be found.
+   * @throws Exception Thrown if there is a problem loading the
+   *  {@link Class} for a {@link TileRenderer}, or the {@link TileRegistry} cannot
+   *  be found.
    */
-  public void loadRenderingRegistryData(File in, String namespace, ClassLoader loader) throws IOException,  ReflectiveOperationException, MissingObjectException {
+  public void loadRenderingRegistryData(URI in, String namespace) throws Exception {
     DataFileManager dfio = (DataFileManager) getObject(DataFileManager.DATAFILEMANAGER_NAME);
     
     if(dfio == null) {
@@ -154,7 +96,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
     
     DataNode data = dfio.readFile(in);
     
-    loadRenderingRegistryData(data, namespace, loader);
+    loadRenderingRegistryData(data, namespace);
     
     log.log(Level.INFO, LOADED_FILE, in);
   }
@@ -163,17 +105,15 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    * Loads a {@link DataNode} of {@link TileRenderingEntry}s into this {@link TileRenderingRegistry}.
    * 
    * @param data The {@link DataNode} with the rendering information.
-   * @param namespace The namespace that the {@link TileRenderingEntry} should be added to
+   * @param namespace The name space that the {@link TileRenderingEntry} should be added to
    *  to agree with the {@link TileRegistry} and prevent name conflicts.
-   * @param loader The {@link ClassLoader} to load the {@link TileRenderer} from.
    * 
-   * @throws ReflectiveOperationException Thrown if there is a problem loading the
-   *  {@link Class} for a {@link TileRenderer}.
-   * @throws MissingObjectException If there is no {@link DataFileManager} in the
-   *  registration tree or it could not be found.
+   * @throws Exception Thrown if there is a problem loading the
+   *  {@link Class} for a {@link TileRenderer}, or the {@link TileRegistry} cannot
+   *  be found.
    */
-  public void loadRenderingRegistryData(DataNode data, String namespace, ClassLoader loader) throws ReflectiveOperationException, MissingObjectException {
-    TileRegistry tiles = (TileRegistry) getObject(HardcodedValues.TILE_REGISTRY_NAME);
+  public void loadRenderingRegistryData(DataNode data, String namespace) throws Exception {
+    TileRegistry tiles = getObject(HardcodedValues.TILE_REGISTRY_NAME);
     
     if(tiles == null)
       throw new MissingObjectException();
@@ -181,49 +121,10 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
     for(NamedObject val : data) {
       if(!(val instanceof DataNode)) continue;
       DataNode cur = (DataNode) val;
-
-      if(cur.data != null) {
-        log.log(Level.WARNING, INVALID_RENDERING_ENTRY, new Object[] {val});
-        continue;
-      }
-
-      DataNode renddata = null;
-      Class<? extends TileRenderer> rendclass = null;
-
-      for(NamedObject obj : cur) {
-        if(!(obj instanceof DataNode)) continue;
-        DataNode dataval = (DataNode)obj;
-
-        switch(dataval.name) {
-          case RENDERER_CLASS_FIELD:
-            if(dataval.data instanceof String) {
-              rendclass = (Class<? extends TileRenderer>) loader.loadClass((String) dataval.data);
-            } else {
-              log.log(Level.WARNING, INVALID_RENDERING_ENTRY, new Object[]{val});
-            }
-            break;
-          case RENDERING_INFO_FIELD:
-            if(dataval.data == null) {
-              renddata = dataval;
-            } else {
-              log.log(Level.WARNING, INVALID_RENDERING_ENTRY, new Object[] {val});
-            }
-            break;
-        }
-      }
-
-      if(rendclass == null) continue;
-
-      TileRenderer temp = rendclass.newInstance();
-      Class<? extends RenderingInfo> infoclass = temp.getInfoClass();
-
-      RenderingInfo info = null;
-      if(infoclass != null) {
-        Constructor<? extends RenderingInfo> con = infoclass.getConstructor(DataNode.class);
-        info = con.newInstance(renddata);
-      }
-
-      TileRenderingEntry entry = new TileRenderingEntry(rendclass, info, tiles.getEntry(namespace + NAMESPACE_SEPERATOR + val.name));
+      
+      TileEntry tile = tiles.getEntry(cur.name);
+      TileRenderingEntry entry = new TileRenderingEntry(tile, cur);
+      
       addEntry(entry);
     }
   }
@@ -232,7 +133,6 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
   
   private static final String locprefix = TileRenderingRegistry.class.getName().toLowerCase();
   
-  private static final String INVALID_RENDERING_ENTRY = locprefix + ".invalid_rendering_entry";
   private static final String LOADED_FILE = locprefix + ".loaded_file";
   
   private static final Logger log = Logger.getLogger(locprefix, 

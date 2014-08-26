@@ -18,7 +18,7 @@ import taiga.code.registration.NamedObject;
 import taiga.code.util.Updateable;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Region;
-import taiga.gpvm.registry.EntityEntry;
+import taiga.gpvm.registry.EntityType;
 import taiga.gpvm.util.geom.Coordinate;
 
 public class EntityManager extends NamedObject implements Updateable {
@@ -32,10 +32,12 @@ public class EntityManager extends NamedObject implements Updateable {
     nextid = 0;
   }
   
-  public void createEntity(EntityEntry type) {
+  public Entity createEntity(EntityType type) {
     Entity nent = new Entity(getNextID(), type, this);
     
     index.put(nent.id, nent);
+    
+    return nent;
   }
   
   public Collection<Entity> getEntitiesAtRegion(Coordinate coor) {

@@ -8,14 +8,13 @@ package taiga.gpvm.registry;
 
 import java.util.logging.Logger;
 import taiga.gpvm.entity.Entity;
-import taiga.gpvm.render.EntityRenderer;
 
 /**
  * Contains the definitions for a type of {@link Entity}.
  * 
  * @author russell
  */
-public class EntityEntry extends RegistryEntry {
+public class EntityType extends RegistryEntry {
   
   /**
    * The name of the mod that added this {@link Entity}.
@@ -26,7 +25,7 @@ public class EntityEntry extends RegistryEntry {
    * The name of the {@link Entity} within the name space of the mod.  The get name method
    * will return the name prepended with the modname and separated by a '.'.
    */
-  public final String name;
+  public final String simplename;
 
   /**
    * Creates a new {@link EntityEntry} with the given information.
@@ -34,23 +33,9 @@ public class EntityEntry extends RegistryEntry {
    * @param modname The name of the {@link Mod} that this {@link EntityEntry} is from.
    * @param name The internal name for this {@link EntityEntry}.
    */
-  public EntityEntry(String modname, String name) {
+  public EntityType(String modname, String name) {
     super(modname + "." + name);
     this.modname = modname;
-    this.name = name;
+    this.simplename = name;
   }
-
-  /**
-   * Returns the name of this {@link TileEntry}.  This will have the mod name prepended.
-   * 
-   * @return The full name of the {@link TileEntry}.
-   */
-  public String getName() {
-    return name;
-  }
-
-  private static final String locprefix = EntityEntry.class.getName().toLowerCase();
-
-  private static final Logger log = Logger.getLogger(locprefix,
-    System.getProperty("taiga.code.logging.text"));
 }

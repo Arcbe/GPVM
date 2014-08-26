@@ -15,8 +15,6 @@ import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.UniverseListener;
 import taiga.gpvm.map.World;
 import taiga.gpvm.registry.TileRenderingRegistry;
-import taiga.gpvm.registry.SkyEntry;
-import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.registry.TileEntry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.ColoredSky;
@@ -189,7 +187,6 @@ public class Main {
     SettingManager settings = game.getObject(HardcodedValues.SETTING_MANAGER_NAME);
     TileRegistry tiles = game.getObject(HardcodedValues.TILE_REGISTRY_NAME);
     TileRenderingRegistry rendreg = game.getObject(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
-    SkyRegistry skies = game.getObject(HardcodedValues.SKY_REGISTRY_NAME);
     
     settings.loadSettings("settings.yml");
     tiles.loadFile("tiles.yml", "default");
@@ -204,7 +201,6 @@ public class Main {
     });
     
     TileEntry ent = tiles.getEntry("default.grass");
-    skies.addEntry(new SkyEntry("test-world", ColoredSky.class));
     World test = universe.addWorld("test-world", new FlatWorldGenerator(ent, 1));
     
     game.start();

@@ -4,6 +4,7 @@
  */
 package taiga.gpvm;
 
+import java.util.logging.Logger;
 import taiga.code.input.InputSystem;
 import taiga.code.registration.NamedSystem;
 
@@ -13,17 +14,18 @@ import taiga.code.opengl.WindowListener;
 import taiga.code.io.SettingManager;
 import taiga.code.opengl.Camera;
 import taiga.code.opengl.GraphicsSystem;
-import taiga.code.yaml.YAMLDataReader;
+import taiga.code.io.YAMLDataReader;
+import taiga.gpvm.entity.Entity;
 import taiga.gpvm.entity.EntityManager;
 import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.World;
+import taiga.gpvm.registry.EntityType;
 import taiga.gpvm.registry.EntityRegistry;
 import taiga.gpvm.registry.EntityRenderingRegistry;
 import taiga.gpvm.schedule.WorldUpdater;
 import taiga.gpvm.registry.TileRenderingRegistry;
-import taiga.gpvm.registry.SkyRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.SkyBoxRenderer;
 import taiga.gpvm.render.WorldRenderer;
@@ -111,7 +113,6 @@ public final class GameManager extends NamedSystem implements WindowListener {
     Universe uni = getObject(HardcodedValues.UNIVERSE_NAME);
     WorldUpdater updater = getObject(HardcodedValues.WORLD_UPDATER_NAME);
     InputSystem input = getObject(HardcodedValues.INPUT_SYSTEM_NAME);
-    SkyRegistry skies = getObject(HardcodedValues.SKY_REGISTRY_NAME);
     
     if(client) {
       if(tilerendreg == null) tilerendreg = addChild(new TileRenderingRegistry());
@@ -119,7 +120,6 @@ public final class GameManager extends NamedSystem implements WindowListener {
       if(graphics == null) graphics = addChild(new GraphicsSystem(HardcodedValues.GRAPHICS_SYSTEM_NAME));
       if(gamescreen == null) gamescreen = graphics.addChild(new GameScreen());
       if(input == null) input = addChild(new InputSystem(HardcodedValues.INPUT_SYSTEM_NAME));
-      if(skies == null) skies = addChild(new SkyRegistry());
       
       graphics.addUpdateable(input);
       graphics.addWindowListener(this);
@@ -150,11 +150,51 @@ public final class GameManager extends NamedSystem implements WindowListener {
     return uni.addWorld(name, gen);
   }
   
+  /**
+   * Sets the {@link SkyBoxRenderer} that will be used for the {@link World}
+   * with the given name.
+   * 
+   * @param name The name of the {@link World} to add a {@link SkyBoxRenderer} to.
+   * @param sky The {@link SkyBoxRenderer} to add.
+   */
   public void setWorldSky(String name, SkyBoxRenderer sky) {
     WorldRenderer world = getObject(HardcodedValues.GRAPHICS_SYSTEM_NAME, HardcodedValues.GAME_SCREEN_NAME, name);
     if(world == null) return;
     
     world.addChild(sky);
+  }
+  
+  /**
+   * Creates and returns a new {@link Entity} with the type of the given
+   * name.  If there is no type with the given name then this will immediately
+   * return null.
+   * 
+   * @param type The name of the type for the new {@link Entity}.
+   * @return The new {@link Entity}.
+   */
+  public Entity createEntity(String type) {
+    EntityType etype = getEntityType(type);
+    if(etype == null) return null;
+    
+    EntityManager man = getObject(HardcodedValues.ENTITY_MANAGER_NAME);
+    assert man != null;
+    
+    return man.createEntity(etype);
+  }
+  
+  /**
+   * Returns the {@link EntityType} with the given name from the {@link
+   * EntityRegistry}.  If there is not an {@link EntityType} with the given
+   * name, then this will return null.
+   * 
+   * @param name The name of the {@link EntityType} to return.
+   * @return The desired {@link EntityType} or null.
+   */
+  public EntityType getEntityType(String name) {
+    EntityRegistry reg = getObject(HardcodedValues.ENTITY_REGISTRY_NAME);
+    assert reg != null;
+    
+    return reg.getEntry(name);
   }
 
   @Override
@@ -165,4 +205,8 @@ public final class GameManager extends NamedSystem implements WindowListener {
   public void windowDestroyed() {
     stop();
   }
+  
+  private static final String locprefix = GameManager.class.getName().toLowerCase();
+  
+  private static final Logger log = Logger.getLogger(locprefix);
 }

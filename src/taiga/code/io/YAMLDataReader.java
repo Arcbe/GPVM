@@ -1,21 +1,31 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2014 Russell Smith
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package taiga.code.yaml;
+package taiga.code.io;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.yaml.snakeyaml.Yaml;
-import taiga.code.io.DataFileManager;
-import taiga.code.io.DataFileReader;
 import taiga.code.util.DataNode;
 
 /**
@@ -45,10 +55,10 @@ public class YAMLDataReader extends DataFileReader {
   }
 
   @Override
-  public DataNode readFile(File file) throws IOException {
+  public DataNode readFile(URI file) throws IOException {
     Map<String, Object> raw;
     
-    try (Reader in = new FileReader(file)) {
+    try (Reader in = new FileReader(new File(file))) {
       raw = (Map<String, Object>) yaml.load(in);
     }
     
@@ -61,8 +71,8 @@ public class YAMLDataReader extends DataFileReader {
   }
 
   @Override
-  public boolean canReadFile(File file) {
-    try (Reader in = new FileReader(file)) {
+  public boolean canReadFile(URI file) {
+    try (Reader in = new FileReader(new File(file))) {
       yaml.load(in);
     } catch(Exception ex) {
       return false;

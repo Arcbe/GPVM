@@ -14,7 +14,7 @@ import taiga.code.registration.MissingObjectException;
 import taiga.code.text.TextLocalizer;
 import taiga.code.util.Updateable;
 import taiga.gpvm.HardcodedValues;
-import taiga.gpvm.registry.EntityEntry;
+import taiga.gpvm.registry.EntityType;
 import taiga.gpvm.registry.EntityRenderingEntry;
 import taiga.gpvm.registry.EntityRenderingRegistry;
 import taiga.gpvm.render.ColorEntityRenderer;
@@ -33,10 +33,10 @@ import taiga.gpvm.render.EntityRenderer;
  */
 public class Entity implements Updateable {
   public final long id;
-  public final EntityEntry type;
+  public final EntityType type;
   public final EntityManager manager;
 
-  protected Entity(long id, EntityEntry type, EntityManager manager) {
+  protected Entity(long id, EntityType type, EntityManager manager) {
     this.id = id;
     this.type = type;
     this.manager = manager;

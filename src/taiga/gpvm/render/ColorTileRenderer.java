@@ -81,16 +81,16 @@ public class ColorTileRenderer implements TileRenderer {
         colors.add(color);
       }
       
-      //bottom face
-      adj = info.adjacent[Direction.Down.getIndex()];
-      if(adj == null || adj.type == null || !adj.type.opaque) {
-        vertices.add(corner);
-        vertices.add(corner.add(1, 0, 0, new Coordinate()));
-        vertices.add(corner.add(1, 1, 0, new Coordinate()));
-        vertices.add(corner.add(0, 1, 0, new Coordinate()));
-        colors.add(color);
-      }
-      
+//      //bottom face
+//      adj = info.adjacent[Direction.Down.getIndex()];
+//      if(adj == null || adj.type == null || !adj.type.opaque) {
+//        vertices.add(corner);
+//        vertices.add(corner.add(1, 0, 0, new Coordinate()));
+//        vertices.add(corner.add(1, 1, 0, new Coordinate()));
+//        vertices.add(corner.add(0, 1, 0, new Coordinate()));
+//        colors.add(color);
+//      }
+  
       //top face
       adj = info.adjacent[Direction.Up.getIndex()];
       if(adj == null || adj.type == null || !adj.type.opaque) {

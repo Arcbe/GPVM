@@ -6,8 +6,8 @@
 
 package taiga.gpvm.registry;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.io.DataFileManager;
@@ -15,14 +15,14 @@ import taiga.code.util.DataNode;
 import taiga.code.registration.NamedObject;
 import taiga.gpvm.HardcodedValues;
 
-public class EntityRegistry extends NetworkRegistry<EntityEntry> {
+public class EntityRegistry extends NetworkRegistry<EntityType> {
 
   public EntityRegistry() {
     super(HardcodedValues.ENTITY_REGISTRY_NAME);
   }
   
   /**
-   * Loads a {@link File} of {@link EntityEntry}s into this {@link EntityRegistry}.
+   * Loads a {@link File} of {@link EntityType}s into this {@link EntityRegistry}.
    * 
    * @param in The name of the {@link File} containing the tile definitions.
    * @param modname The name of the mod that this data file is loaded by.
@@ -42,13 +42,13 @@ public class EntityRegistry extends NetworkRegistry<EntityEntry> {
   }
   
   /**
-   * Loads a {@link File} of {@link EntityEntry}s into this {@link EntityRegistry}.
+   * Loads a {@link File} of {@link EntityType}s into this {@link EntityRegistry}.
    * 
    * @param in The {@link File} containing the tile definitions.
    * @param modname The name of the mod that this data file is loaded by.
    * @throws IOException Thrown if the data file cannot be read.
    */
-  public void loadFile(File in, String modname) throws IOException {
+  public void loadFile(URI in, String modname) throws IOException {
     DataFileManager dfio = (DataFileManager) getObject(DataFileManager.DATAFILEMANAGER_NAME);
     if(dfio == null) {
       log.log(Level.WARNING, NO_DFIO);
@@ -62,7 +62,7 @@ public class EntityRegistry extends NetworkRegistry<EntityEntry> {
   }
   
   /**
-   * Loads a {@link DataNode} of {@link EntityEntry}s into this {@link EntityRegistry}.
+   * Loads a {@link DataNode} of {@link EntityType}s into this {@link EntityRegistry}.
    * 
    * @param data The {@link DataNode} containing the tile definitions.
    * @param modname The name of the mod that this data file is loaded by.
@@ -74,22 +74,8 @@ public class EntityRegistry extends NetworkRegistry<EntityEntry> {
     for(NamedObject val : data) {
       if(!(val instanceof DataNode)) continue;
       DataNode cur = (DataNode) val;
-
-      if(cur.data != null) {
-        log.log(Level.WARNING, INVALID_ENTITY_DATA, new Object[]{val});
-        continue;
-      }
       
-      for(NamedObject obj : data) {
-        if(!(obj instanceof DataNode)) continue;
-        DataNode field = (DataNode) obj;
-        
-        switch(field.name) {
-          //put in fields later
-        }
-      }
-      
-      EntityEntry entry = new EntityEntry(modname, cur.name);
+      EntityType entry = new EntityType(modname, cur.name);
       addEntry(entry);
     }
   }
@@ -97,8 +83,6 @@ public class EntityRegistry extends NetworkRegistry<EntityEntry> {
   private static final String locprefix = EntityRegistry.class.getName().toLowerCase();
   
   private static final String NO_DFIO = locprefix + ".no_dfio";
-  private static final String INVALID_ENTITY_DATA = locprefix + ".invalid_entity_data";
-  private static final String INVALID_FIELD_VALUE = locprefix + ".invalid_field_data";
   private static final String LOADED_FILE = locprefix + ".loaded_file";
 
   private static final Logger log = Logger.getLogger(locprefix,
