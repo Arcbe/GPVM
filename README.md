@@ -1,6 +1,7 @@
 GPVM - General Purpose Voxel Modding framework
-Copyright (c) Russell Smith 2014
 ====
+Copyright (c) Russell Smith 2014
+
 License
 ====
 This program is free software: you can redistribute it and/or modify
