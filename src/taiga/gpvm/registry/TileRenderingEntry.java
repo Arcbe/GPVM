@@ -8,6 +8,7 @@ package taiga.gpvm.registry;
 
 import taiga.code.text.TextLocalizer;
 import taiga.code.util.DataNode;
+import taiga.gpvm.render.EntityRenderer;
 import taiga.gpvm.render.TileRenderer;
 
 /**
@@ -61,6 +62,7 @@ public class TileRenderingEntry extends RegistryEntry {
    * 
    * @param entry The {@link TileEntry} for this {@link TileRenderingEntry}.
    * @param data A {@link DataNode} that contains the values for this {@link TileRenderingEntry}.
+   * @throws Exception Thrown if the {@link EntityRenderer} cannot be instantiated.
    */
   public TileRenderingEntry(TileEntry entry, DataNode data) throws Exception {
     super(entry.name);

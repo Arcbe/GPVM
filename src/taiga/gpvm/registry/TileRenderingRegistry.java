@@ -116,13 +116,21 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
     TileRegistry tiles = getObject(HardcodedValues.TILE_REGISTRY_NAME);
     
     if(tiles == null)
-      throw new MissingObjectException();
+      throw new MissingObjectException(HardcodedValues.TILE_REGISTRY_NAME);
     
     for(NamedObject val : data) {
       if(!(val instanceof DataNode)) continue;
       DataNode cur = (DataNode) val;
       
-      TileEntry tile = tiles.getEntry(cur.name);
+      TileEntry tile = tiles.getEntry(namespace + HardcodedValues.NAMESPACE_SEPERATOR + cur.name);
+      if(tile == null)
+        tile = tiles.getEntry(cur.name);
+      if(tile == null) {
+        log.log(Level.WARNING, NO_TILE_ENTRY, new Object[]{cur.name, namespace});
+        continue;
+      }
+      
+      
       TileRenderingEntry entry = new TileRenderingEntry(tile, cur);
       
       addEntry(entry);
@@ -134,6 +142,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
   private static final String locprefix = TileRenderingRegistry.class.getName().toLowerCase();
   
   private static final String LOADED_FILE = locprefix + ".loaded_file";
+  private static final String NO_TILE_ENTRY = locprefix + ".no_tile_entry";
   
   private static final Logger log = Logger.getLogger(locprefix, 
     System.getProperty("taiga.code.logging.text"));
