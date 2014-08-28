@@ -4,13 +4,12 @@
  */
 package taiga.gpvm.map;
 
-import java.util.ArrayList;
 import taiga.gpvm.util.geom.Coordinate;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import taiga.code.util.ByteUtils;
+import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.registry.TileEntry;
+import taiga.gpvm.registry.TileRegistry;
 
 /**
  *
@@ -18,7 +17,8 @@ import taiga.gpvm.registry.TileEntry;
  */
 public final class Region {
   /**
-   * Each region will be a cube with edges of length REGION_SIZE.
+   * Each region will be a cube with edges of length REGION_SIZE.  This
+   * must be a power of 2, because simplicity.
    */
   public static final byte REGION_SIZE = 32;
   private final Coordinate location;
@@ -101,7 +101,7 @@ public final class Region {
    * @param z The z coordinate of the tile.
    * @return The tile at the given point.
    */
-  public Tile getTile(int x, int y, int z) {
+  public final Tile getTile(int x, int y, int z) {
     assert x < REGION_SIZE;
     assert y < REGION_SIZE;
     assert z < REGION_SIZE;
@@ -109,7 +109,7 @@ public final class Region {
     assert y > 0;
     assert z > 0;
     
-    return tiles[z * REGION_SIZE * REGION_SIZE + x * REGION_SIZE + y];
+    return tiles[(z * REGION_SIZE * REGION_SIZE) | (x * REGION_SIZE) | y];
   }
   
   /**
@@ -120,113 +120,18 @@ public final class Region {
       list.regionUnloading(this);
   }
   
-  /**
-   * This will encode the {@link Region} into an array of bytes.  Tiles will be
-   * listed sequential with in the y direction, followed by in the x direction,
-   * and finally in the z direction.  Following each entry will be a single byte
-   * that for how many tiles share the same value.  First ids for {@link TileEntry}s
-   * will be encoded, then the damage value, and finally a list of meta-data.
-   * The meta-data will be encoded as an int id, a coordinate, and a value depending
-   * on the type of meta-data.  All values are unsigned.
-   * 
-   * @return The {@link Region} encoded as a byte array.
-   */
-  public byte[] toBytes() {
-    //An arbitrary starting amount.
-    List<Byte> bytes = new ArrayList<>(16000);
+  protected final void setTile(int x, int y, int z, int type) {
+    if(treg == null)
+      treg = map.getObject(HardcodedValues.TILE_REGISTRY_NAME);
     
-    encodeDamageValues(bytes);
-    encodeTileType(bytes);
-    
-    byte[] result = new byte[bytes.size()];
-    int index = 0;
-    for(Byte b : bytes)
-      result[index++] = b;
-    return result;
+    setTile(x, y, z, treg.getEntry(type));
   }
   
-  private void encodeDamageValues(List<Byte> bytes) {
-    
-    //first get all of the damage values
-    short amount = 1;
-    Tile last = null;
-    byte[] converts = new byte[8]; //to hold bytes for a long.
-    for(Tile t : tiles) {
-      if(t == null) {
-        throw new NullPointerException();
-      }
-      
-      //lets start this thing.
-      if(last == null) {
-        last = t;
-        continue;
-      }
-      
-      //continue until a tile with a different value is hit.
-      if(last.damage == t.damage && amount < 256) {
-        amount++;
-        continue;
-      }
-      
-      ByteUtils.toBytes(last.damage, 0, converts);
-      for(byte b : converts)
-        bytes.add(b);
-      bytes.add((byte) amount);
-      amount = 1;
-      
-      last = t;
-    }
-    //and one more encoding to get the last set of tiles.
-    ByteUtils.toBytes(last.damage, 0, converts);
-    for(byte b : converts)
-      bytes.add(b);
-    bytes.add((byte) amount);
+  protected final void setTile(int x, int y, int z, TileEntry type) {
+    tiles[(z * REGION_SIZE * REGION_SIZE) | (x * REGION_SIZE) | y].type = type;
   }
   
-  private void encodeTileType(List<Byte> bytes) {
-//    
-//    //first get all of the damage values
-//    short amount = 1;
-//    Tile last = null;
-//    byte[] converts = new byte[4]; //to hold bytes for a long.
-//    for(Tile t : tiles) {
-//      if(t == null) {
-//        throw new NullPointerException();
-//      }
-//      
-//      //lets start this thing.
-//      if(last == null) {
-//        last = t;
-//        continue;
-//      }
-//      
-//      //continue until a tile with a different value is hit.
-//      if(last.type == t.type && amount < 256) {
-//        amount++;
-//        continue;
-//      }
-//      
-//      if(last.type == null)
-//        ByteUtils.toBytes(-1, 0, converts);
-//      else
-//        ByteUtils.toBytes(last.type.getID(), 0, converts);
-//      for(byte b : converts)
-//        bytes.add(b);
-//      bytes.add((byte) amount);
-//      amount = 1;
-//      
-//      last = t;
-//    }
-//    //and one more encoding to get the last set of tiles.
-//    if(last.type == null)
-//      ByteUtils.toBytes(-1, 0, converts);
-//    else
-//      ByteUtils.toBytes(last.type.getID(), 0, converts);
-//    for(byte b : converts)
-//      bytes.add(b);
-//    bytes.add((byte) amount);
-  }
-  
+  private TileRegistry treg;
   private Collection<RegionListener> listeners;
   private Tile[] tiles;
 }

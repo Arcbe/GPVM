@@ -225,12 +225,17 @@ public abstract class Renderable extends UpdateableObject {
     NamedObject obj = getParent();
     if(!(obj instanceof Renderable)) return;
     
-    ((Renderable)obj).globaltrans.mul(localtrans, globaltrans);
+    updateGlobalTransform(((Renderable)obj).getGlobalTransform());
+  }
+  
+  private void updateGlobalTransform(ReadableMatrix4 par) {
+    if(par != null)
+      localtrans.mulRHS(par, globaltrans);
     
     //now that we are updated update the children.
     for(NamedObject o : this)
       if(o instanceof Renderable)
-        ((Renderable)o).updateGlobalTransform();
+        ((Renderable)o).updateGlobalTransform(globaltrans);
   }
   
   /**

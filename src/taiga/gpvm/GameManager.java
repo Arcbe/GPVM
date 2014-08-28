@@ -206,6 +206,11 @@ public final class GameManager extends NamedSystem implements WindowListener {
     stop();
   }
   
+  @Override
+  public void windowResized() {
+    
+  }
+  
   private static final String locprefix = GameManager.class.getName().toLowerCase();
   
   private static final Logger log = Logger.getLogger(locprefix);

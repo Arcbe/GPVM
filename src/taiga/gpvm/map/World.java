@@ -157,12 +157,7 @@ public final class World extends ReusableObject {
       
       Region nreg = ((MapGenerator)obj).generateRegion(coor, this);
       
-      try {
-        regionlock.writeLock().lock();
-        regions.put(coor, nreg);
-      } finally {
-        regionlock.writeLock().unlock();
-      }
+      addRegion(nreg);
       
       log.log(Level.FINE, REGION_GENERATED, new Object[]{getFullName(), coor});
       fireRegionLoaded(nreg);
@@ -179,8 +174,8 @@ public final class World extends ReusableObject {
    * @return Whether the {@link Region} is loaded.
    */
   public boolean isLoaded(Coordinate coor) {
+    regionlock.readLock().lock();
     try {
-      regionlock.readLock().lock();
       return regions.containsKey(coor);
     } finally {
       regionlock.readLock().unlock();
@@ -213,6 +208,15 @@ public final class World extends ReusableObject {
   
   protected void setID(short id) {
     worldid = id;
+  }
+  
+  protected void addRegion(Region reg) {
+    regionlock.writeLock().lock();
+    try {
+      regions.put(reg.getLocation(), reg);
+    } finally {
+      regionlock.writeLock().unlock();
+    }
   }
   
   private boolean loadRegionFile(Coordinate coor) {

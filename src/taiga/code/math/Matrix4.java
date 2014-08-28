@@ -33,6 +33,7 @@ public final class Matrix4 extends ReadableMatrix4 implements Serializable {
    * Creates a new identity {@link Matrix4}.
    */
   public Matrix4() {
+    super();
   }
   
   /**

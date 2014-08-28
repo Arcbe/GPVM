@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 import taiga.code.math.Matrix4;
 import taiga.code.registration.NamedObject;
 import taiga.code.registration.NamedSystem;
@@ -77,6 +78,17 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
   public static final String SETTING_FPS = "fps";
   
   /**
+   * The name of that will be used to look for a setting to allow resizing of the
+   * window.
+   */
+  public static final String SETTING_RESIZABLE = "resize";
+  
+  /**
+   * The default for whether the window will be resizable.
+   */
+  public static final boolean DEFAULT_RESIZABLE = true;
+  
+  /**
    * Creates a new {@link GraphicsSystem} with the given name and default settings.
    * 
    * @param name The name for the new {@link GraphicsSystem}.
@@ -89,6 +101,7 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
     fullscreen = DEFAULT_FULLSCREEN;
     vsync = DEFAULT_VSYNC;
     target_fps = DEFAULT_TARGET_FRAME_RATE;
+    resize = DEFAULT_RESIZABLE;
     
     reset = true;
     running = false;
@@ -294,6 +307,14 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
       log.log(Level.WARNING, WRONG_SETTING_TYPE, SETTING_VSYNC);
     }
     
+    if((cur = obj.getObject(SETTING_RESIZABLE)) == null) {
+      log.log(Level.WARNING, MISSING_SETTING, SETTING_RESIZABLE);
+    } else if(cur.data instanceof Boolean) {
+      resize = (Boolean)cur.data;
+    } else {
+      log.log(Level.WARNING, WRONG_SETTING_TYPE, SETTING_RESIZABLE);
+    }
+    
     //fps
     if((cur = obj.getObject(SETTING_FPS)) == null) {
       log.log(Level.WARNING, MISSING_SETTING, SETTING_FPS);
@@ -362,6 +383,11 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
           }
         }
         
+        if(Display.wasResized()) {
+          GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+          fireWindowResized();
+        }
+        
         //abstract methods for the implementing class to hook into
         update();
         render();
@@ -396,6 +422,7 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
   
   private boolean fullscreen;
   private boolean vsync;
+  private boolean resize;
   private int target_fps;
   private int res_x;
   private int res_y;
@@ -407,6 +434,7 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
   private void createWindow() throws LWJGLException {
     DisplayMode mode = new DisplayMode(res_x, res_y);
     
+    Display.setResizable(resize);
     Display.setFullscreen(fullscreen);
     Display.setVSyncEnabled(vsync);
     Display.setDisplayMode(mode);
@@ -446,6 +474,11 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
           ((Renderable)obj).render(i, proj);
       }
     }
+  }
+  
+  private void fireWindowResized() {
+    for(WindowListener list: listeners)
+      list.windowResized();
   }
   
   private void fireWindowClosed() {

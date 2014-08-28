@@ -238,7 +238,7 @@ public final class Universe extends ReusableObject {
       
       Region reg = index.get(wid).getRegion(coor);
       
-      byte[] regdata = reg.toBytes();
+      byte[] regdata = RegionEncoder.encode(reg);
       byte[] data = new byte[regdata.length + 15];
       
       data[0] = REG_RES;

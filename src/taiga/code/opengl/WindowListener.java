@@ -15,4 +15,5 @@ package taiga.code.opengl;
 public interface WindowListener {
   public void windowCreated();
   public void windowDestroyed();
+  public void windowResized();
 }
