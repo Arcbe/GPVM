@@ -17,6 +17,7 @@
 
 package taiga.gpvm.diagnostics;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Logger;
@@ -25,9 +26,11 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JTabbedPane;
 import taiga.code.registration.NamedSystem;
 import taiga.code.registration.SystemListener;
 import taiga.code.text.TextLocalizer;
+import taiga.code.util.LoggingPanel;
 import taiga.gpvm.GameManager;
 
 /**
@@ -46,9 +49,12 @@ public class DiagnosticsWindow extends JFrame implements SystemListener {
     
     game_status = new JLabel(TextLocalizer.localize(LABEL_NO_INSTANCE));
     
+    setLayout(new BorderLayout(SPACING_AMOUNT, SPACING_AMOUNT));
+    
     setButtonActions();
     
-    add(createButtonPanel());
+    add(createPanels(), BorderLayout.CENTER);
+    add(createButtonPanel(), BorderLayout.SOUTH);
     
     pack();
   }
@@ -71,6 +77,16 @@ public class DiagnosticsWindow extends JFrame implements SystemListener {
       toggle_game.setText(TextLocalizer.localize(BUTTON_START));
       game_status.setText(TextLocalizer.localize(LABEL_STOPPED));
     }
+  }
+  
+  private JComponent createPanels() {
+    JTabbedPane pane = new JTabbedPane();
+    
+    LoggingPanel logging = new LoggingPanel();
+    logging.setName(TextLocalizer.localize(TAB_LOGGING_NAME));
+    pane.add(logging);
+    
+    return pane;
   }
   
   private JComponent createButtonPanel() {
@@ -98,6 +114,14 @@ public class DiagnosticsWindow extends JFrame implements SystemListener {
         } else {
           instance.start();
         }
+      }
+    });
+    
+    reset_game.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if(instance != null) instance.reset();
       }
     });
   }
@@ -133,6 +157,7 @@ public class DiagnosticsWindow extends JFrame implements SystemListener {
   private static final String LABEL_NO_INSTANCE = locprefix + ".label_no_instance";
   private static final String LABEL_RUNNING = locprefix + ".label_running";
   private static final String LABEL_STOPPED = locprefix + ".label_stopped";
+  private static final String TAB_LOGGING_NAME = locprefix + ".tab_logging_name";
 
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));
