@@ -79,7 +79,7 @@ public abstract class PerspectiveCamera implements Camera {
   
   @Override
   public Matrix4 getProjection() {
-    if(!Float.isFinite(aspect)) {
+    if(Float.isInfinite(aspect) || Float.isNaN(aspect)) {
       aspect = (float) Display.getWidth() / (float) Display.getHeight();
     }
     
