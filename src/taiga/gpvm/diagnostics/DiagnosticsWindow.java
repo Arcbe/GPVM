@@ -39,7 +39,7 @@ import taiga.gpvm.GameManager;
  * 
  * @author Russell Smith
  */
-public class DiagnosticsWindow extends JFrame implements SystemListener { 
+public final class DiagnosticsWindow extends JFrame implements SystemListener {
   
   public DiagnosticsWindow() {
     setTitle(TextLocalizer.localize(WINDOW_TITLE));
@@ -47,7 +47,31 @@ public class DiagnosticsWindow extends JFrame implements SystemListener {
     toggle_game = new JButton(TextLocalizer.localize(BUTTON_CREATE));
     reset_game = new JButton(TextLocalizer.localize(BUTTON_RESTART));
     
+    logging = new LoggingPanel();
+    systems = new SystemViewer();
+    
     game_status = new JLabel(TextLocalizer.localize(LABEL_NO_INSTANCE));
+    
+    init();
+  }
+  
+  public DiagnosticsWindow(GameManager man) {
+    setTitle(TextLocalizer.localize(WINDOW_TITLE));
+    
+    toggle_game = new JButton();
+    reset_game = new JButton(TextLocalizer.localize(BUTTON_RESTART));
+    
+    logging = new LoggingPanel();
+    systems = new SystemViewer(man);
+    
+    game_status = new JLabel();
+    
+    init();
+    
+    setInstance(man);
+  }
+  
+  private void init() {
     
     setLayout(new BorderLayout(SPACING_AMOUNT, SPACING_AMOUNT));
     
@@ -82,9 +106,11 @@ public class DiagnosticsWindow extends JFrame implements SystemListener {
   private JComponent createPanels() {
     JTabbedPane pane = new JTabbedPane();
     
-    LoggingPanel logging = new LoggingPanel();
     logging.setName(TextLocalizer.localize(TAB_LOGGING_NAME));
     pane.add(logging);
+    
+    systems.setName(TextLocalizer.localize(TAB_SYSTEMS_NAME));
+    pane.add(systems);
     
     return pane;
   }
@@ -143,6 +169,9 @@ public class DiagnosticsWindow extends JFrame implements SystemListener {
   private final JButton toggle_game;
   private final JButton reset_game;
   
+  private final LoggingPanel logging;
+  private final SystemViewer systems;
+  
   private final JLabel game_status;
   
   private static final int SPACING_AMOUNT = 5;
@@ -158,6 +187,7 @@ public class DiagnosticsWindow extends JFrame implements SystemListener {
   private static final String LABEL_RUNNING = locprefix + ".label_running";
   private static final String LABEL_STOPPED = locprefix + ".label_stopped";
   private static final String TAB_LOGGING_NAME = locprefix + ".tab_logging_name";
+  private static final String TAB_SYSTEMS_NAME = locprefix + ".tab_systems_name";
 
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));

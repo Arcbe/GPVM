@@ -18,8 +18,10 @@
 package taiga.code.util;
 
 import java.awt.BorderLayout;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -134,17 +136,40 @@ public class LoggingPanel extends JPanel {
     }
 
     @Override
+    public String getColumnName(int column) {
+      switch(column) {
+        case 0: return TextLocalizer.localize(COL_NAME_LEVEL);
+        case 1: return TextLocalizer.localize(COL_NAME_MESSAGE);
+        case 2: return TextLocalizer.localize(COL_NAME_CLASS);
+        default: return "";
+      }
+    }
+
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
       LogRecord record = records.get(rowIndex);
       
       switch(columnIndex) {
         case 0: return record.getLevel();
-        case 1: return record.getMessage();
+        case 1: return getMessage(record);
         case 2: return record.getSourceClassName();
         default: return null;
       }
     }
     
+    public String getMessage(LogRecord record) {
+      ResourceBundle bun = record.getResourceBundle();
+      if(bun == null) return record.getMessage();
+      
+      if(!bun.containsKey(record.getMessage())) return record.getMessage();
+      
+      String result = bun.getString(record.getMessage());
+      
+      if(record.getParameters() != null) 
+        result = MessageFormat.format(result, record.getParameters());
+      
+      return result;
+    }
   }
   
   private final JComboBox<Level> loglevel;

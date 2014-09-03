@@ -203,7 +203,8 @@ public final class GameManager extends NamedSystem implements WindowListener {
 
   @Override
   public void windowDestroyed() {
-    stop();
+    if(isRunning())
+      stop();
   }
   
   @Override

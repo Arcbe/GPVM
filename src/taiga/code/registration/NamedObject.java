@@ -48,7 +48,12 @@ import taiga.code.text.TextLocalizer;
  * 
  * @author russell
  */
-public class NamedObject implements Iterable<NamedObject>, Serializable {
+public class NamedObject implements Iterable<NamedObject>, Serializable, Comparable<NamedObject> {
+
+  @Override
+  public int compareTo(NamedObject o) {
+    return name.compareTo(o.name);
+  }
 
   /**
    * A simple combination of a {@link NamedObject} with a {@link Method}
@@ -104,7 +109,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
   public final String name;
   
   public NamedObject() {
-    name = null;
+    name = "";
     childlist = new HashSet<>();
     children = new HashMap<>();
   }
@@ -505,6 +510,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable {
    */
   @Override
   public boolean equals(Object obj) {
+    if(obj == null) return false;
     if(obj == this) return true;
     if(!(obj instanceof NamedObject)) return false;
     

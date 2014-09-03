@@ -329,14 +329,14 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
   }
 
   @Override
-  protected synchronized void stopSystem() {
+  protected void stopSystem() {
     Thread gt = gthread;
     
     running = false;
     gthread = null;
     
     try {
-      if(Thread.currentThread() != gt)
+      if(Thread.currentThread() != gt && gt != null)
         gt.join();
     } catch (InterruptedException ex) {
       log.log(Level.SEVERE, STOP_SYSTEM_EX, ex);
