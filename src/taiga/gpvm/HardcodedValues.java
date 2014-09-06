@@ -94,7 +94,7 @@ public class HardcodedValues {
   /**
    * Name for the {@link TileRenderingRegistry}.
    */
-  public static final String TILE_RENDERING_REGISTRY_NAME = "tile-renedering-registry";
+  public static final String TILE_RENDERING_REGISTRY_NAME = "tile-rendering-registry";
   /**
    * Name for {@link MapGenerator}s.
    */

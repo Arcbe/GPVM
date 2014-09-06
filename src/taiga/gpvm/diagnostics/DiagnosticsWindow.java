@@ -106,11 +106,11 @@ public final class DiagnosticsWindow extends JFrame implements SystemListener {
   private JComponent createPanels() {
     JTabbedPane pane = new JTabbedPane();
     
-    logging.setName(TextLocalizer.localize(TAB_LOGGING_NAME));
-    pane.add(logging);
-    
     systems.setName(TextLocalizer.localize(TAB_SYSTEMS_NAME));
     pane.add(systems);
+    
+    logging.setName(TextLocalizer.localize(TAB_LOGGING_NAME));
+    pane.add(logging);
     
     return pane;
   }

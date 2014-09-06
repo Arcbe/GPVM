@@ -18,17 +18,22 @@
 package taiga.gpvm.diagnostics;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
+import taiga.code.util.NamedObjectDetailPanel;
 import taiga.code.util.NamingTreeViewer;
 import taiga.gpvm.GameManager;
 
 public class SystemViewer extends JPanel {
 
   public SystemViewer() {
-    super(new BorderLayout());
+    super(new BorderLayout(SPACING_AMOUNT, SPACING_AMOUNT));
     view = new NamingTreeViewer();
+    details = new NamedObjectDetailPanel();
     
     init();
   }
@@ -36,6 +41,7 @@ public class SystemViewer extends JPanel {
   public SystemViewer(GameManager man) {
     super(new BorderLayout());
     view = new NamingTreeViewer(man);
+    details = new NamedObjectDetailPanel(man);
     
     init();
   }
@@ -44,14 +50,22 @@ public class SystemViewer extends JPanel {
     JScrollPane pane = new JScrollPane();
     pane.setViewportView(view);
     
+    details.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+    details.setBackground(Color.lightGray);
+    
     add(pane, BorderLayout.CENTER);
+    add(details, BorderLayout.EAST);
   }
   
   public void setGame(GameManager man) {
     view.setRoot(man);
+    details.setObject(man);
   }
   
   private final NamingTreeViewer view;
+  private final NamedObjectDetailPanel details;
+  
+  private static final int SPACING_AMOUNT = 5;
 
   private static final String locprefix = SystemViewer.class.getName().toLowerCase();
 

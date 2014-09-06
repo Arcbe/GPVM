@@ -61,8 +61,7 @@ public final class NamingTreeViewer extends JTree {
     root = r;
     
     if(root != null) {
-      model.fireNodeAdded(root);
-      setModel(model);
+      model.rootChanged();
     }
   }
   
@@ -85,6 +84,13 @@ public final class NamingTreeViewer extends JTree {
 
     public NTModel() {
       this.lists = new HashSet<>();
+    }
+    
+    public void rootChanged() {
+      TreeModelEvent event = new TreeModelEvent(this, new Object[]{root});
+      
+      for(TreeModelListener list : lists)
+        list.treeStructureChanged(event);
     }
 
     @Override
@@ -150,24 +156,15 @@ public final class NamingTreeViewer extends JTree {
     public void fireNodeAdded(NamedObject obj) {
       TreeModelEvent event;
       
-      if(obj.getParent() == null) {
-        event = new TreeModelEvent(this, new TreePath(obj));(new DefaultTreeModel(null)).setRoot(null);
-        for(TreeModelListener list : lists)
-          list.treeStructureChanged(event);
-      }
-      else {
-        List<NamedObject> path = new ArrayList<>();
+      List<NamedObject> path = new ArrayList<>();
+      while(obj != null) {
         path.add(obj);
-        NamedObject cur = obj;
-        while(cur.getParent() != null) {
-          path.add(cur.getParent());
-          cur = cur.getParent();
-        }
-
-        Collections.reverse(path);
-
-        event = new TreeModelEvent(obj, path.toArray());
+        obj = obj.getParent();
       }
+
+      Collections.reverse(path);
+
+      event = new TreeModelEvent(this, path.toArray());
       
       for(TreeModelListener list : lists)
         list.treeNodesInserted(event);
@@ -176,11 +173,11 @@ public final class NamingTreeViewer extends JTree {
     public void fireNodeRemoved(NamedObject parent, NamedObject obj) {
       List<NamedObject> path = new ArrayList<>();
       path.add(obj);
-      path.add(parent);
-      NamedObject cur = parent;
-      while(cur.getParent() != null) {
-        path.add(cur.getParent());
-        cur = cur.getParent();
+      
+      obj = parent;
+      while(obj != null) {
+        path.add(obj);
+        obj = obj.getParent();
       }
       
       Collections.reverse(path);
