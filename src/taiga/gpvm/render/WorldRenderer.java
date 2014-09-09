@@ -125,6 +125,8 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
     
     for(Coordinate coor : renderers.keySet())
       viewables.add(coor);
+    
+    collectEntities();
   }
   
   private void collectEntities() {
@@ -152,11 +154,6 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   }
   
   private static final String locprefix = WorldRenderer.class.getName().toLowerCase();
-  
-  private static final String NO_SKY_REGISTRY = locprefix + ".no_sky_registry";
-  private static final String NO_SKY_FOUND = locprefix + ".no_sky_found";
-  private static final String SKY_ADDED = locprefix + ".sky_added";
-  private static final String SKY_CREATION_EX = locprefix + ".sky_creation_ex";
   
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));

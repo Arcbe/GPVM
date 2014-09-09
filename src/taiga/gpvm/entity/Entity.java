@@ -9,6 +9,7 @@ package taiga.gpvm.entity;
 import java.util.logging.Logger;
 import org.lwjgl.util.vector.Vector3f;
 import taiga.code.geom.AABox;
+import taiga.code.math.Vector3;
 import taiga.code.util.DataNode;
 import taiga.code.registration.MissingObjectException;
 import taiga.code.text.TextLocalizer;
@@ -19,6 +20,7 @@ import taiga.gpvm.registry.EntityRenderingEntry;
 import taiga.gpvm.registry.EntityRenderingRegistry;
 import taiga.gpvm.render.ColorEntityRenderer;
 import taiga.gpvm.render.EntityRenderer;
+import taiga.gpvm.util.geom.Coordinate;
 
 /**
  * Base class for all {@link Entity}s in the game.  This class provides a
@@ -42,7 +44,8 @@ public class Entity implements Updateable {
     this.manager = manager;
     
     bounds = new AABox();
-    velocity = new Vector3f();
+    position = new Vector3();
+    momentum = new Vector3();
     damage = 0;
   }
   
@@ -54,9 +57,16 @@ public class Entity implements Updateable {
   public void update() {
   }
   
+  public void teleport(Coordinate coor) {
+    position.setX(coor.x);
+    position.setY(coor.y);
+    position.setZ(coor.z);
+  }
+  
   private final AABox bounds;
-  private final Vector3f velocity;
   private final long damage;
+  private final Vector3 position;
+  private final Vector3 momentum;
   
   private EntityRenderer renderer;
   
