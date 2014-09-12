@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import taiga.code.registration.ChildListener;
@@ -105,7 +104,7 @@ public final class NamingTreeViewer extends JTree {
       NamedObject obj = (NamedObject)parent;
       
       List<NamedObject> children = new ArrayList<>(obj.getChildren());
-      children.sort(null);
+      Collections.sort(children);
       
       return children.get(index);
     }
@@ -138,7 +137,7 @@ public final class NamingTreeViewer extends JTree {
       NamedObject obj = (NamedObject)parent;
       
       List<NamedObject> children = new ArrayList<>(obj.getChildren());
-      children.sort(null);
+      Collections.sort(children);
       
       return children.indexOf(child);
     }
