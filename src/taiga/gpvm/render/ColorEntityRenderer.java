@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.ReadableVector3f;
+import taiga.code.math.ReadableMatrix4;
 import taiga.code.util.DataNode;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.entity.Entity;
@@ -19,7 +20,7 @@ public class ColorEntityRenderer implements EntityRenderer {
   public static final String COLOR_FIELD = "color";
 
   @Override
-  public void render(Collection<Entity> ents, int pass) {
+  public void render(Collection<Entity> ents, int pass, ReadableMatrix4 proj, ReadableMatrix4 modelview) {
     if(pass != HardcodedValues.OPAQUE_WORLD_LAYER) return;
     
     GL11.glPointSize(size);

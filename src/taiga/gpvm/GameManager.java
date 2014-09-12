@@ -4,6 +4,7 @@
  */
 package taiga.gpvm;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.input.InputSystem;
 import taiga.code.registration.NamedSystem;
@@ -30,6 +31,7 @@ import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.SkyBoxRenderer;
 import taiga.gpvm.render.WorldRenderer;
 import taiga.gpvm.screens.GameScreen;
+import taiga.gpvm.util.geom.Coordinate;
 
 /**
  * Controls the overall state of the game.  This class will initialize the
@@ -173,13 +175,27 @@ public final class GameManager extends NamedSystem implements WindowListener {
    * @return The new {@link Entity}.
    */
   public Entity createEntity(String type) {
-    EntityType etype = getEntityType(type);
-    if(etype == null) return null;
+    return createEntity(getEntityType(type));
+  }
+  
+  public Entity createEntity(EntityType type) {
+    return createEntity(type, new Coordinate());
+  }
+  
+  public Entity createEntity(String type, Coordinate location) {
+    return createEntity(getEntityType(type), location);
+  }
+  
+  public Entity createEntity(EntityType type, Coordinate location) {
+    if(type == null) {
+      log.log(Level.WARNING, NO_ENTITY_TYPE);
+      return null;
+    }
     
     EntityManager man = getObject(HardcodedValues.ENTITY_MANAGER_NAME);
     assert man != null;
     
-    return man.createEntity(etype);
+    return man.createEntity(type, location);
   }
   
   /**
@@ -213,6 +229,8 @@ public final class GameManager extends NamedSystem implements WindowListener {
   }
   
   private static final String locprefix = GameManager.class.getName().toLowerCase();
+  
+  private static final String NO_ENTITY_TYPE = locprefix + ".no_entity_type";
   
   private static final Logger log = Logger.getLogger(locprefix);
 }

@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import taiga.code.math.Matrix4;
 import taiga.code.math.Vector3;
@@ -80,7 +81,7 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   protected void renderSelf(int pass, Matrix4 proj) {
     
     for(Map.Entry<EntityRenderer, Collection<Entity>> val : entrend.entrySet()) {
-      val.getKey().render(val.getValue(), pass);
+      val.getKey().render(val.getValue(), pass, proj, getGlobalTransform());
     }
     
     Matrix4 global = new Matrix4(getGlobalTransform());
@@ -98,6 +99,13 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
       global.setValue(2, 3, loc.getZ() + offset.getZ());
       
       reg.render(pass, proj.asReadOnly(), global.asReadOnly());
+    }
+    
+    for(Map.Entry<EntityRenderer,Collection<Entity>> entry : entrend.entrySet()) {
+      EntityRenderer rend = entry.getKey();
+      Collection<Entity> list = entry.getValue();
+      
+      if(list != null) rend.render(list, pass, proj, getGlobalTransform());
     }
   }
 
@@ -142,14 +150,14 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
     
     for(Entity ent : ents) {
       EntityRenderer rend = entreg.getEntry(ent.type).renderer;
+      Collection<Entity> temp = entrend.get(rend);
       
-      Collection<Entity> list = entrend.get(rend);
-      if(list == null) {
-        list = new HashSet<>();
-        entrend.put(rend, list);
+      if(temp == null) {
+        temp = new HashSet<>();
+        entrend.put(rend, temp);
       }
       
-      list.add(ent);
+      temp.add(ent);
     }
   }
   

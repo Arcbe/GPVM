@@ -35,17 +35,17 @@ public class Coordinate implements Cloneable, Serializable {
    * -1 indicates that this is the current world if there is a current world in
    * the given context.
    */
-  public int worldid;
+  public World world;
 
   /**
    * Creates a coordinate at the origin.
    */
   public Coordinate() {
-    worldid = -1;
+    world = null;
   }
 
   /**
-   * Creates a {@link Coordinate} at the given location.
+   * Creates a {@link Coordinate} at the given location, in the default {@link World}.
    * 
    * @param x The x coordinate
    * @param y The y coordinate
@@ -55,6 +55,21 @@ public class Coordinate implements Cloneable, Serializable {
     this.x = x;
     this.y = y;
     this.z = z;
+  }
+  
+  /**
+   * Creates a {@link Coordinate} at the given location in the given {@link World}.
+   * 
+   * @param x The x coordinate
+   * @param y The y coordinate
+   * @param z The x coordinate
+   * @param w The {@link World} that this {@link Coordinate} is in.
+   */
+  public Coordinate(int x, int y, int z, World w) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    world = w;
   }
   
   /**
@@ -166,7 +181,7 @@ public class Coordinate implements Cloneable, Serializable {
     hash = 17 * hash + this.x;
     hash = 17 * hash + this.y;
     hash = 17 * hash + this.z;
-    hash = 17 * hash + this.worldid;
+    if(world != null) hash = 17 * hash + world.getWorldID();
     return hash;
   }
 

@@ -32,10 +32,11 @@ public class EntityManager extends NamedObject implements Updateable {
     nextid = 0;
   }
   
-  public Entity createEntity(EntityType type) {
-    Entity nent = new Entity(getNextID(), type, this);
+  public Entity createEntity(EntityType type, Coordinate location) {
+    Entity nent = new Entity(getNextID(), type, location);
     
     index.put(nent.id, nent);
+    addEntityLoc(nent);
     
     return nent;
   }
@@ -69,7 +70,7 @@ public class EntityManager extends NamedObject implements Updateable {
       //TODO: implement this
     }
     
-    addEntityLoc(ent, ent.getBounds());
+    addEntityLoc(ent);
   }
   
   private void removeEntityLoc(Entity ent, AABox bounds) {
@@ -97,7 +98,9 @@ public class EntityManager extends NamedObject implements Updateable {
     } 
   }
     
-  private void addEntityLoc(Entity ent, AABox bounds) {
+  private void addEntityLoc(Entity ent) {
+    AABox bounds = ent.getBounds();
+    
     int top = (int) bounds.top() / Region.REGION_SIZE;
     int right = (int) bounds.right() / Region.REGION_SIZE;
     int back = (int) bounds.back() / Region.REGION_SIZE;

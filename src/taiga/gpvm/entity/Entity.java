@@ -7,19 +7,13 @@
 package taiga.gpvm.entity;
 
 import java.util.logging.Logger;
-import org.lwjgl.util.vector.Vector3f;
 import taiga.code.geom.AABox;
+import taiga.code.math.ReadableVector3;
 import taiga.code.math.Vector3;
 import taiga.code.util.DataNode;
-import taiga.code.registration.MissingObjectException;
-import taiga.code.text.TextLocalizer;
 import taiga.code.util.Updateable;
-import taiga.gpvm.HardcodedValues;
+import taiga.gpvm.map.World;
 import taiga.gpvm.registry.EntityType;
-import taiga.gpvm.registry.EntityRenderingEntry;
-import taiga.gpvm.registry.EntityRenderingRegistry;
-import taiga.gpvm.render.ColorEntityRenderer;
-import taiga.gpvm.render.EntityRenderer;
 import taiga.gpvm.util.geom.Coordinate;
 
 /**
@@ -36,21 +30,24 @@ import taiga.gpvm.util.geom.Coordinate;
 public class Entity implements Updateable {
   public final long id;
   public final EntityType type;
-  public final EntityManager manager;
 
-  protected Entity(long id, EntityType type, EntityManager manager) {
+  protected Entity(long id, EntityType type, Coordinate location) {
     this.id = id;
     this.type = type;
-    this.manager = manager;
     
     bounds = new AABox();
-    position = new Vector3();
+    position = new Vector3(location.x, location.y, location.z);
     momentum = new Vector3();
+    world = location.world;
     damage = 0;
   }
   
   public AABox getBounds() {
     return bounds;
+  }
+  
+  public ReadableVector3 getPosition() {
+    return position;
   }
 
   @Override
@@ -67,25 +64,7 @@ public class Entity implements Updateable {
   private final long damage;
   private final Vector3 position;
   private final Vector3 momentum;
-  
-  private EntityRenderer renderer;
-  
-  private void checkRenderer() {
-    if(renderer != null) return;
-    
-    EntityRenderingRegistry rend = manager.getObject(HardcodedValues.ENTITY_RENDERING_REGISTRY_NAME);
-    if(rend == null) {
-      throw new MissingObjectException(TextLocalizer.localize(MISSING_RENDERING_REGISTRY));
-    }
-    
-    EntityRenderingEntry entry = rend.getEntry(type);
-    if(entry == null || entry.renderer == null) {
-      //lets use the default renderer
-      renderer = new ColorEntityRenderer();
-    } else {
-      renderer = entry.renderer;
-    }
-  }
+  private World world;
 
   private static final String locprefix = Entity.class.getName().toLowerCase();
   
