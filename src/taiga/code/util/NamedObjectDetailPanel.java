@@ -17,21 +17,26 @@
 
 package taiga.code.util;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JTextArea;
+import javax.swing.JLabel;
 import taiga.code.registration.NamedObject;
 import taiga.code.text.TextLocalizer;
 
 public final class NamedObjectDetailPanel extends Box {
+  
+  public static final int TAB_SIZE = 2;
 
   public NamedObjectDetailPanel() {
     super(BoxLayout.Y_AXIS);
     
-    text = new JTextArea();
-    text.setEditable(false);
-    text.setColumns(COLUMNS);
+    text = new JLabel();
     
     add(text);
     add(Box.createVerticalGlue());
@@ -40,9 +45,7 @@ public final class NamedObjectDetailPanel extends Box {
   public NamedObjectDetailPanel(NamedObject tar) {
     super(BoxLayout.Y_AXIS);
     
-    text = new JTextArea();
-    text.setEditable(false);
-    text.setColumns(COLUMNS);
+    text = new JLabel();
     
     add(text);
     add(Box.createVerticalGlue());
@@ -53,19 +56,52 @@ public final class NamedObjectDetailPanel extends Box {
   public void setObject(NamedObject obj) {
     target = obj;
     
-    populateText();
-  }
-  
-  private void populateText() {
     StringBuilder build = new StringBuilder();
+    build.append("<html><b>");
+    populateName(build);
+    populateInfo(build);
     
-    String fullname = target.getFullName();
-    build.append(TextLocalizer.localize(FIELD_NAME, fullname));
-    
+    build.append("</html>");
     text.setText(build.toString());
   }
   
-  private final JTextArea text;
+  private void populateName(StringBuilder builder) {
+    builder.append(TextLocalizer.localize(FIELD_NAME));
+    builder.append(target.getFullName());
+  }
+  
+  private void populateInfo(StringBuilder builder) {
+    BeanInfo info;
+    
+    try {
+      info = Introspector.getBeanInfo(target.getClass());
+    } catch (IntrospectionException ex) {
+      log.log(Level.SEVERE, "Error inspecting object class.", ex);
+      return;
+    }
+    
+    builder.append(TextLocalizer.localize(FIELD_DESC));
+    builder.append(info.getBeanDescriptor().getShortDescription());
+    
+    builder.append(TextLocalizer.localize(FIELD_PROP));
+    builder.append("<ul>");
+    
+    for(PropertyDescriptor prop : info.getPropertyDescriptors()) {
+      builder.append("<li>");
+      
+      if(prop.isBound()) builder.append('B');
+      if(prop.isConstrained()) builder.append('C');
+      if(prop.getReadMethod() != null) builder.append('R');
+      if(prop.getWriteMethod() != null) builder.append('W');
+      
+      builder.append(" - ");
+      builder.append(prop.getDisplayName());
+    }
+    
+    builder.append("</ul>");
+  }
+  
+  private final JLabel text;
   
   private NamedObject target;
   
@@ -74,6 +110,8 @@ public final class NamedObjectDetailPanel extends Box {
   private static final String locprefix = NamedObjectDetailPanel.class.getName().toLowerCase();
   
   private static final String FIELD_NAME = locprefix + ".field_name";
+  private static final String FIELD_DESC = locprefix + ".field_desc";
+  private static final String FIELD_PROP = locprefix + ".field_prop";
 
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));

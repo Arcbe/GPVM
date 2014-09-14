@@ -1,22 +1,23 @@
 /*
- * Copyright (C) 2014 Russell Smith
+ * Copyright (c) 2014, Russell Smith, All rights reserved.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3.0 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
  */
 
 package taiga.code.registration;
 
+import java.beans.ConstructorProperties;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -121,6 +122,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable, Compara
    * 
    * @param name The name for the new {@link NamedObject}
    */
+  @ConstructorProperties({"name"})
   public NamedObject(String name) {
     if(!checkName(name))
       throw new IllegalArgumentException(TextLocalizer.localize(ILLEGAL_NAME, name));
@@ -143,6 +145,15 @@ public class NamedObject implements Iterable<NamedObject>, Serializable, Compara
   public final String getFullName() {
     if(parent == null) return name;
     else return parent.getFullName() + SEPARATOR + name;
+  }
+  
+  /**
+   * Returns the local name of this {@link NamedObject}.
+   * 
+   * @return The name of this {@link NamedObject}.
+   */
+  public final String getName() {
+    return name;
   }
   
   /**
@@ -272,7 +283,7 @@ public class NamedObject implements Iterable<NamedObject>, Serializable, Compara
   /**
    * Removes this object from is parent and sets it as having no parent.
    */
-  public final void removeParent() {
+  public final void removeFromParent() {
     if(parent != null) parent.removeChild(this);
     
     parent = null;

@@ -23,12 +23,14 @@ import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
-import javax.swing.border.LineBorder;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import taiga.code.registration.NamedObject;
 import taiga.code.util.NamedObjectDetailPanel;
 import taiga.code.util.NamingTreeViewer;
 import taiga.gpvm.GameManager;
 
-public class SystemViewer extends JPanel {
+public class SystemViewer extends JPanel implements TreeSelectionListener {
 
   public SystemViewer() {
     super(new BorderLayout(SPACING_AMOUNT, SPACING_AMOUNT));
@@ -49,6 +51,7 @@ public class SystemViewer extends JPanel {
   private void init() {
     JScrollPane pane = new JScrollPane();
     pane.setViewportView(view);
+    view.addTreeSelectionListener(this);
     
     details.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
     details.setBackground(Color.lightGray);
@@ -71,4 +74,9 @@ public class SystemViewer extends JPanel {
 
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));
+
+  @Override
+  public void valueChanged(TreeSelectionEvent e) {
+    details.setObject((NamedObject) e.getNewLeadSelectionPath().getLastPathComponent());
+  }
 }
