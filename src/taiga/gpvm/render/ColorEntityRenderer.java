@@ -6,8 +6,11 @@
 
 package taiga.gpvm.render;
 
+import java.nio.FloatBuffer;
 import java.util.Collection;
 import java.util.logging.Logger;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.ReadableVector3f;
 import taiga.code.math.ReadableMatrix4;
@@ -23,7 +26,21 @@ public class ColorEntityRenderer implements EntityRenderer {
   public void render(Collection<Entity> ents, int pass, ReadableMatrix4 proj, ReadableMatrix4 modelview) {
     if(pass != HardcodedValues.OPAQUE_WORLD_LAYER) return;
     
+    ARBShaderObjects.glUseProgramObjectARB(0);
     GL11.glPointSize(size);
+    
+    FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+    proj.store(buffer, false);
+    buffer.flip();
+    
+    GL11.glMatrixMode(GL11.GL_PROJECTION);
+    GL11.glLoadMatrix(buffer);
+    
+    buffer.rewind();
+    modelview.store(buffer, false);
+    buffer.flip();
+    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+    GL11.glLoadMatrix(buffer);
     
     GL11.glBegin(GL11.GL_POINTS);
     
