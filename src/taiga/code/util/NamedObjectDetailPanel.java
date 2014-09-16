@@ -96,6 +96,9 @@ public final class NamedObjectDetailPanel extends Box {
       
       builder.append(" - ");
       builder.append(prop.getDisplayName());
+      builder.append(" (");
+      builder.append(prop.getPropertyType().getSimpleName());
+      builder.append(")");
     }
     
     builder.append("</ul>");

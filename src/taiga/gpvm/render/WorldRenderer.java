@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import taiga.code.math.Matrix4;
+import taiga.code.math.ReadableMatrix4;
 import taiga.code.math.Vector3;
 import taiga.code.math.Vector4;
 import taiga.code.opengl.SceneRoot;
@@ -70,15 +71,14 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   protected void updateRenderable() {
     super.updateRenderable();
     
-    updateRendFrustrum();
-    collectEntities();
-    
     for(RegionRenderer reg : renderers.values())
       reg.update();
   }
 
   @Override
   protected void renderSelf(int pass, Matrix4 proj) {
+    
+    updateRendFrustrum(proj);
     
     for(Map.Entry<EntityRenderer, Collection<Entity>> val : entrend.entrySet()) {
       val.getKey().render(val.getValue(), pass, proj, getGlobalTransform());
@@ -128,11 +128,69 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
     reg.updateTile(change.location);
   }
   
-  private void updateRendFrustrum() {
-    viewables.clear();
+  private void updateRendFrustrum(ReadableMatrix4 proj) {
+    Matrix4 inv = new Matrix4(proj);
     
-    for(Coordinate coor : renderers.keySet())
-      viewables.add(coor);
+    //create teh rendering matrix
+    inv.mul(getGlobalTransform());
+    Matrix4 trans = new Matrix4(inv);
+    
+    //now create the invert the matrix to transform the coordinates of the corner vertices
+    inv.invert();
+    Vector4[] corners = new Vector4[] {
+      new Vector4(0, 0, 0, 1),
+      new Vector4(1, 0, 0, 1),
+      new Vector4(1, 1, 0, 1),
+      new Vector4(0, 1, 0, 1),
+      new Vector4(0, 1, 1, 1),
+      new Vector4(0, 0, 1, 1),
+      new Vector4(1, 0, 1, 1),
+      new Vector4(1, 1, 1, 1)
+    };
+    
+    float xmin = Float.POSITIVE_INFINITY;
+    float xmax = Float.NEGATIVE_INFINITY;
+    float ymin = Float.POSITIVE_INFINITY;
+    float ymax = Float.NEGATIVE_INFINITY;
+    float zmin = Float.POSITIVE_INFINITY;
+    float zmax = Float.NEGATIVE_INFINITY;
+    
+    for(int i = 0; i < corners.length; i++) {
+      //find the corners in world space
+      inv.transform(corners[i], corners[i]);
+      corners[i].scale(1f / corners[i].getW());
+      
+      //and create a bounding box for them.
+      if(corners[i].getX() < xmin) xmin = corners[i].getX();
+      if(corners[i].getX() > xmax) xmax = corners[i].getX();
+      if(corners[i].getX() < ymin) ymin = corners[i].getY();
+      if(corners[i].getX() > ymax) ymax = corners[i].getY();
+      if(corners[i].getX() < zmin) zmin = corners[i].getZ();
+      if(corners[i].getX() > zmax) zmax = corners[i].getZ();
+    }
+    
+    int xm = (int)xmin / Region.REGION_SIZE;
+    int ym = (int)ymin / Region.REGION_SIZE;
+    int zm = (int)zmin / Region.REGION_SIZE;
+    
+    int xmm = (int)xmax / Region.REGION_SIZE;
+    int ymm = (int)ymax / Region.REGION_SIZE;
+    int zmm = (int)zmax / Region.REGION_SIZE;
+    
+    //check all of the regions intersecting the bounding box, and add them to the
+    //rendering queue as needed.
+    //TODO: actually do check intersections
+    viewables.clear();
+    for(int i = xm; i < xmm; i++) {
+      for(int j = ym; j < ymm; j++) {
+        for(int k = zm; k < zmm; k++) {
+          viewables.add(new Coordinate(
+            i * Region.REGION_SIZE,
+            j * Region.REGION_SIZE,
+            k * Region.REGION_SIZE));
+        }
+      }
+    }
     
     collectEntities();
   }
