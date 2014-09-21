@@ -85,20 +85,18 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
     }
     
     Matrix4 global = new Matrix4(getGlobalTransform());
-    Vector3 offset = new Vector3(
-      global.getValue(0, 3),
-      global.getValue(1, 3),
-      global.getValue(2, 3));
     for(RegionRenderer reg : renderers.values()) {
       Coordinate coor = reg.getLocation();
-      Vector4 loc = new Vector4(coor.x, coor.y, coor.z, 0f);
+      Matrix4 trans = new Matrix4(new float[][]{
+        {1, 0, 0, coor.x},
+        {0, 1, 0, coor.y},
+        {0, 0, 1, coor.z},
+        {0, 0, 0, 1}
+      });
       
-      global.transform(loc, loc);
-      global.setValue(0, 3, loc.getX() + offset.getX());
-      global.setValue(1, 3, loc.getY() + offset.getY());
-      global.setValue(2, 3, loc.getZ() + offset.getZ());
+      trans.mulRHS(global, trans);
       
-      reg.render(pass, proj.asReadOnly(), global.asReadOnly());
+      reg.render(pass, proj.asReadOnly(), trans.asReadOnly());
     }
     
     for(Map.Entry<EntityRenderer,Collection<Entity>> entry : entrend.entrySet()) {
@@ -129,22 +127,22 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   }
   
   private void updateRendFrustrum(ReadableMatrix4 proj) {
-    Matrix4 inv = new Matrix4(proj);
+    Matrix4 inv = new Matrix4(getGlobalTransform());
     
     //create teh rendering matrix
-    inv.mul(getGlobalTransform());
+    inv.mul(proj);
     Matrix4 trans = new Matrix4(inv);
     
     //now create the invert the matrix to transform the coordinates of the corner vertices
     inv.invert();
     Vector4[] corners = new Vector4[] {
-      new Vector4(0, 0, 0, 1),
-      new Vector4(1, 0, 0, 1),
+      new Vector4(-1, -1, 0, 1),
+      new Vector4(1, -1, 0, 1),
       new Vector4(1, 1, 0, 1),
-      new Vector4(0, 1, 0, 1),
-      new Vector4(0, 1, 1, 1),
-      new Vector4(0, 0, 1, 1),
-      new Vector4(1, 0, 1, 1),
+      new Vector4(-1, 1, 0, 1),
+      new Vector4(-1, 1, 1, 1),
+      new Vector4(-1, -1, 1, 1),
+      new Vector4(1, -1, 1, 1),
       new Vector4(1, 1, 1, 1)
     };
     

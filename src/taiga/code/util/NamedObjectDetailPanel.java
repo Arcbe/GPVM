@@ -57,11 +57,11 @@ public final class NamedObjectDetailPanel extends Box {
     target = obj;
     
     StringBuilder build = new StringBuilder();
-    build.append("<html><b>");
+    build.append("<html><body>");
     populateName(build);
     populateInfo(build);
     
-    build.append("</html>");
+    build.append("</body></html>");
     text.setText(build.toString());
   }
   

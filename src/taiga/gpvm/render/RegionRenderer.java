@@ -1,5 +1,7 @@
 package taiga.gpvm.render;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Region;
 import taiga.gpvm.map.RegionListener;
@@ -134,14 +136,8 @@ public final class RegionRenderer extends NamedObject implements RegionListener 
     
     // create the renderer if needed
     if(newrend == null) {
-      try {
-        newrend = renderer.newInstance();
-        instances.put(newrend.getClass(), newrend);
-      } catch (InstantiationException | IllegalAccessException ex) {
-        log.log(Level.SEVERE, null, ex);
-        assert false;
-        return;
-      }
+      newrend = getRenderer(renderer);
+      instances.put(renderer, newrend);
     }
     
     //create the list of tileinfo.
@@ -217,6 +213,33 @@ public final class RegionRenderer extends NamedObject implements RegionListener 
   
   private boolean dirty;
   private final Region reg;
+  
+  private TileRenderer getRenderer(Class<? extends TileRenderer> clazz) {
+    TileRenderer rend = null;
+    
+    Constructor<TileRenderer> cons;
+    //try for a constructor with a regionrenderer argument
+    try {
+      cons = (Constructor<TileRenderer>) clazz.getConstructor(RegionRenderer.class);
+      rend = cons.newInstance(this);
+    } catch (
+      InstantiationException |
+      IllegalAccessException | 
+      IllegalArgumentException | 
+      InvocationTargetException | 
+      NoSuchMethodException | 
+      SecurityException e) {
+      //try a no argument constructor if the first does not work
+      try {
+        rend = clazz.newInstance();
+      } catch (InstantiationException | IllegalAccessException ex) {
+        log.log(Level.SEVERE, "Unable to create tile renderer.", ex);
+        assert false;
+      }
+    }
+      
+    return rend;
+  }
   
   //cached data for static rendering.
   private final Map<Coordinate, TileInfo> rendindex;

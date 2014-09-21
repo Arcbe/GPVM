@@ -22,6 +22,8 @@ import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.World;
+import taiga.gpvm.opengl.ResourceLoader;
+import taiga.gpvm.opengl.ResourceManager;
 import taiga.gpvm.registry.EntityType;
 import taiga.gpvm.registry.EntityRegistry;
 import taiga.gpvm.registry.EntityRenderingRegistry;
@@ -115,6 +117,7 @@ public final class GameManager extends NamedSystem implements WindowListener {
     Universe uni = getObject(HardcodedValues.UNIVERSE_NAME);
     WorldUpdater updater = getObject(HardcodedValues.WORLD_UPDATER_NAME);
     InputSystem input = getObject(HardcodedValues.INPUT_SYSTEM_NAME);
+    ResourceManager assets = getObject(HardcodedValues.NAME_RESOURCE_MANAGER);
     
     if(client) {
       if(tilerendreg == null) tilerendreg = addChild(new TileRenderingRegistry());
@@ -122,6 +125,7 @@ public final class GameManager extends NamedSystem implements WindowListener {
       if(graphics == null) graphics = addChild(new GraphicsSystem(HardcodedValues.GRAPHICS_SYSTEM_NAME));
       if(gamescreen == null) gamescreen = graphics.addChild(new GameScreen());
       if(input == null) input = addChild(new InputSystem(HardcodedValues.INPUT_SYSTEM_NAME));
+      if(assets == null) assets = graphics.addChild(new ResourceManager(HardcodedValues.NAME_RESOURCE_MANAGER));
       
       graphics.addUpdateable(input);
       graphics.addWindowListener(this);
