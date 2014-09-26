@@ -3,10 +3,13 @@ package taiga.gpvm.opengl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import taiga.code.opengl.GraphicsSystem;
+import taiga.code.opengl.WindowListener;
+import taiga.code.registration.NamedObject;
 import taiga.code.registration.ReusableObject;
 import taiga.code.util.Resource;
 
-public class ResourceManager extends ReusableObject {
+public class ResourceManager extends ReusableObject implements WindowListener {
 
   public ResourceManager(String name) {
     super(name);
@@ -51,18 +54,58 @@ public class ResourceManager extends ReusableObject {
     
     T output = (T) loader.load(name);
     cache.put(name, output);
+    
+    if(loading) output.load();
     return output;
   }
 
   @Override
   protected void resetObject() {
   }
+
+  @Override
+  protected void dettached(NamedObject parent) {
+    super.dettached(parent);
+    
+    if(parent instanceof GraphicsSystem) {
+      ((GraphicsSystem)parent).addWindowListener(this);
+    }
+  }
+
+  @Override
+  protected void attached(NamedObject parent) {
+    super.attached(parent);
+    
+    if(parent instanceof GraphicsSystem) {
+      ((GraphicsSystem)parent).removeWindowListener(this);
+    }
+  }
+  
+  
   
   private final Map<String, Resource> cache;
   private final Map<Class<? extends Resource>, ResourceLoader> loaders;
+  private boolean loading;
 
   private static final String locprefix = ResourceManager.class.getName().toLowerCase();
 
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));
+
+  @Override
+  public void windowCreated() {
+    loading = true;
+    
+    for(Resource res : cache.values())
+      res.load();
+  }
+
+  @Override
+  public void windowDestroyed() {
+    loading = false;
+  }
+
+  @Override
+  public void windowResized() {
+  }
 }

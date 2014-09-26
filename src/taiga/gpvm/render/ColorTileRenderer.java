@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import taiga.code.math.Matrix4;
 import taiga.code.math.ReadableMatrix4;
 import taiga.code.opengl.shaders.ShaderProgram;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.Tile;
+import taiga.gpvm.opengl.ResourceManager;
 import taiga.gpvm.registry.RenderingInfo;
 import taiga.gpvm.util.geom.Direction;
 
@@ -26,6 +26,15 @@ import taiga.gpvm.util.geom.Direction;
  * @author russell
  */
 public class ColorTileRenderer implements TileRenderer {
+  
+  public ColorTileRenderer(RegionRenderer parent) {
+    ResourceManager resources = parent.getObject(HardcodedValues.NAME_RESOURCE_MANAGER);
+    assert resources != null;
+    
+    simplecolor = resources.getResource(ShaderProgram.SHADER_NAME_SIMPLE_COLOR, ShaderProgram.class);
+    projloc = simplecolor.getUniformLocation("projection");
+    mvloc = simplecolor.getUniformLocation("modelview");
+  }
 
   @Override
   public void compile(List<TileInfo> tiles) {
@@ -129,12 +138,6 @@ public class ColorTileRenderer implements TileRenderer {
       color == null || 
       pass != HardcodedValues.OPAQUE_WORLD_LAYER) return;
     
-    if(simplecolor == null) {
-      simplecolor = ShaderProgram.createSimpleColorShader();
-      projloc = simplecolor.getUniformLocation("projection");
-      mvloc = simplecolor.getUniformLocation("modelview");
-    }
-    
     simplecolor.bind();
     
     simplecolor.setUniformMatrix(projloc, proj);
@@ -165,15 +168,12 @@ public class ColorTileRenderer implements TileRenderer {
     color = null;
     verts = null;
   }
-
-  @Override
-  public Class<? extends RenderingInfo> getInfoClass() {
-    return ColorInfo.class;
-  }
   
-  private static ShaderProgram simplecolor;
-  private static int projloc;
-  private static int mvloc;
+  public static final Class<? extends RenderingInfo>  INFO_CLASS = ColorInfo.class;
+  
+  private ShaderProgram.Location projloc;
+  private ShaderProgram.Location mvloc;
+  private ShaderProgram simplecolor;
   private ByteBuffer color;
   private IntBuffer verts;
 }

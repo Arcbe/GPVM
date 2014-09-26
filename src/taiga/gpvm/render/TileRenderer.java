@@ -45,6 +45,7 @@ public interface TileRenderer {
   public void release();
   
   /**
+   * //TODO: update this.
    * Returns the class that this renderer uses to store information about how to
    * render various tile types.  If this method returns null then no additional
    * information will be associated with the tiles that use this {@link TileRenderer}
@@ -53,5 +54,4 @@ public interface TileRenderer {
    * @return The class that will be used to store additional rendering information
    * for any tiles that use this {@link TileRenderer}.
    */
-  public Class<? extends RenderingInfo> getInfoClass();
 }

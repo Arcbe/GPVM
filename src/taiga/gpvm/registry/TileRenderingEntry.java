@@ -6,6 +6,10 @@
 
 package taiga.gpvm.registry;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import taiga.code.text.TextLocalizer;
 import taiga.code.util.DataNode;
 import taiga.gpvm.render.EntityRenderer;
@@ -19,6 +23,7 @@ import taiga.gpvm.render.TileRenderer;
  */
 public class TileRenderingEntry extends RegistryEntry {
   
+  public static final String FIELD_NAME_INFO_CLASS = "INFO_CLASS";
   public static final String FIELD_NAME_RENDERER = "renderer";
   
   public static final String FIELD_NAME_RENDERING_INFO = "rendering-info";
@@ -64,28 +69,33 @@ public class TileRenderingEntry extends RegistryEntry {
    * @param data A {@link DataNode} that contains the values for this {@link TileRenderingEntry}.
    * @throws Exception Thrown if the {@link EntityRenderer} cannot be instantiated.
    */
-  public TileRenderingEntry(TileEntry entry, DataNode data) throws Exception {
+  public TileRenderingEntry(TileEntry entry, DataNode data) {
     super(entry.name);
     tile = entry;
     
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    
-    String rend = data.getValueByName(FIELD_NAME_RENDERER);
     try {
+      ClassLoader loader = Thread.currentThread().getContextClassLoader();
+      String rend = data.getValueByName(FIELD_NAME_RENDERER);
       renderer = (Class<? extends TileRenderer>) loader.loadClass(rend);
-      
-      TileRenderer temp = renderer.newInstance();
-      info = temp.
-        getInfoClass().
-        getConstructor(DataNode.class).
-        newInstance(data.getChild(FIELD_NAME_RENDERING_INFO));
-      
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException ex) {
-      throw new Exception(TextLocalizer.localize(BAD_ENTRY_DATA), ex);
+    } catch (SecurityException | ClassNotFoundException ex) {
+      throw new RuntimeException("Unable to create tile rendering entry.", ex);
     }
+    
+    Class<? extends RenderingInfo> ic = null;
+    try {
+      Field iclass = renderer.getField(FIELD_NAME_INFO_CLASS);
+      ic = (Class<? extends RenderingInfo>) iclass.get(null);
+    } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException ex) {
+    }
+    
+    RenderingInfo i = null;
+    try {
+      i = ic.getConstructor(DataNode.class).newInstance(data);
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+    }
+    
+    info = i;
   }
   
   private static final String locprefix = TileRenderingEntry.class.getSimpleName().toLowerCase();
-  
-  private static final String BAD_ENTRY_DATA = locprefix + ".bad_entry_data";
 }

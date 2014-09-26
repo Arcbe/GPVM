@@ -12,7 +12,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
@@ -32,7 +34,29 @@ import taiga.code.util.Resource;
  * 
  * @author russell
  */
-public class ShaderProgram implements Resource {
+public final class ShaderProgram implements Resource {
+  
+  public final class Location {
+    protected int index;
+    
+    public final String name;
+    public final boolean uniform;
+    
+    public Location(String name, boolean uni) {
+      this.name = name;
+      uniform = uni;
+    }
+    
+    public int getIndex() {
+      return index;
+    }
+  }
+  
+  /**
+   * The name for the {@link ShaderProgram} gotten by the {@link #createSimpleColorShader() }
+   * method.
+   */
+  public static final String SHADER_NAME_SIMPLE_COLOR = "colored";
   
   /**
    * Creates a simple {@link ShaderProgram} that draws polygons with per
@@ -77,6 +101,8 @@ public class ShaderProgram implements Resource {
    * Creates a new {@link ShaderProgram} without any source code attached.
    */
   public ShaderProgram() {
+    locations = new HashMap<>();
+    
     this.fragsrc = new ArrayList<>();
     this.vertsrc = new ArrayList<>();
     this.geomsrc = new ArrayList<>();
@@ -120,6 +146,10 @@ public class ShaderProgram implements Resource {
     loadSource(in, geomsrc);
   }
   
+  public void setUniformMatrix(Location loc, ReadableMatrix4 mat) {
+    setUniformMatrix(loc.index, mat);
+  }
+  
   public void setUniformMatrix(int loc, ReadableMatrix4 mat) {
     FloatBuffer buf = matbuffer.get();
     
@@ -137,8 +167,12 @@ public class ShaderProgram implements Resource {
    * @param name The name of the uniform to look up.
    * @return The index for the given uniform, or -1 if there was a problem.
    */
-  public int getUniformLocation(String name) {
-    return ARBShaderObjects.glGetUniformLocationARB(shaderprog, name);
+  public Location getUniformLocation(String name) {
+    Location output = new Location(name, true);
+    output.index =  ARBShaderObjects.glGetUniformLocationARB(shaderprog, name);
+    locations.put(name, output);
+    
+    return output;
   }
   
   /**
@@ -148,8 +182,12 @@ public class ShaderProgram implements Resource {
    * @param name The name of the attribute to look up.
    * @return The index of the attribute , or -1 if there was a problem.
    */
-  public int getAttributeLocation(String name) {
-    return ARBVertexShader.glGetAttribLocationARB(shaderprog, name);
+  public Location getAttributeLocation(String name) {
+    Location output = new Location(name, false);
+    output.index =  ARBVertexShader.glGetAttribLocationARB(shaderprog, name);
+    locations.put(name, output);
+    
+    return output;
   }
   
   /**
@@ -211,6 +249,13 @@ public class ShaderProgram implements Resource {
       
       throw ex;
     }
+    
+    for(Location loc : locations.values()) {
+      if(loc.uniform)
+        loc.index = ARBShaderObjects.glGetUniformLocationARB(shaderprog, loc.name);
+      else
+        loc.index = ARBVertexShader.glGetAttribLocationARB(shaderprog, loc.name);
+    }
   }
 
   @Override
@@ -220,6 +265,7 @@ public class ShaderProgram implements Resource {
   }
   
   private int shaderprog;
+  private Map<String, Location> locations;
   
   private void loadSource(InputStream in, List<String> dest) throws IOException {
     InputStreamReader ireader = new InputStreamReader(in);

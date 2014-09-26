@@ -224,18 +224,19 @@ public final class RegionRenderer extends NamedObject implements RegionListener 
       rend = cons.newInstance(this);
     } catch (
       InstantiationException |
-      IllegalAccessException | 
-      IllegalArgumentException | 
-      InvocationTargetException | 
-      NoSuchMethodException | 
-      SecurityException e) {
+      NoSuchMethodException e) {
       //try a no argument constructor if the first does not work
       try {
         rend = clazz.newInstance();
       } catch (InstantiationException | IllegalAccessException ex) {
-        log.log(Level.SEVERE, "Unable to create tile renderer.", ex);
-        assert false;
+        throw new RuntimeException("Could not create tile renderer.", ex);
       }
+    } catch (
+      SecurityException |
+      IllegalAccessException | 
+      IllegalArgumentException | 
+      InvocationTargetException ex) {
+      throw new RuntimeException("Could not create tile renderer.", ex);
     }
       
     return rend;
