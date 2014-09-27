@@ -4,15 +4,14 @@
  */
 package taiga.gpvm.render;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 import taiga.code.math.Matrix4;
 import taiga.code.math.ReadableMatrix4;
-import taiga.code.math.Vector3;
 import taiga.code.math.Vector4;
 import taiga.code.opengl.SceneRoot;
 import taiga.code.registration.NamedObject;
@@ -43,7 +42,7 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
     
     map = world;
     renderers = new HashMap<>();
-    viewables = new HashSet<>();
+    viewables = new ArrayList<>();
     entrend = new HashMap<>();
     
     world.addListener(this);
@@ -85,14 +84,14 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
     }
     
     Matrix4 global = new Matrix4(getGlobalTransform());
+    Matrix4 trans = new Matrix4();
     for(RegionRenderer reg : renderers.values()) {
       Coordinate coor = reg.getLocation();
-      Matrix4 trans = new Matrix4(new float[][]{
-        {1, 0, 0, coor.x},
-        {0, 1, 0, coor.y},
-        {0, 0, 1, coor.z},
-        {0, 0, 0, 1}
-      });
+      trans.setIdentity();
+      
+      trans.setValue(0, 3, coor.x);
+      trans.setValue(1, 3, coor.y);
+      trans.setValue(2, 3, coor.z);
       
       trans.mulRHS(global, trans);
       
@@ -127,10 +126,10 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   }
   
   private void updateRendFrustrum(ReadableMatrix4 proj) {
-    Matrix4 inv = new Matrix4(getGlobalTransform());
+    Matrix4 inv = new Matrix4(proj);
     
     //create teh rendering matrix
-    inv.mul(proj);
+    inv.mul(getGlobalTransform());
     Matrix4 trans = new Matrix4(inv);
     
     //now create the invert the matrix to transform the coordinates of the corner vertices

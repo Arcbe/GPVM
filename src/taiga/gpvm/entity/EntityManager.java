@@ -42,11 +42,12 @@ public class EntityManager extends NamedObject implements Updateable {
   }
   
   public Collection<Entity> getEntitiesAtRegion(Coordinate coor) {
-    coor = coor.getRegionCoordinate();
-    
-    Collection<Entity> result = entlocs.get(coor);
-    if(result == null) return null;
-    else return Collections.unmodifiableCollection(result);
+    return null;
+//    coor = coor.getRegionCoordinate();
+//    
+//    Collection<Entity> result = entlocs.get(coor);
+//    if(result == null) return null;
+//    else return Collections.unmodifiableCollection(result);
   }
 
   @Override

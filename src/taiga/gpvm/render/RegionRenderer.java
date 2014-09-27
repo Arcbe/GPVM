@@ -204,6 +204,8 @@ public final class RegionRenderer extends NamedObject implements RegionListener 
         rend.compile(tiles);
       }
     }
+    
+    dirtyents.clear();
   }
 
   protected void render(int pass, ReadableMatrix4 proj, ReadableMatrix4 modelview) {

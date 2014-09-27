@@ -55,6 +55,30 @@ public final class Matrix4 extends ReadableMatrix4 implements Serializable {
     setValues(other);
   }
   
+  public final Matrix4 setIdentity() {
+    values[0][0] = 1;
+    values[0][1] = 0;
+    values[0][2] = 0;
+    values[0][3] = 0;
+    
+    values[1][0] = 0;
+    values[1][1] = 1;
+    values[1][2] = 0;
+    values[1][3] = 0;
+    
+    values[2][0] = 0;
+    values[2][1] = 0;
+    values[2][2] = 1;
+    values[2][3] = 0;
+    
+    values[3][0] = 0;
+    values[3][1] = 0;
+    values[3][2] = 0;
+    values[3][3] = 1;
+    
+    return this;
+  }
+  
   /**
    * Sets this {@link Matrix4} to the inverse of the given {@link ReadableMatrix4}.
    * 
