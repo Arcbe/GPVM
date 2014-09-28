@@ -167,6 +167,10 @@ public class Coordinate implements Cloneable, Serializable {
     c.y = y % Region.REGION_SIZE;
     c.z = z % Region.REGION_SIZE;
     
+    if(c.x < 0) c.x += Region.REGION_SIZE;
+    if(c.y < 0) c.y += Region.REGION_SIZE;
+    if(c.z < 0) c.z += Region.REGION_SIZE;
+    
     return c;
   }
 

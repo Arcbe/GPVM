@@ -87,6 +87,7 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
     Matrix4 trans = new Matrix4();
     for(RegionRenderer reg : renderers.values()) {
       Coordinate coor = reg.getLocation();
+      
       trans.setIdentity();
       
       trans.setValue(0, 3, coor.x);
