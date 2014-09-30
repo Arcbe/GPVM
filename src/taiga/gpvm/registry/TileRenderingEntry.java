@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.text.TextLocalizer;
 import taiga.code.util.DataNode;
+import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.render.EntityRenderer;
 import taiga.gpvm.render.TileRenderer;
 
@@ -81,21 +82,41 @@ public class TileRenderingEntry extends RegistryEntry {
       throw new RuntimeException("Unable to create tile rendering entry.", ex);
     }
     
+    //get the rendering information or return if there isn't any.
+    data = data.getDataNode(FIELD_NAME_RENDERING_INFO);
+    if(data == null) {
+      info = null;
+      return;
+    }
+    
     Class<? extends RenderingInfo> ic = null;
     try {
       Field iclass = renderer.getField(FIELD_NAME_INFO_CLASS);
       ic = (Class<? extends RenderingInfo>) iclass.get(null);
     } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException ex) {
+      info = null;
+      return;
     }
     
     RenderingInfo i = null;
     try {
-      i = ic.getConstructor(DataNode.class).newInstance(data);
-    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+      if(ic != null)
+        i = ic.getConstructor(DataNode.class).newInstance(data);
+    } catch (
+      InstantiationException | 
+      IllegalAccessException | 
+      IllegalArgumentException | 
+      InvocationTargetException |
+      NoSuchMethodException |
+      SecurityException ex) {
+      log.log(Level.WARNING, "Could  not create rendering info.", ex);
     }
     
     info = i;
   }
   
   private static final String locprefix = TileRenderingEntry.class.getSimpleName().toLowerCase();
+  
+  private static final Logger log = Logger.getLogger(locprefix,
+    System.getProperty("taiga.logging.text"));
 }
