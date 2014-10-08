@@ -53,6 +53,7 @@ public class ResourceManager extends ReusableObject implements WindowListener {
     }
     
     T output = (T) loader.load(name);
+    if(output == null) return null;
     cache.put(name, output);
     
     if(loading) output.load();
@@ -68,7 +69,7 @@ public class ResourceManager extends ReusableObject implements WindowListener {
     super.dettached(parent);
     
     if(parent instanceof GraphicsSystem) {
-      ((GraphicsSystem)parent).addWindowListener(this);
+      ((GraphicsSystem)parent).removeWindowListener(this);
     }
   }
 
@@ -77,7 +78,7 @@ public class ResourceManager extends ReusableObject implements WindowListener {
     super.attached(parent);
     
     if(parent instanceof GraphicsSystem) {
-      ((GraphicsSystem)parent).removeWindowListener(this);
+      ((GraphicsSystem)parent).addWindowListener(this);
     }
   }
   

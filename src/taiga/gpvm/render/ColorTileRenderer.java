@@ -149,7 +149,6 @@ public class ColorTileRenderer implements TileRenderer {
     GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
     
     GL11.glEnable(GL11.GL_DEPTH_TEST);
-    GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
     
     //There are 3 elements to each vertex
     //stride is zero the vertices are tightly packed.

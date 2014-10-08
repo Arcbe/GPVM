@@ -19,6 +19,10 @@
 
 package taiga.gpvm.opengl;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.opengl.shaders.ShaderProgram;
 import taiga.code.util.Resource;
@@ -32,7 +36,27 @@ public class ShaderLoader implements ResourceLoader {
         return ShaderProgram.createSimpleColorShader();
     }
     
-    return null;
+    URL verts = Thread.currentThread().getContextClassLoader().getResource(resname + ".vert");
+    URL frags = Thread.currentThread().getContextClassLoader().getResource(resname + ".frag");
+    URL tesss = Thread.currentThread().getContextClassLoader().getResource(resname + ".tess");
+    URL geoms = Thread.currentThread().getContextClassLoader().getResource(resname + ".geom");
+    
+    if(verts == null || frags == null) return null;
+    
+    ShaderProgram prog = new ShaderProgram();
+    
+    try {
+      prog.loadVertexShader(verts.openStream());
+      prog.loadFragmentShader(frags.openStream());
+      
+      if(geoms != null) prog.loadGeometryShader(geoms.openStream());
+      if(tesss != null) throw new UnsupportedOperationException();
+    } catch (IOException ex) {
+      log.log(Level.SEVERE, "Could not load shader program.", ex);
+      return null;
+    }
+    
+    return prog;
   }
 
   private static final String locprefix = ShaderLoader.class.getName().toLowerCase();

@@ -23,9 +23,10 @@ import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.World;
-import taiga.gpvm.opengl.ResourceLoader;
 import taiga.gpvm.opengl.ResourceManager;
 import taiga.gpvm.opengl.ShaderLoader;
+import taiga.gpvm.opengl.TexLoader;
+import taiga.gpvm.opengl.TextureResource;
 import taiga.gpvm.registry.EntityType;
 import taiga.gpvm.registry.EntityRegistry;
 import taiga.gpvm.registry.EntityRenderingRegistry;
@@ -134,6 +135,7 @@ public final class GameManager extends NamedSystem implements WindowListener {
       uni.addListener(gamescreen);
       updater.addWorldChangeListener(gamescreen);
       assets.addLoader(new ShaderLoader(), ShaderProgram.class);
+      assets.addLoader(new TexLoader(), TextureResource.class);
     }
   }
   
