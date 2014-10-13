@@ -137,7 +137,7 @@ public final class Region {
   
   protected final void setTile(int x, int y, int z, int type) {
     if(treg == null)
-      treg = map.getObject(HardcodedValues.TILE_REGISTRY_NAME);
+      treg = map.getObject(HardcodedValues.NAME_TILE_REGISTRY);
     
     setTile(x, y, z, treg.getEntry(type));
   }

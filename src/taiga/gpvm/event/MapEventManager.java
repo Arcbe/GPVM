@@ -37,7 +37,7 @@ import taiga.gpvm.schedule.WorldUpdater;
 public class MapEventManager extends NamedSystem implements WorldChangeListener {
 
   public MapEventManager() {
-    super(HardcodedValues.MAP_EVENT_MANAGER_NAME);
+    super(HardcodedValues.NAME_MAP_EVENT_MANAGER);
   }
 
   @Override

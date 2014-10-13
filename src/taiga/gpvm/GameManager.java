@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import taiga.code.input.InputSystem;
 import taiga.code.registration.NamedSystem;
 
-import static taiga.gpvm.HardcodedValues.GAMEMANAGER_NAME;
+import static taiga.gpvm.HardcodedValues.NAME_GAME_MANAGER;
 import taiga.code.io.DataFileManager;
 import taiga.code.opengl.WindowListener;
 import taiga.code.io.SettingManager;
@@ -80,7 +80,7 @@ public final class GameManager extends NamedSystem implements WindowListener {
    * @param client Whether this {@link GameManager} will be a client.
    */
   public GameManager(boolean server, boolean client) {
-    super(GAMEMANAGER_NAME);
+    super(NAME_GAME_MANAGER);
     
     addChild(new DataFileManager());
     getObject(DataFileManager.DATAFILEMANAGER_NAME).addChild(new YAMLDataReader());
@@ -128,21 +128,21 @@ public final class GameManager extends NamedSystem implements WindowListener {
    * @param client Whether this {@link GameManager} should be a client.
    */
   public void setClientMode(boolean client) {
-    TileRenderingRegistry tilerendreg = getObject(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
-    EntityRenderingRegistry entrendreg = getObject(HardcodedValues.ENTITY_RENDERING_REGISTRY_NAME);
-    GraphicsSystem graphics = getObject(HardcodedValues.GRAPHICS_SYSTEM_NAME);
-    GameScreen gamescreen = getObject(HardcodedValues.GAME_SCREEN_NAME);
-    Universe uni = getObject(HardcodedValues.UNIVERSE_NAME);
-    WorldUpdater updater = getObject(HardcodedValues.WORLD_UPDATER_NAME);
-    InputSystem input = getObject(HardcodedValues.INPUT_SYSTEM_NAME);
+    TileRenderingRegistry tilerendreg = getObject(HardcodedValues.NAME_TILE_RENDERING_REGISTRY);
+    EntityRenderingRegistry entrendreg = getObject(HardcodedValues.NAME_ENTITY_RENDERING_REGISTRY);
+    GraphicsSystem graphics = getObject(HardcodedValues.NAME_GRAPHICS_SYSTEM);
+    GameScreen gamescreen = getObject(HardcodedValues.NAME_GAME_SCREEN);
+    Universe uni = getObject(HardcodedValues.NAME_UNIVERSE);
+    WorldUpdater updater = getObject(HardcodedValues.NAME_WORLD_UPDATER);
+    InputSystem input = getObject(HardcodedValues.NAME_INPUT_SYSTEM);
     ResourceManager assets = getObject(HardcodedValues.NAME_RESOURCE_MANAGER);
     
     if(client) {
       if(tilerendreg == null) tilerendreg = addChild(new TileRenderingRegistry());
       if(entrendreg == null) entrendreg = addChild(new EntityRenderingRegistry());
-      if(graphics == null) graphics = addChild(new GraphicsSystem(HardcodedValues.GRAPHICS_SYSTEM_NAME));
+      if(graphics == null) graphics = addChild(new GraphicsSystem(HardcodedValues.NAME_GRAPHICS_SYSTEM));
       if(gamescreen == null) gamescreen = graphics.addChild(new GameScreen());
-      if(input == null) input = addChild(new InputSystem(HardcodedValues.INPUT_SYSTEM_NAME));
+      if(input == null) input = addChild(new InputSystem(HardcodedValues.NAME_INPUT_SYSTEM));
       if(assets == null) assets = graphics.addChild(new ResourceManager(HardcodedValues.NAME_RESOURCE_MANAGER));
       
       graphics.addUpdateable(input);
@@ -162,13 +162,13 @@ public final class GameManager extends NamedSystem implements WindowListener {
    * @param cam The {@link Camera} to use for rendering the {@link World}.
    */
   public void setWorldCamera(Camera cam) {
-    GameScreen screen = getObject(HardcodedValues.GRAPHICS_SYSTEM_NAME, HardcodedValues.GAME_SCREEN_NAME);
+    GameScreen screen = getObject(HardcodedValues.NAME_GRAPHICS_SYSTEM, HardcodedValues.NAME_GAME_SCREEN);
     
     if(screen != null) screen.setCamera(cam);
   }
   
   public World createWorld(String name, MapGenerator gen) {
-    Universe uni = getObject(HardcodedValues.UNIVERSE_NAME);
+    Universe uni = getObject(HardcodedValues.NAME_UNIVERSE);
     if(uni == null) {
       return null;
     }
@@ -184,7 +184,7 @@ public final class GameManager extends NamedSystem implements WindowListener {
    * @param sky The {@link SkyBoxRenderer} to add.
    */
   public void setWorldSky(String name, SkyBoxRenderer sky) {
-    WorldRenderer world = getObject(HardcodedValues.GRAPHICS_SYSTEM_NAME, HardcodedValues.GAME_SCREEN_NAME, name);
+    WorldRenderer world = getObject(HardcodedValues.NAME_GRAPHICS_SYSTEM, HardcodedValues.NAME_GAME_SCREEN, name);
     if(world == null) return;
     
     world.addChild(sky);
@@ -216,7 +216,7 @@ public final class GameManager extends NamedSystem implements WindowListener {
       return null;
     }
     
-    EntityManager man = getObject(HardcodedValues.ENTITY_MANAGER_NAME);
+    EntityManager man = getObject(HardcodedValues.NAME_ENTITY_MANAGER);
     assert man != null;
     
     return man.createEntity(type, location);
@@ -231,7 +231,7 @@ public final class GameManager extends NamedSystem implements WindowListener {
    * @return The desired {@link EntityType} or null.
    */
   public EntityType getEntityType(String name) {
-    EntityRegistry reg = getObject(HardcodedValues.ENTITY_REGISTRY_NAME);
+    EntityRegistry reg = getObject(HardcodedValues.NAME_ENTITY_REGISTRY);
     assert reg != null;
     
     return reg.getEntry(name);

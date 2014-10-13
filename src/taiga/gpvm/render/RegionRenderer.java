@@ -110,7 +110,7 @@ public final class RegionRenderer extends NamedObject implements RegionListener 
    * @param z The z coordinate of the {@link Tile} in the {@link Region}.
    */
   public void updateTile(int x, int y, int z) {
-    TileRenderingRegistry rendreg = (TileRenderingRegistry) getObject(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
+    TileRenderingRegistry rendreg = (TileRenderingRegistry) getObject(HardcodedValues.NAME_TILE_RENDERING_REGISTRY);
     
     //first check to see if the entity needs rendering
     Tile tar = reg.getTile(x, y, z);

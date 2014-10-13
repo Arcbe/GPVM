@@ -47,7 +47,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    * Creates a new empty {@link RenderingRegistry}.
    */
   public TileRenderingRegistry() {
-    super(HardcodedValues.TILE_RENDERING_REGISTRY_NAME);
+    super(HardcodedValues.NAME_TILE_RENDERING_REGISTRY);
     
     tileindex = new HashMap<>();
   }
@@ -132,10 +132,10 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    *  be found.
    */
   public void loadRenderingRegistryData(DataNode data, String namespace) throws Exception {
-    TileRegistry tiles = getObject(HardcodedValues.TILE_REGISTRY_NAME);
+    TileRegistry tiles = getObject(HardcodedValues.NAME_TILE_REGISTRY);
     
     if(tiles == null)
-      throw new MissingObjectException(HardcodedValues.TILE_REGISTRY_NAME);
+      throw new MissingObjectException(HardcodedValues.NAME_TILE_REGISTRY);
     
     for(NamedObject val : data) {
       if(!(val instanceof DataNode)) continue;

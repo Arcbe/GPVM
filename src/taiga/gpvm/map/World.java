@@ -166,7 +166,7 @@ public final class World extends ReusableObject {
       }
       
       //otherwise get the generator and generate the region.
-      NamedObject obj = getObject(HardcodedValues.MAP_GENERATOR_NAME);
+      NamedObject obj = getObject(HardcodedValues.NAME_MAP_GENERATOR);
       
       if(obj == null || !(obj instanceof MapGenerator)) {
         log.log(Level.WARNING, NO_GENERATOR, getFullName());
@@ -252,12 +252,12 @@ public final class World extends ReusableObject {
     ByteUtils.toBytes(coor.z, 9, pack.data);
     ByteUtils.toBytes(getWorldID(), 13, pack.data);
     
-    Universe.Comms comms = getObject(HardcodedValues.COMMS_NAME);
+    Universe.Comms comms = getObject(HardcodedValues.NAME_COMMS);
     comms.sendMessage(pack);
   }
 
   private boolean isServer() {
-    Universe.Comms comms = getObject(HardcodedValues.COMMS_NAME);
+    Universe.Comms comms = getObject(HardcodedValues.NAME_COMMS);
     
     return comms == null || 
       comms.getNetworkManager() == null ||

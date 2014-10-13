@@ -48,7 +48,7 @@ public final class Universe extends ReusableObject {
    * Creates a new empty {@link Universe}.
    */
   public Universe() {
-    super(HardcodedValues.UNIVERSE_NAME);
+    super(HardcodedValues.NAME_UNIVERSE);
     
     listeners = new HashSet<>();
     index = new TreeMap<>();
@@ -96,7 +96,7 @@ public final class Universe extends ReusableObject {
 
   @Override
   protected void resetObject() {
-    Comms comms = getObject(HardcodedValues.COMMS_NAME);
+    Comms comms = getObject(HardcodedValues.NAME_COMMS);
     removeAllChildren();
     addChild(comms);
     
@@ -172,7 +172,7 @@ public final class Universe extends ReusableObject {
   protected final class Comms extends NetworkedObject {
 
     public Comms() {
-      super(HardcodedValues.COMMS_NAME);
+      super(HardcodedValues.NAME_COMMS);
     }
     
     @Override

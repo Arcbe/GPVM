@@ -31,7 +31,7 @@ import taiga.gpvm.HardcodedValues;
 public class EntityRegistry extends NetworkRegistry<EntityType> {
 
   public EntityRegistry() {
-    super(HardcodedValues.ENTITY_REGISTRY_NAME);
+    super(HardcodedValues.NAME_ENTITY_REGISTRY);
   }
   
   /**

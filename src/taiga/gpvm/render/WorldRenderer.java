@@ -77,8 +77,8 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
   
   @Override
   protected void attached(NamedObject parent) {
-    entreg = getObject(HardcodedValues.ENTITY_RENDERING_REGISTRY_NAME);
-    entmng = getObject(HardcodedValues.ENTITY_MANAGER_NAME);
+    entreg = getObject(HardcodedValues.NAME_ENTITY_RENDERING_REGISTRY);
+    entmng = getObject(HardcodedValues.NAME_ENTITY_MANAGER);
   }
 
   @Override

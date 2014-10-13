@@ -43,7 +43,7 @@ public class GameScreen extends RenderableSwitcher implements UniverseListener, 
    * Creates a new {@link GameScreen}.
    */
   public GameScreen() {
-    super(HardcodedValues.GAME_SCREEN_NAME);
+    super(HardcodedValues.NAME_GAME_SCREEN);
     
     setPasses(HardcodedValues.NUM_GRAPHICS_LAYERS);
   }

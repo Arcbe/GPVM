@@ -52,7 +52,7 @@ public class WorldUpdater extends NamedSystem implements UniverseListener {
    * Creates a new {@link WorldUpdater}
    */
   public WorldUpdater() {
-    super(HardcodedValues.WORLD_UPDATER_NAME);
+    super(HardcodedValues.NAME_WORLD_UPDATER);
     
     addChild(new WorldComms());
     
@@ -279,7 +279,7 @@ public class WorldUpdater extends NamedSystem implements UniverseListener {
   private class WorldComms extends NetworkedObject {
 
     public WorldComms() {
-      super(HardcodedValues.COMMS_NAME);
+      super(HardcodedValues.NAME_COMMS);
     }
 
     @Override

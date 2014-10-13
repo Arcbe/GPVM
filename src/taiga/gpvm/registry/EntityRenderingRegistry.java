@@ -38,7 +38,7 @@ import taiga.gpvm.render.TileRenderer;
 public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
 
   public EntityRenderingRegistry() {
-    super(HardcodedValues.ENTITY_RENDERING_REGISTRY_NAME);
+    super(HardcodedValues.NAME_ENTITY_RENDERING_REGISTRY);
     
     entindex = new HashMap<>();
   }
@@ -129,7 +129,7 @@ public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
    *  registration tree or it could not be found.
    */
   public void loadRenderingRegistryData(DataNode data, String namespace) throws ReflectiveOperationException, MissingObjectException {
-    EntityRegistry entities = getObject(HardcodedValues.ENTITY_REGISTRY_NAME);
+    EntityRegistry entities = getObject(HardcodedValues.NAME_ENTITY_REGISTRY);
     
     if(entities == null)
       throw new MissingObjectException();

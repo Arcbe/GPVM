@@ -36,7 +36,7 @@ import taiga.gpvm.util.geom.Coordinate;
 public class EntityManager extends NamedObject implements Updateable {
 
   public EntityManager() {
-    super(HardcodedValues.ENTITY_MANAGER_NAME);
+    super(HardcodedValues.NAME_ENTITY_MANAGER);
     
     index = new TreeMap<>();
     entlocs = new HashMap<>();

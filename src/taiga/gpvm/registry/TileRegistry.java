@@ -42,7 +42,7 @@ public class TileRegistry extends NetworkRegistry<TileEntry>{
    * Creates a new empty {@link TileRegistry}.
    */
   public TileRegistry() {
-    super(HardcodedValues.TILE_REGISTRY_NAME);
+    super(HardcodedValues.NAME_TILE_REGISTRY);
   }
   
   /**

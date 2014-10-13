@@ -34,7 +34,7 @@ public abstract class MapGenerator extends NamedObject {
    * Creates a new {@link MapGenerator}.
    */
   public MapGenerator() {
-    super(HardcodedValues.MAP_GENERATOR_NAME);
+    super(HardcodedValues.NAME_MAP_GENERATOR);
   }
   /**
    * Generates a single region.  The methods takes in a coordinate for the

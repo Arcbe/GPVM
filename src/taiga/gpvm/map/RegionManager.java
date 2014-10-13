@@ -33,7 +33,7 @@ public abstract class RegionManager extends NamedObject {
    * Creates a new {@link RegionManager}.
    */
   public RegionManager() {
-    super(HardcodedValues.REGION_MANAGER_NAME);
+    super(HardcodedValues.NAME_REGION_MANAGER);
   }
   
   /**

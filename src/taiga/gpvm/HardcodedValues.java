@@ -27,12 +27,14 @@ import taiga.gpvm.event.MapEventManager;
 import taiga.gpvm.map.MapGenerator;
 import taiga.gpvm.map.RegionManager;
 import taiga.gpvm.map.Universe;
+import taiga.gpvm.opengl.ResourceManager;
 import taiga.gpvm.registry.EntityRegistry;
 import taiga.gpvm.registry.EntityRenderingRegistry;
 import taiga.gpvm.schedule.WorldUpdater;
 import taiga.gpvm.registry.TileRenderingRegistry;
 import taiga.gpvm.registry.TileRegistry;
 import taiga.gpvm.render.ColorTileRenderer;
+import taiga.gpvm.render.RegionalEntityRenderer;
 import taiga.gpvm.render.TileRenderer;
 import taiga.gpvm.screens.GameScreen;
 
@@ -67,72 +69,78 @@ public class HardcodedValues {
   
   //internal system names
   //<editor-fold>
+  /**
+   * The name for the {@link ResourceManager}.
+   */
   public static final String NAME_RESOURCE_MANAGER = "assets";
-  public static final String REGIONAL_ENTITY_RENDERER_NAME = "entities";
+  /**
+   * The name for the {@link RegionalEntityRenderer}.
+   */
+  public static final String NAME_REGIONAL_ENTITY_RENDERER = "entities";
   /**
    * The name for the {@link EntityRenderingRegistry}.
    */
-  public static final String ENTITY_RENDERING_REGISTRY_NAME = "entity-rendering-registry";
+  public static final String NAME_ENTITY_RENDERING_REGISTRY = "entity-rendering-registry";
   /**
    * The name for the {@link EntityRegistry}.
    */
-  public static final String ENTITY_REGISTRY_NAME = "entity-registry";
+  public static final String NAME_ENTITY_REGISTRY = "entity-registry";
   /**
    * The name for the {@link EntityManager}s.
    */
-  public static final String ENTITY_MANAGER_NAME = "entities";
+  public static final String NAME_ENTITY_MANAGER = "entities";
   /**
    * The name for the {@link InputSystem}.
    */
-  public static final String INPUT_SYSTEM_NAME = "input";
+  public static final String NAME_INPUT_SYSTEM = "input";
   /**
    * The name for the {@link SettingManager}.  This is the same as {@link SettingManager#SETTINGMANAGER_NAME}
    */
-  public static final String SETTING_MANAGER_NAME = SettingManager.SETTINGMANAGER_NAME;
+  public static final String NAME_SETTING_MANAGER = SettingManager.SETTINGMANAGER_NAME;
   /**
    * The name for the {@link RegionManager}.
    */
-  public static final String REGION_MANAGER_NAME = "region-manager";
+  public static final String NAME_REGION_MANAGER = "region-manager";
   /**
    * Name for the {@link GameManager}.
    */
-  public static final String GAMEMANAGER_NAME = "game";
+  public static final String NAME_GAME_MANAGER = "game";
   /**
    * Name for the {@link GraphicsSystem}.
    */
-  public static final String GRAPHICS_SYSTEM_NAME = "graphics";
+  public static final String NAME_GRAPHICS_SYSTEM = "graphics";
   /**
    * Name for the {@link TileRegistry}
    */
-  public static final String TILE_REGISTRY_NAME = "tiles";
+  public static final String NAME_TILE_REGISTRY = "tiles";
   /**
    * Name for the {@link TileRenderingRegistry}.
    */
-  public static final String TILE_RENDERING_REGISTRY_NAME = "tile-rendering-registry";
+  public static final String NAME_TILE_RENDERING_REGISTRY = "tile-rendering-registry";
   /**
    * Name for {@link MapGenerator}s.
    */
-  public static final String MAP_GENERATOR_NAME = "generator";
+  public static final String NAME_MAP_GENERATOR = "generator";
   /**
    * Name for the {@link GameScreen}
    */
-  public static final String GAME_SCREEN_NAME = "game-screen";
+  public static final String NAME_GAME_SCREEN = "game-screen";
   /**
    * Name for {@link Universe}s
    */
-  public static final String UNIVERSE_NAME = "universe";
+  public static final String NAME_UNIVERSE = "universe";
   /**
    * Name for {@link WorldUpdater}.
    */
-  public static final String WORLD_UPDATER_NAME = "updater";
+  public static final String NAME_WORLD_UPDATER = "updater";
   /**
    * Name for {@link WorldUpdater} networking.
    */
-  public static final String COMMS_NAME = "comms";
+  public static final String NAME_COMMS = "comms";
   /**
    * Name for {@link MapEventManager}.
    */
-  public static final String MAP_EVENT_MANAGER_NAME = "map-events";
+  public static final String NAME_MAP_EVENT_MANAGER = "map-events";
   //</editor-fold>
   
   //field names for data files

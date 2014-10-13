@@ -41,7 +41,7 @@ public class RegionalEntityRenderer extends Renderable {
    * @param worldname The name of the {@link World} to render.
    */
   public RegionalEntityRenderer(String worldname) {
-    super(HardcodedValues.REGIONAL_ENTITY_RENDERER_NAME);
+    super(HardcodedValues.NAME_REGIONAL_ENTITY_RENDERER);
     
     this.renderers = new HashMap<>();
   }
