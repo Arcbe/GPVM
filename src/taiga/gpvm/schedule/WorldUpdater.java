@@ -109,6 +109,8 @@ public class WorldUpdater extends NamedSystem implements UniverseListener {
     try {
       mutator.setWorld(world);
       mutators.put(world, mutator);
+      
+      log.log(Level.FINE, "Mutator created for world {0}.", world);
     } catch (MutatorPresentException ex) {
       throw new IllegalStateException(ex);
     }
@@ -165,9 +167,11 @@ public class WorldUpdater extends NamedSystem implements UniverseListener {
     List<WorldChange> pending = getPendingChanges();
     List<WorldChange> ready = new ArrayList<>();
     
+    //go through all requested changes
     for(List<WorldChange> cur = getConflictingChanges(pending) ;
       !cur.isEmpty();
       cur = getConflictingChanges(pending)) {
+      
       for(int i = 0; i < cur.size(); i++) {
         if(cur.get(i) == null) continue;
         
@@ -207,7 +211,8 @@ public class WorldUpdater extends NamedSystem implements UniverseListener {
       WorldMutator mutator = mutators.get(change.world);
       
       if(mutator == null) {
-        log.log(Level.WARNING, NO_MUTATOR_FOUND, change.world.getFullName());
+        log.log(Level.WARNING, "No mutator for world {0}.", change.world);
+        result.add(null);
         continue;
       }
       
@@ -264,8 +269,6 @@ public class WorldUpdater extends NamedSystem implements UniverseListener {
   
   private static final String THREAD_STARTED = locprefix + ".thread_started";
   private static final String THREAD_STOPPED = locprefix + ".thread_stopped";
-  private static final String NO_MUTATOR_FOUND = locprefix + ".no_mutator_found";
-  private static final String NO_UNIVERSE_FOUND = locprefix + ".no_universe_found";
   
   private static final Logger log = Logger.getLogger(locprefix, 
     System.getProperty("taiga.code.logging.text"));

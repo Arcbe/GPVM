@@ -153,9 +153,17 @@ public class Coordinate implements Cloneable, Serializable {
    * @return The resulting coordinate
    */
   public Coordinate getRegionCoordinate(Coordinate c) {
-    c.x = x - x % Region.REGION_SIZE;
-    c.y = y - y % Region.REGION_SIZE;
-    c.z = z - z % Region.REGION_SIZE;
+    int tx = x % Region.REGION_SIZE;
+    int ty = y % Region.REGION_SIZE;
+    int tz = z % Region.REGION_SIZE;
+    
+    if(tx < 0) tx += Region.REGION_SIZE;
+    if(ty < 0) ty += Region.REGION_SIZE;
+    if(tz < 0) tz += Region.REGION_SIZE;
+    
+    c.x = x - tx;
+    c.y = y - ty;
+    c.z = z - tz;
     
     return c;
   }

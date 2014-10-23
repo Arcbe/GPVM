@@ -108,27 +108,37 @@ public final class World extends ReusableObject {
    */
   public Tile[] getNeighborTiles(Coordinate coor) {
     Tile[] tiles = new Tile[6];
+    Coordinate tar = new Coordinate();
     
-    coor.x += 1;
-    tiles[Direction.East.getIndex()] = getTile(coor);
+    tar.x = coor.x + 1;
+    tar.y = coor.y;
+    tar.z = coor.z;
+    tiles[Direction.East.getIndex()] = getTile(tar);
     
-    coor.x -= 2;
-    tiles[Direction.West.getIndex()] = getTile(coor);
+    tar.x = coor.x - 1;
+    tar.y = coor.y;
+    tar.z = coor.z;
+    tiles[Direction.West.getIndex()] = getTile(tar);
     
-    coor.x += 1;
-    coor.y += 1;
-    tiles[Direction.North.getIndex()] = getTile(coor);
+    tar.x = coor.x;
+    tar.y = coor.y + 1;
+    tar.z = coor.z;
+    tiles[Direction.North.getIndex()] = getTile(tar);
     
-    coor.y -= 2;
-    tiles[Direction.South.getIndex()] = getTile(coor);
+    tar.x = coor.x;
+    tar.y = coor.y - 1;
+    tar.z = coor.z;
+    tiles[Direction.South.getIndex()] = getTile(tar);
     
-    coor.y += 1;
-    coor.z += 1;
-    tiles[Direction.Up.getIndex()] = getTile(coor);
+    tar.x = coor.x;
+    tar.y = coor.y;
+    tar.z = coor.z + 1;
+    tiles[Direction.Up.getIndex()] = getTile(tar);
     
-    coor.z -= 2;
-    tiles[Direction.Down.getIndex()] = getTile(coor);
-    coor.z += 1;
+    tar.x = coor.x;
+    tar.y = coor.y;
+    tar.z = coor.z - 1;
+    tiles[Direction.Down.getIndex()] = getTile(tar);
     
     return tiles;
   }
@@ -208,6 +218,26 @@ public final class World extends ReusableObject {
    */
   public short getWorldID() {
     return worldid;
+  }
+
+  @Override
+  public int hashCode() {
+    return worldid;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final World other = (World) obj;
+    if (this.worldid != other.worldid) {
+      return false;
+    }
+    return true;
   }
   
   protected WorldMutator mutator;

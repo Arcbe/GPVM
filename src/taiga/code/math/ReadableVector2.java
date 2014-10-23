@@ -45,6 +45,11 @@ public class ReadableVector2 implements Cloneable {
     this.y = y;
   }
   
+  public ReadableVector2(ReadableVector2 other) {
+    this.x = other.x;
+    this.y = other.y;
+  }
+  
   /**
    * Returns the current x coordinate of this {@link ReadableVector2}.
    * 

@@ -79,6 +79,14 @@ public abstract class PerspectiveCamera implements Camera {
     return out;
   }
   
+  public Vector4 screenPointToWorld(float x, float y, float z) {
+    Vector4 out = new Vector4(x, y, z, 1);
+    Matrix4 invtrans = new Matrix4(getProjection());
+    invtrans.mul(getViewMatrix()).invert(invtrans);
+    invtrans.transform(out, out);
+    return out;
+  }
+  
   @Override
   public Matrix4 getProjection() {
     if(Float.isInfinite(aspect) || Float.isNaN(aspect)) {

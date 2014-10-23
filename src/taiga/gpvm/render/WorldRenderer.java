@@ -138,6 +138,8 @@ public final class WorldRenderer extends SceneRoot implements WorldListener, Wor
     if(change.world != map) return;
     
     RegionRenderer reg = renderers.get(change.location.getRegionCoordinate());
+    if(reg == null) return;
+    
     reg.updateTile(change.location);
   }
   

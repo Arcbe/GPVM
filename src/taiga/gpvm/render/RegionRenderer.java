@@ -108,29 +108,28 @@ public final class RegionRenderer extends NamedObject implements RegionListener 
    * @param x The x coordinate of the {@link Tile} in the {@link Region}.
    * @param y The y coordinate of the {@link Tile} in the {@link Region}.
    * @param z The z coordinate of the {@link Tile} in the {@link Region}.
+   * @return Whether the tile should cause updates for adjacent ones as well.
    */
-  public void updateTile(int x, int y, int z) {
+  public boolean updateTile(int x, int y, int z) {
     TileRenderingRegistry rendreg = (TileRenderingRegistry) getObject(HardcodedValues.NAME_TILE_RENDERING_REGISTRY);
     
     //first check to see if the entity needs rendering
     Tile tar = reg.getTile(x, y, z);
-    if(tar == null || tar.type == null) return;
+    if(tar == null || tar.type == null) return true;
     
-    //now check if the entity is actually visible
+    //now check if the entity is visible
     Coordinate loc = new Coordinate(x, y, z);
     Tile[] ngbrs = reg.getWorld().getNeighborTiles(loc);
     boolean visible = false;
     for (Tile ngbr : ngbrs) {
-      if (ngbr == null || ngbr.type == null) {
-        visible = true;
-        break;
-      }
-      if (!ngbr.type.opaque) {
+      if (ngbr == null ||
+        ngbr.type == null ||
+        !ngbr.type.opaque) {
         visible = true;
         break;
       }
     }
-    if(!visible) return;
+    if(!visible) return false;
     
     //The entity can be rendered and is visible, now collect information on the entity.
     TileInfo info = new TileInfo();
@@ -139,7 +138,7 @@ public final class RegionRenderer extends NamedObject implements RegionListener 
     info.absposition = reg.getLocation().add(x, y, z, new Coordinate());
     info.rendentry = rendreg.getEntry(tar.type);
     
-    //ues the asociated renderer if avalaible otherwise use the default one.
+    //use the asociated renderer if avalaible otherwise use the default one.
     Class<? extends TileRenderer> renderer;
     if(info.rendentry == null) {
       renderer = HardcodedValues.DEFAULT_RENDERER;
@@ -168,7 +167,7 @@ public final class RegionRenderer extends NamedObject implements RegionListener 
     // Update the previous renderer if needed
     if(oldent != null) {
     
-      //ues the asociated renderer if avalaible otherwise use the default one.
+      //use the asociated renderer if avalaible otherwise use the default one.
       Class<? extends TileRenderer> oldrendclass;
       if(oldent.rendentry == null) {
         oldrendclass = HardcodedValues.DEFAULT_RENDERER;
@@ -188,6 +187,8 @@ public final class RegionRenderer extends NamedObject implements RegionListener 
     ents.add(info);
     rendindex.put(info.absposition, info);
     dirtyents.put(newrend.getClass(), true);
+    
+    return !info.tile.type.opaque;
   }
 
   @Override

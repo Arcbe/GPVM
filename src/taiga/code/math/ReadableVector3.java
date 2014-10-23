@@ -45,6 +45,11 @@ public class ReadableVector3 extends ReadableVector2 {
     this.z = z;
   }
   
+  public ReadableVector3(ReadableVector3 other) {
+    super(other);
+    this.z = other.z;
+  }
+  
   /**
    * Returns the current z coordinate for this {@link ReadableVector3}.
    * @return 

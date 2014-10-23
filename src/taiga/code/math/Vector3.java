@@ -28,6 +28,10 @@ public final class Vector3 extends ReadableVector3 {
     super(x, y, z);
   }
   
+  public Vector3(ReadableVector3 other) {
+    super(other);
+  }
+  
   public Vector3 setX(float x) {
     this.x = x;
     
@@ -54,6 +58,18 @@ public final class Vector3 extends ReadableVector3 {
     out.x = x + other.x;
     out.y = y + other.y;
     out.z = z + other.z;
+    
+    return out;
+  }
+  
+  public Vector3 sub(ReadableVector3 other) {
+    return sub(other, this);
+  }
+  
+  public Vector3 sub(ReadableVector3 other, Vector3 out) {
+    out.x = x - other.x;
+    out.y = y - other.y;
+    out.z = z - other.z;
     
     return out;
   }
