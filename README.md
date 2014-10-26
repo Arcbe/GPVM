@@ -6,5 +6,11 @@ multiplayer game play.
 
 Support
 ====
-If you found this software helpful, or just feeling generous then please
+If you found this software helpful, or are just feeling generous then please
 consider donating. https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KDBWH6JFZ9EFN
+
+This project also makes use of several third party libraries.
+
+LWJGL- http://lwjgl.org/
+SnakeYAML - http://snakeyaml.org/
+Slick2D - http://slick.ninjacave.com/
