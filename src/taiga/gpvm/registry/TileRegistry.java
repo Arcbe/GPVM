@@ -22,7 +22,7 @@ package taiga.gpvm.registry;
 import taiga.gpvm.HardcodedValues;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.io.DataFileManager;
@@ -72,7 +72,7 @@ public class TileRegistry extends NetworkRegistry<TileEntry>{
    * @param modname The name of the mod that this data file is loaded by.
    * @throws IOException Thrown if the data file cannot be read.
    */
-  public void loadFile(URI in, String modname) throws IOException {
+  public void loadFile(URL in, String modname) throws IOException {
     DataFileManager dfio = getObject(DataFileManager.DATAFILEMANAGER_NAME);
     if(dfio == null) {
       log.log(Level.WARNING, NO_DFIO);

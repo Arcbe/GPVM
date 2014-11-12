@@ -21,7 +21,7 @@ package taiga.gpvm.registry;
 
 import taiga.gpvm.HardcodedValues;
 import java.io.File;
-import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -106,7 +106,7 @@ public class TileRenderingRegistry extends Registry<TileRenderingEntry>{
    *  {@link Class} for a {@link TileRenderer}, or the {@link TileRegistry} cannot
    *  be found.
    */
-  public void loadRenderingRegistryData(URI in, String namespace) throws Exception {
+  public void loadRenderingRegistryData(URL in, String namespace) throws Exception {
     DataFileManager dfio = (DataFileManager) getObject(DataFileManager.DATAFILEMANAGER_NAME);
     
     if(dfio == null) {

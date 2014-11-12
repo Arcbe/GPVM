@@ -20,7 +20,6 @@
 package taiga.code.util;
 
 import java.util.logging.Logger;
-import taiga.code.opengl.Renderable;
 import taiga.code.registration.NamedObject;
 
 public abstract class UpdateableObject extends NamedObject implements Updateable {
@@ -40,8 +39,8 @@ public abstract class UpdateableObject extends NamedObject implements Updateable
     updateSelf();
     
     for(NamedObject obj : this) {
-      if(obj != null && obj instanceof Renderable) {
-        ((Renderable)obj).update();
+      if(obj != null && obj instanceof UpdateableObject) {
+        ((UpdateableObject)obj).update();
       }
     }
   }

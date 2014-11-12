@@ -22,8 +22,11 @@ package taiga.code.io;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
+import java.net.URL;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,10 +60,10 @@ public class YAMLDataReader extends DataFileReader {
   }
 
   @Override
-  public DataNode readFile(URI file) throws IOException {
+  public DataNode readFile(URL file) throws IOException {
     Map<String, Object> raw;
     
-    try (Reader in = new FileReader(new File(file))) {
+    try (InputStream in = file.openStream()) {
       raw = (Map<String, Object>) yaml.load(in);
     }
     
@@ -73,8 +76,8 @@ public class YAMLDataReader extends DataFileReader {
   }
 
   @Override
-  public boolean canReadFile(URI file) {
-    try (Reader in = new FileReader(new File(file))) {
+  public boolean canReadFile(URL file) {
+    try (InputStream in = file.openStream()) {
       yaml.load(in);
     } catch(Exception ex) {
       return false;

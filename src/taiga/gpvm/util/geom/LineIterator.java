@@ -90,4 +90,9 @@ public class LineIterator implements Iterable<Coordinate>, Iterator<Coordinate> 
 
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));
+
+  @Override
+  public void remove() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 }

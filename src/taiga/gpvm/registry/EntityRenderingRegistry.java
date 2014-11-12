@@ -21,7 +21,7 @@ package taiga.gpvm.registry;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -102,7 +102,7 @@ public class EntityRenderingRegistry extends Registry<EntityRenderingEntry> {
    * @throws MissingObjectException If there is no {@link DataFileManager} in the
    *  registration tree or it could not be found.
    */
-  public void loadRenderingRegistryData(URI in, String namespace) throws IOException,  ReflectiveOperationException, MissingObjectException {
+  public void loadRenderingRegistryData(URL in, String namespace) throws IOException,  ReflectiveOperationException, MissingObjectException {
     DataFileManager dfio = (DataFileManager) getObject(DataFileManager.DATAFILEMANAGER_NAME);
     
     if(dfio == null) {

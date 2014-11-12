@@ -416,7 +416,8 @@ public class GraphicsSystem extends NamedSystem implements Runnable {
           Display.sync(target_fps);
         
       } while(running && !Display.isCloseRequested());
-       
+      
+      log.log(Level.INFO, "Closing main window.");
     } catch(LWJGLException ex) {
       log.log(Level.SEVERE, UNHANDLED_EX, ex);
     } finally {

@@ -19,6 +19,7 @@
 
 package taiga.gpvm.diagnostics;
 
+import taiga.code.util.EnvironmentViewer;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,8 +50,10 @@ public final class DiagnosticsWindow extends JFrame implements SystemListener {
     toggle_game = new JButton(TextLocalizer.localize(BUTTON_CREATE));
     reset_game = new JButton(TextLocalizer.localize(BUTTON_RESTART));
     
+    env = new EnvironmentViewer();
     logging = new LoggingPanel();
     systems = new SystemViewer();
+    mapinfo = new MapInfoPanel();
     
     game_status = new JLabel(TextLocalizer.localize(LABEL_NO_INSTANCE));
     
@@ -63,8 +66,10 @@ public final class DiagnosticsWindow extends JFrame implements SystemListener {
     toggle_game = new JButton();
     reset_game = new JButton(TextLocalizer.localize(BUTTON_RESTART));
     
+    env = new EnvironmentViewer();
     logging = new LoggingPanel();
     systems = new SystemViewer(man);
+    mapinfo = new MapInfoPanel(man);
     
     game_status = new JLabel();
     
@@ -93,6 +98,9 @@ public final class DiagnosticsWindow extends JFrame implements SystemListener {
     
     instance = target;
     
+    systems.setGame(target);
+    mapinfo.setGameManager(target);
+    
     //add new listeners
     instance.addSystemListener(this);
     
@@ -108,10 +116,16 @@ public final class DiagnosticsWindow extends JFrame implements SystemListener {
   private JComponent createPanels() {
     JTabbedPane pane = new JTabbedPane();
     
-    systems.setName(TextLocalizer.localize(TAB_SYSTEMS_NAME));
+    mapinfo.setName(TextLocalizer.localize(TAB_NAME_MAP_INFO));
+    pane.add(mapinfo);
+    
+    env.setName(TextLocalizer.localize(TAB_NAME_ENVIRONMENT));
+    pane.add(env);
+    
+    systems.setName(TextLocalizer.localize(TAB_NAME_SYSTEMS));
     pane.add(systems);
     
-    logging.setName(TextLocalizer.localize(TAB_LOGGING_NAME));
+    logging.setName(TextLocalizer.localize(TAB_NAME_LOGGING));
     pane.add(logging);
     
     return pane;
@@ -171,8 +185,10 @@ public final class DiagnosticsWindow extends JFrame implements SystemListener {
   private final JButton toggle_game;
   private final JButton reset_game;
   
+  private final EnvironmentViewer env;
   private final LoggingPanel logging;
   private final SystemViewer systems;
+  private final MapInfoPanel mapinfo;
   
   private final JLabel game_status;
   
@@ -188,8 +204,10 @@ public final class DiagnosticsWindow extends JFrame implements SystemListener {
   private static final String LABEL_NO_INSTANCE = locprefix + ".label_no_instance";
   private static final String LABEL_RUNNING = locprefix + ".label_running";
   private static final String LABEL_STOPPED = locprefix + ".label_stopped";
-  private static final String TAB_LOGGING_NAME = locprefix + ".tab_logging_name";
-  private static final String TAB_SYSTEMS_NAME = locprefix + ".tab_systems_name";
+  private static final String TAB_NAME_LOGGING = locprefix + ".tab_name_logging";
+  private static final String TAB_NAME_SYSTEMS = locprefix + ".tab_name_systems";
+  private static final String TAB_NAME_ENVIRONMENT = locprefix + ".tab_name_environment";
+  private static final String TAB_NAME_MAP_INFO = locprefix + ".tab_name_map_info";
 
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));

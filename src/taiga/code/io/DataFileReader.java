@@ -21,7 +21,7 @@ package taiga.code.io;
 
 import taiga.code.util.DataNode;
 import java.io.IOException;
-import java.net.URI;
+import java.net.URL;
 import taiga.code.registration.NamedObject;
 
 /**
@@ -48,7 +48,7 @@ public abstract class DataFileReader extends NamedObject {
    * @throws IOException Thrown if there is an exception file trying to read the
    * given file.
    */
-  public abstract DataNode readFile(URI file) throws IOException;
+  public abstract DataNode readFile(URL file) throws IOException;
   
   /**
    * Checks whether this {@link DataFileReader} can read the given file.
@@ -56,5 +56,5 @@ public abstract class DataFileReader extends NamedObject {
    * @param file The file to test
    * @return Whether the file can be read by this {@link DataFileReader}
    */
-  public abstract boolean canReadFile(URI file);
+  public abstract boolean canReadFile(URL file);
 }

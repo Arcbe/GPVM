@@ -70,29 +70,22 @@ public class DataFileManager extends NamedObject {
     URL loc = context.getResource(fname);
     
     if(loc != null) {
-      try {
-        URI loci = loc.toURI();
-        return readFile(loci);
-      } catch(URISyntaxException ex) {}
+      return readFile(loc);
     }
     
-    try {
-      URI loci = new URI(fname);
-      return readFile(loci);
-    } catch(URISyntaxException ex) {
-      throw new FileNotFoundException(fname);
-    }
+    URL loci = new URL(fname);
+    return readFile(loci);
   }
   
   /**
    * Attempts to read the given file using one of the attached {@link DataFileReader}.
    * If none can read the file this method will simply return null.
    * 
-   * @param file A {@link URI} for the {@link File} to load.
+   * @param file A {@link URL} for the {@link File} to load.
    * @return The data read from the file or null.
    * @throws IOException If there was an exception while reading from the file.
    */
-  public DataNode readFile(URI file) throws IOException {
+  public DataNode readFile(URL file) throws IOException {
     for(NamedObject obj : this) {
       if(obj != null && obj instanceof DataFileReader) {
         DataFileReader reader = (DataFileReader)obj;

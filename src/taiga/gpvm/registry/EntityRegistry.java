@@ -20,7 +20,7 @@
 package taiga.gpvm.registry;
 
 import java.io.IOException;
-import java.net.URI;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.io.DataFileManager;
@@ -61,7 +61,7 @@ public class EntityRegistry extends NetworkRegistry<EntityType> {
    * @param modname The name of the mod that this data file is loaded by.
    * @throws IOException Thrown if the data file cannot be read.
    */
-  public void loadFile(URI in, String modname) throws IOException {
+  public void loadFile(URL in, String modname) throws IOException {
     DataFileManager dfio = (DataFileManager) getObject(DataFileManager.DATAFILEMANAGER_NAME);
     if(dfio == null) {
       log.log(Level.WARNING, NO_DFIO);
