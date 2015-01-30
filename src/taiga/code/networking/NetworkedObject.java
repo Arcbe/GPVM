@@ -55,7 +55,7 @@ public abstract class NetworkedObject extends NamedObject {
   public void sendMessage(Packet pack) {
     pack.target = getID();
     
-    manager.sendMessage(null, pack);
+    manager.sendPacket(null, pack);
   }
   
   /**
@@ -68,7 +68,7 @@ public abstract class NetworkedObject extends NamedObject {
   public void sendMessage(Packet pack, InetAddress dest) {
     pack.target = getID();
     
-    manager.sendMessage(dest, pack);
+    manager.sendPacket(dest, pack);
   }
   
   /**

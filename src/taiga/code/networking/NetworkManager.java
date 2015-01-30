@@ -61,7 +61,6 @@ public abstract class NetworkManager extends NamedObject {
     super(name);
     
     current = 0;
-    history = new Packet[256];
     index = new HashMap<>();
     objects = new HashMap<>();
   }
@@ -102,24 +101,6 @@ public abstract class NetworkManager extends NamedObject {
       syncIDs();
       fireConnected();
     }
-  }
-  
-  /**
-   * Sends a {@link Packet} through this {@link NetworkManager} to the given 
-   * destination.
-   * 
-   * @param dest The {@link InetAddress} to send the {@link Packet} to.
-   * @param msg The {@link Packet} to send.
-   */
-  public void sendMessage(InetAddress dest, Packet msg) {
-    //make sure that there are nopackets with duplicate numbers.
-    synchronized(this) {
-      msg.number = current++;
-    }
-    
-    history[msg.number] = msg;
-    
-    sendPacket(dest, msg);
   }
   
   /**
@@ -341,7 +322,6 @@ public abstract class NetworkManager extends NamedObject {
   private final Map<Short, NetworkedObject> index;
   private boolean synced;
   
-  private final Packet[] history;
   private byte current;
   
   // id for a sync request, this packet has a single string encoded as bytes.
