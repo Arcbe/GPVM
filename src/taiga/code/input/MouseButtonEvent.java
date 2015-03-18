@@ -19,6 +19,8 @@
 
 package taiga.code.input;
 
+import java.text.MessageFormat;
+
 /**
  * Contains the details of an event caused by a mouse button.
  * 
@@ -93,25 +95,14 @@ public class MouseButtonEvent {
   
   @Override
   public String toString() {
-    StringBuilder result = new StringBuilder();
     
-    result.append("[button=");
-    result.append(button);
-    result.append(", state=");
-    result.append(state);
-    result.append(", (X,Y)=(");
-    result.append(x);
-    result.append(", ");
-    result.append(y);
-    result.append(", (dX,dY)=(");
-    result.append(dx);
-    result.append(", ");
-    result.append(dy);
-    result.append(", dZ=");
-    result.append(dwheel);
-    result.append("]");
-    
-    
-    return result.toString();
+    return MessageFormat.format("[button={0}, state={1}, (X,Y)=({2},{3}), (dX,dY)=({4},{5}), dZ={6}]", 
+      button,
+      state,
+      x,
+      y,
+      dx,
+      dy,
+      dwheel);
   }
 }

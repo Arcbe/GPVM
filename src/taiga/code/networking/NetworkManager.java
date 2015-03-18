@@ -20,6 +20,7 @@
 package taiga.code.networking;
 
 import java.io.UnsupportedEncodingException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -143,17 +144,22 @@ public abstract class NetworkManager extends NamedObject {
    * Sends a packet to the given destination.
    * 
    * @param dest The destination for the packet.
+   * @param sysid The ID number of the {@link NetworkedObject} that is sending the
+   *  {@link DatagramPacket}.
    * @param msg The packet to send.
    */
-  protected abstract void sendPacket(InetAddress dest, Packet msg);
+  protected abstract void sendPacket(InetAddress dest, int sysid, DatagramPacket msg);
   
   /**
    * Called when a {@link Packet} is received from the network.
-   * @param pack 
+   * 
+   * @param pack The {@link DatagramPacket} that was received.
+   * @param sysid The ID number of the system that the {@link DatagramPacket} is
+   * for.
    */
-  protected void packetRecieved(Packet pack) {
-    if(pack.target == 0) {
-      switch(pack.data[0]) {
+  protected void packetRecieved(DatagramPacket pack, int sysid) {
+    if(sysid == 0) {
+      switch(pack.getData()[0]) {
         case SYNC_REQ:
           receiveSyncRequest(pack);
           return;
@@ -163,20 +169,18 @@ public abstract class NetworkManager extends NamedObject {
       }
     }
     
-    NetworkedObject obj = index.get(pack.target);
+    NetworkedObject obj = index.get(sysid);
     
     if(obj == null) {
-      log.log(Level.SEVERE, UNKNOWN_PACKET_ID, pack.target);
+      log.log(Level.SEVERE, UNKNOWN_PACKET_ID, sysid);
       return;
     }
     
     obj.messageRecieved(pack);
-    
-    //TODO: add packet resend code.
   }
   
   /**
-   * This method should e called when this {@link NetworkManager} connects to a
+   * This method should be called when this {@link NetworkManager} connects to a
    * server.
    * 
    * @throws java.util.concurrent.TimeoutException Thrown if this operation times
@@ -242,32 +246,31 @@ public abstract class NetworkManager extends NamedObject {
   }
   
   private void sendSyncRequest(NetworkedObject obj) {
-    Packet req = new Packet();
     byte[] str;
     
     try {
       str = obj.getFullName().getBytes(NETWORK_CHARSET);
     } catch (UnsupportedEncodingException ex) {
-      log.log(Level.WARNING, ENCODING_ERR, ex);
+      log.log(Level.SEVERE, ENCODING_ERR, ex);
       
-      //TODO: this might need changing.
-      return;
+      throw new RuntimeException(ex);
     }
     
-    req.target = NETWORK_MANAGER_ID;
-    req.data = new byte[str.length + 1];
-    req.data[0] = SYNC_REQ;
+    byte[] data = new byte[str.length + 1];
+    data[0] = SYNC_REQ;
+    data = new byte[str.length + 1];
     
-    System.arraycopy(str, 0, req.data, 1, str.length);
+    System.arraycopy(str, 0, data, 1, str.length);
+    DatagramPacket p;
     
-    sendPacket(null, req);
+    sendPacket(null, NETWORK_MANAGER_ID, new DatagramPacket(data, data.length));
   }
   
-  private void receiveSyncResponse(Packet pack) {
+  private void receiveSyncResponse(DatagramPacket pack) {
     NetworkedObject obj;
     String oname;
     try {
-      oname = new String(pack.data, 3, pack.data.length - 3, NETWORK_CHARSET);
+      oname = new String(pack.getData(), 3, pack.getData().length - 3, NETWORK_CHARSET);
       obj = objects.get(oname);
     } catch (UnsupportedEncodingException ex) { 
       log.log(Level.SEVERE, ENCODING_ERR, ex);
@@ -275,7 +278,7 @@ public abstract class NetworkManager extends NamedObject {
       return;
     }
     
-    short id = ByteUtils.toShort(pack.data, 1);
+    short id = ByteUtils.toShort(pack.getData(), 1);
     
     index.put(id, obj);
     obj.id = id;
@@ -286,10 +289,10 @@ public abstract class NetworkManager extends NamedObject {
     if(synced) synchronized(this) {this.notifyAll();}
   }
   
-  private void receiveSyncRequest(Packet pack) {
+  private void receiveSyncRequest(DatagramPacket pack) {
     String oname;
     try {
-      oname = new String(pack.data, 1, pack.data.length - 1, NETWORK_CHARSET);
+      oname = new String(pack.getData(), 1, pack.getData().length - 1, NETWORK_CHARSET);
     } catch (UnsupportedEncodingException ex) {
       log.log(Level.SEVERE, ENCODING_ERR, ex);
       
@@ -298,24 +301,24 @@ public abstract class NetworkManager extends NamedObject {
     
     short id = objects.get(oname).id;
     
-    Packet response = new Packet();
-    
     //syncresponse is the id followed by the encoded string.
-    response.target = NETWORK_MANAGER_ID;
-    
     //there are two more bytes needed for the objects id.
-    response.data = new byte[pack.data.length + 2];
-    response.data[0] = SYNC_RES;
+    byte[] data = new byte[pack.getData().length + 2];
+    data[0] = SYNC_RES;
     
-    System.arraycopy(ByteUtils.toBytes(id), 0, response.data, 1, 2);
-    System.arraycopy(pack.data, 1, response.data, 3, pack.data.length - 1);
+    System.arraycopy(ByteUtils.toBytes(id), 0, data, 1, 2);
+    System.arraycopy(pack.getData(), 1, data, 3, pack.getData().length - 1);
     
-    sendPacket(pack.source, response);
+    sendPacket(pack.getAddress(), NETWORK_MANAGER_ID, new DatagramPacket(data, data.length));
   }
   
   private void fireConnected() {
     for(NetworkedObject obj : objects.values())
       obj.connected();
+  }
+  
+  protected void fireClienConnected(Object clientkey) {
+    
   }
   
   private final Map<String, NetworkedObject> objects;

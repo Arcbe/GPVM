@@ -21,7 +21,9 @@ package taiga.code.input;
 
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +42,7 @@ import taiga.code.registration.ReusableObject;
  * @author russell
  */
 public class HotkeyTable extends ReusableObject implements KeyboardListener, MouseListener {
+  private static final long serialVersionUID = 1L;
 
   /**
    * Creates a new {@link HotkeyTable} without any key bindings and with the
@@ -50,8 +53,8 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
   public HotkeyTable(String name) {
     super(name);
     
-    keyactions = new HashMap<>();
-    keybindings = new HashMap<>();
+    keyactions = new HashMap<>(0);
+    keybindings = new HashMap<>(0);
   }
   
   /**
@@ -61,6 +64,8 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
    * @param actions The name for the {@link KeyListener}s to add.
    */
   public void addKeyBinding(String key, String ... actions) {
+    log.log(Level.FINEST, () -> MessageFormat.format("addKeyBinding({0}, {1})", key, Arrays.toString(actions)));
+    
     Collection<ButtonAction> bindings = getBindings(key);
     if(bindings == null) return;
     
@@ -69,13 +74,13 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
       
       //make sure that it is a valid action
       if(action == null) {
-        log.log(Level.WARNING, INVALID_KEY_ACTION_NAME, act);
+        log.log(Level.WARNING, "'{0}' action not found, unable to bind key.", act);
         continue;
       }
       
       //Make sure the action is not already bound to this key
       if(action.keysbound.contains(key)) {
-        log.log(Level.WARNING, KEY_ACTION_ALREADY_BOUND, new Object[] {act, key});
+        log.log(Level.WARNING, "Action '{0}' is already bound to key '{1}'.", new Object[] {act, key});
         continue;
       }
       
@@ -83,7 +88,7 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
       action.keysbound.add(key);
       bindings.add(action);
       
-      log.log(Level.CONFIG, KEY_BINDING_ADDED, new Object[] {act, key});
+      log.log(Level.CONFIG, "Action '{0}' bound to key '{1}'.", new Object[] {act, key});
     }
   }
   
@@ -96,17 +101,21 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
    * @param actions The name given to the {@link KeyListener}s to remove.
    */
   public void removeKeyBinding(String key, String ... actions) {
+    log.log(Level.FINEST, () -> MessageFormat.format("removeKeyBinding({0}, {1})", key, Arrays.toString(actions)));
+    
     Collection<ButtonAction> bindings = getBindings(key);
     if(bindings == null) return;
     
-    for(ButtonAction act : bindings) {
+    bindings.stream().forEach((act) -> {
       if(act.keysbound.contains(key)) {
         act.keysbound.remove(key);
         bindings.remove(act);
         
-        log.log(Level.CONFIG, REMOVED_KEY_BINDING, new Object[]{key, act});
+        log.log(Level.CONFIG, "Action '{0}' removed from key '{1}'.", new Object[]{act, key});
+      } else {
+        log.log(Level.WARNING, "Action '{0}' could not be removed from key '{1}', action not bound.");
       }
-    }
+    });
   }
   
   /**
@@ -117,17 +126,18 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
    * @param key The name of the key to clear of bound {@link ButtonListener}s.
    */
   public void removeAllBindings(String key) {
+    log.log(Level.FINEST, "removeAllBindings({0})", key);
     
     Collection<ButtonAction> bindings = getBindings(key);
     if(bindings == null) return;
     
-    for(ButtonAction act : bindings) {
+    bindings.stream().forEach((act) -> {
       act.keysbound.remove(key);
-    }
+    });
     
     bindings.clear();
     
-    log.log(Level.CONFIG, CLEARED_KEY_BINDINGS, key);
+    log.log(Level.CONFIG, "All key bindings removed from key '{0}'.", key);
   }
   
   /**
@@ -140,10 +150,12 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
    * @param list The {@link KeyListener} to add to this {@link HotkeyTable}.
    */
   public void addAction(String name, ButtonListener list) {
+    log.log(Level.FINEST, "addAction({0}, {1})", new Object[]{name, list});
+    
     ButtonAction action = new ButtonAction(list, name);
     keyactions.put(name, action);
     
-    log.log(Level.CONFIG, KEY_ACTION_ADDED, name);
+    log.log(Level.CONFIG, "Action '{0}' added.", name);
   }
   
   /**
@@ -154,17 +166,22 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
    * @param name The name of the {@link ButtonListener} to remove.
    */
   public void removeAction(String name) {
+    log.log(Level.FINEST, "removeAction({0})", name);
+    
     ButtonAction action = keyactions.remove(name);
     if(action == null) return;
     
-    for(String key : action.keysbound) {
-      Collection<ButtonAction> bindings = getBindings(key);
-      assert bindings != null;
-      
-      bindings.remove(action);
-    }
+    action.keysbound.stream()
+      .map((key) -> {
+        Collection<ButtonAction> bindings = getBindings(key);
+        assert bindings != null;
+        return bindings;
+      })
+      .forEach((bindings) -> {
+        bindings.remove(action);
+      });
     
-    log.log(Level.CONFIG, KEY_ACTION_REMOVED, name);
+    log.log(Level.CONFIG, "Action '{0}' removed.", name);
   }
   
   public void addAction(String name, MouseListener list) {
@@ -181,11 +198,13 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
     if(bindings.isEmpty()) return;
     
     if(event.state)
-      for(ButtonAction act : bindings)
+      bindings.stream().forEach((act) -> {
         act.list.buttonPressed(key);
+      });
     else
-      for(ButtonAction act: bindings)
+      bindings.stream().forEach((act) -> {
         act.list.buttonReleased(key);
+      });
   }
 
   @Override
@@ -195,11 +214,13 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
     if(bindings.isEmpty()) return;
     
     if(event.state)
-      for(ButtonAction act : bindings)
+      bindings.stream().forEach((act) -> {
         act.list.buttonPressed(key);
+      });
     else
-      for(ButtonAction act : bindings)
+      bindings.stream().forEach((act) -> {
         act.list.buttonReleased(key);
+      });
   }
 
   @Override
@@ -209,11 +230,12 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
   }
   
   private Collection<ButtonAction> getBindings(String key) {
+    log.log(Level.FINEST, "getBindings({0})", key);
     
     //get or create a collection of actions for binding.
     Collection<ButtonAction> bindings = keybindings.get(key);
     if(bindings == null) {
-      bindings = new HashSet();
+      bindings = new HashSet<>(0);
       keybindings.put(key, bindings);
     }
     
@@ -230,21 +252,12 @@ public class HotkeyTable extends ReusableObject implements KeyboardListener, Mou
 
     public ButtonAction(ButtonListener list, String name) {
       this.list = list;
-      this.keysbound = new ArrayList<>();
+      this.keysbound = new ArrayList<>(0);
       this.name = name;
     }
   }
 
   private static final String locprefix = HotkeyTable.class.getName().toLowerCase();
-  
-  private static final String INVALID_KEY_NAME = locprefix + ".invalid_key_name";
-  private static final String INVALID_KEY_ACTION_NAME = locprefix + ".invalid_key_action_name";
-  private static final String KEY_ACTION_ALREADY_BOUND = locprefix + ".key_action_already_bound";
-  private static final String KEY_ACTION_ADDED = locprefix + ".key_action_added";
-  private static final String KEY_ACTION_REMOVED = locprefix + ".key_action_removed";
-  private static final String KEY_BINDING_ADDED = locprefix + ".key_binding_added";
-  private static final String REMOVED_KEY_BINDING = locprefix + ".removed_key_binding";
-  private static final String CLEARED_KEY_BINDINGS = locprefix + ".cleared_key_bindings";
 
   private static final Logger log = Logger.getLogger(locprefix,
       System.getProperty("taiga.code.logging.text"));

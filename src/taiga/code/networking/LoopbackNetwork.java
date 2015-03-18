@@ -19,6 +19,7 @@
 
 package taiga.code.networking;
 
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -83,13 +84,13 @@ public class LoopbackNetwork extends NetworkManager {
   }
 
   @Override
-  protected void sendPacket(InetAddress dest, final Packet msg) {
+  protected void sendPacket(InetAddress dest, int sysid, final DatagramPacket msg) {
     exe.execute(new Runnable() {
 
       @Override
       public void run() {
         if(connection != null)
-          connection.packetRecieved(msg);
+          connection.packetRecieved(msg, sysid);
       }
     });
   }

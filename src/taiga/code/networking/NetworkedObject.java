@@ -19,6 +19,7 @@
 
 package taiga.code.networking;
 
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import taiga.code.registration.NamedObject;
 
@@ -45,30 +46,26 @@ public abstract class NetworkedObject extends NamedObject {
   }
   
   /**
-   * Sends a {@link Packet} through the attached {@link NetworkManager}.  This
+   * Sends a {@link DatagramPacket} through the attached {@link NetworkManager}.  This
    * method will only work if the manager is a client.  If the manager is not a
    * client then the {@link NetworkedObject#sendMessage(taiga.code.networking.Packet, java.net.InetAddress) }
    * should be used instead.
    * 
-   * @param pack The {@link Packet} to send.
+   * @param pack The {@link DatagramPacket} to send.
    */
-  public void sendMessage(Packet pack) {
-    pack.target = getID();
-    
-    manager.sendPacket(null, pack);
+  public void sendMessage(DatagramPacket pack) {
+    manager.sendPacket(null, getID(), pack);
   }
   
   /**
    * Sends a {@link Packet} to a specific destination.  If the manager is a client
-   * then the destination is ignored as {@link Packet}s can only go to the server.
+   * then the destination is ignored as {@link DatagramPacket}s can only go to the server.
    * 
-   * @param pack The {@link Packet} to send.
+   * @param pack The {@link DatagramPacket} to send.
    * @param dest The {@link InetAddress} of the destination.
    */
-  public void sendMessage(Packet pack, InetAddress dest) {
-    pack.target = getID();
-    
-    manager.sendPacket(dest, pack);
+  public void sendMessage(DatagramPacket pack, InetAddress dest) {
+    manager.sendPacket(dest, getID(), pack);
   }
   
   /**
@@ -109,11 +106,11 @@ public abstract class NetworkedObject extends NamedObject {
   protected abstract void connected();
   
   /**
-   * Called when a {@link Packet} is received for this {@link NetworkedObject}.
+   * Called when a {@link DatagramPacket} is received for this {@link NetworkedObject}.
    * 
-   * @param pack The received {@link Packet}.
+   * @param pack The received {@link DatagramPacket}.
    */
-  protected abstract void messageRecieved(Packet pack);
+  protected abstract void messageRecieved(DatagramPacket pack);
   
   /**
    * Called when a {@link NetworkManager} has discovered and attached to this

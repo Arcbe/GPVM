@@ -19,7 +19,7 @@
 
 package taiga.gpvm.map;
 
-import taiga.gpvm.util.geom.Coordinate;
+import java.net.DatagramPacket;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,11 +29,11 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import taiga.code.networking.Packet;
 import taiga.code.registration.NamedObject;
 import taiga.code.registration.ReusableObject;
 import taiga.code.util.ByteUtils;
 import taiga.gpvm.HardcodedValues;
+import taiga.gpvm.util.geom.Coordinate;
 import taiga.gpvm.util.geom.Direction;
 
 /**
@@ -272,18 +272,16 @@ public final class World extends ReusableObject {
   }
 
   private void sendRegionRequest(Coordinate coor) {
-    Packet pack = new Packet();
+    byte[] data = new byte[15];
+    data[0] = Universe.Comms.REG_REQ;
     
-    pack.data = new byte[15];
-    pack.data[0] = Universe.Comms.REG_REQ;
-    
-    ByteUtils.toBytes(coor.x, 1, pack.data);
-    ByteUtils.toBytes(coor.y, 5, pack.data);
-    ByteUtils.toBytes(coor.z, 9, pack.data);
-    ByteUtils.toBytes(getWorldID(), 13, pack.data);
+    ByteUtils.toBytes(coor.x, 1, data);
+    ByteUtils.toBytes(coor.y, 5, data);
+    ByteUtils.toBytes(coor.z, 9, data);
+    ByteUtils.toBytes(getWorldID(), 13, data);
     
     Universe.Comms comms = getObject(HardcodedValues.NAME_COMMS);
-    comms.sendMessage(pack);
+    comms.sendMessage(new DatagramPacket(data, data.length));
   }
 
   private boolean isServer() {

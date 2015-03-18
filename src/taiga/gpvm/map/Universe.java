@@ -20,6 +20,7 @@
 package taiga.gpvm.map;
 
 import java.io.UnsupportedEncodingException;
+import java.net.DatagramPacket;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,14 +28,13 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
-import taiga.gpvm.HardcodedValues;
 import java.util.logging.Logger;
 import taiga.code.networking.NetworkManager;
 import taiga.code.networking.NetworkedObject;
-import taiga.code.networking.Packet;
 import taiga.code.registration.NamedObject;
 import taiga.code.registration.ReusableObject;
 import taiga.code.util.ByteUtils;
+import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.util.geom.Coordinate;
 
 /**
@@ -179,14 +179,13 @@ public final class Universe extends ReusableObject {
     protected void connected() {
       clearWorlds();
       
-      Packet request = new Packet();
-      request.data = new byte[]{NAME_REQ};
+      DatagramPacket request = new DatagramPacket(new byte[]{NAME_REQ}, 1);
       sendMessage(request);
     }
 
     @Override
-    protected void messageRecieved(Packet pack) {
-      switch(pack.data[0]) {
+    protected void messageRecieved(DatagramPacket pack) {
+      switch(pack.getData()[0]) {
         case NAME_REQ:
           receiveNameRequest(pack);
           break;
@@ -206,7 +205,7 @@ public final class Universe extends ReusableObject {
     protected void managerAttached() {
     }
     
-    private void receiveNameRequest(Packet pack) {
+    private void receiveNameRequest(DatagramPacket pack) {
       for(World target : index.values()) {
         byte[] nameb;
         try {
@@ -217,25 +216,25 @@ public final class Universe extends ReusableObject {
         }
       
         //assemble the response packet.
-        Packet res = new Packet();
-        res.data = new byte[nameb.length + 3];
+        byte[] data = new byte[nameb.length + 3];
+        DatagramPacket res = new DatagramPacket(data, data.length);
 
-        res.data[0] = NAME_RES;
-        ByteUtils.toBytes(target.getWorldID(), 1, res.data);
-        System.arraycopy(nameb, 0, res.data, 3, nameb.length);
+        data[0] = NAME_RES;
+        ByteUtils.toBytes(target.getWorldID(), 1, data);
+        System.arraycopy(nameb, 0, data, 3, nameb.length);
 
-        sendMessage(res, pack.source);
+        sendMessage(res, pack.getAddress());
       }
     }
     
-    private void receiveNameResponse(Packet pack) {
+    private void receiveNameResponse(DatagramPacket pack) {
       //decode the incoming packet
       String name;
-      short id = ByteUtils.toShort(pack.data, 1);
+      short id = ByteUtils.toShort(pack.getData(), 1);
       try {
-        name = new String(pack.data, 3, pack.data.length - 3, NetworkManager.NETWORK_CHARSET);
+        name = new String(pack.getData(), 3, pack.getData().length - 3, NetworkManager.NETWORK_CHARSET);
       } catch (UnsupportedEncodingException ex) {
-        log.log(Level.SEVERE, BAD_PACKET, new Object[] {pack.source, ex});
+        log.log(Level.SEVERE, BAD_PACKET, new Object[] {pack.getAddress(), ex});
         return;
       }
       
@@ -247,13 +246,13 @@ public final class Universe extends ReusableObject {
       setID(target, id);
     }
     
-    private void receiveRegionRequest(Packet pack) {
+    private void receiveRegionRequest(DatagramPacket pack) {
       Coordinate coor = new Coordinate();
       
-      coor.x = ByteUtils.toInteger(pack.data, 1);
-      coor.y = ByteUtils.toInteger(pack.data, 5);
-      coor.z = ByteUtils.toInteger(pack.data, 9);
-      short wid = ByteUtils.toShort(pack.data, 13);
+      coor.x = ByteUtils.toInteger(pack.getData(), 1);
+      coor.y = ByteUtils.toInteger(pack.getData(), 5);
+      coor.z = ByteUtils.toInteger(pack.getData(), 9);
+      short wid = ByteUtils.toShort(pack.getData(), 13);
       
       Region reg = index.get(wid).getRegion(coor);
       
@@ -261,15 +260,13 @@ public final class Universe extends ReusableObject {
       byte[] data = new byte[regdata.length + 15];
       
       data[0] = REG_RES;
-      System.arraycopy(pack.data, 1, data, 1, 14);
+      System.arraycopy(pack.getData(), 1, data, 1, 14);
       System.arraycopy(regdata, 0, data, 15, regdata.length);
       
-      Packet res = new Packet();
-      res.data = data;
-      sendMessage(pack);
+      sendMessage(new DatagramPacket(data, data.length));
     }
     
-    private void receiveRegionResponse(Packet pack) {
+    private void receiveRegionResponse(DatagramPacket pack) {
       
     }
     

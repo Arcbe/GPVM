@@ -64,13 +64,19 @@ import taiga.gpvm.util.geom.Coordinate;
 public final class GameManager extends NamedSystem implements WindowListener {
 
   @Override
-  public void resetObject() {}
+  public void resetObject() {
+    log.log(Level.INFO, "Game reset");
+  }
 
   @Override
-  protected void startSystem() {}
+  protected void startSystem() {
+    log.log(Level.INFO, "Game started.");
+  }
 
   @Override
-  protected void stopSystem() {}
+  protected void stopSystem() {
+    log.log(Level.INFO, "Game stopped.");
+  }
 
   /**
    * Creates a new {@link GameManager} with the given setting for being a server
@@ -118,7 +124,9 @@ public final class GameManager extends NamedSystem implements WindowListener {
    */
   public void setServerMode(boolean server) {
     if(server) {
-      
+      log.log(Level.INFO, "Server mode for game set to true.");
+    } else {
+      log.log(Level.INFO, "Server mode for game set to false.");
     }
   }
   
@@ -138,6 +146,7 @@ public final class GameManager extends NamedSystem implements WindowListener {
     ResourceManager assets = getObject(HardcodedValues.NAME_RESOURCE_MANAGER);
     
     if(client) {
+      //create any components that need to be created
       if(tilerendreg == null) tilerendreg = addChild(new TileRenderingRegistry());
       if(entrendreg == null) entrendreg = addChild(new EntityRenderingRegistry());
       if(graphics == null) graphics = addChild(new GraphicsSystem(HardcodedValues.NAME_GRAPHICS_SYSTEM));
@@ -151,6 +160,10 @@ public final class GameManager extends NamedSystem implements WindowListener {
       updater.addWorldChangeListener(gamescreen);
       assets.addLoader(new ShaderLoader(), ShaderProgram.class);
       assets.addLoader(new TexLoader(), TextureResource.class);
+      
+      log.log(Level.INFO, "Client mode for game set to true.");
+    } else {
+      log.log(Level.INFO, "Client mode for game set to false.");
     }
   }
   
@@ -167,6 +180,15 @@ public final class GameManager extends NamedSystem implements WindowListener {
     if(screen != null) screen.setCamera(cam);
   }
   
+  /**
+   * Creates a new {@link World} with the given name and using the given {@link MapGenerator}.
+   * This is just a convenience method and is equivalent to using the {@link Universe#addWorld(java.lang.String, taiga.gpvm.map.MapGenerator) }
+   * method.
+   * 
+   * @param name The name of the new {@link World} to create.
+   * @param gen The {@link MapGenerator} that will create the {@link World}.
+   * @return A reference to the newly created {@link World}.
+   */
   public World createWorld(String name, MapGenerator gen) {
     Universe uni = getObject(HardcodedValues.NAME_UNIVERSE);
     if(uni == null) {
@@ -193,7 +215,8 @@ public final class GameManager extends NamedSystem implements WindowListener {
   /**
    * Creates and returns a new {@link Entity} with the type of the given
    * name.  If there is no type with the given name then this will immediately
-   * return null.
+   * return null.  The {@link Entity} will be placed on a null map when created
+   * and should be moved in order for it to do anything.
    * 
    * @param type The name of the type for the new {@link Entity}.
    * @return The new {@link Entity}.
@@ -202,14 +225,42 @@ public final class GameManager extends NamedSystem implements WindowListener {
     return createEntity(getEntityType(type));
   }
   
+  /**
+   * Creates a returns a new {@link Entity} with the given {@link EntityType}.
+   * The {@link Entity} will be placed on a null map when created and should be
+   * moved in order for it to do anything.
+   * 
+   * @param type The {@link EntityType} for the new {@link Entity}.
+   * @return The newly created {@link Entity}.
+   */
   public Entity createEntity(EntityType type) {
     return createEntity(type, new Coordinate());
   }
   
+  /**
+   * Creates a new {@link Entity} with the {@link EntityType} with the given name
+   * and located at the given coordinate.  IF there is no {@link EntityType} with
+   * the given name then this will simply return null.
+   * 
+   * @param type The name of the {@link EntityType} for the {@link Entity}.
+   * @param location The {@link Coordinate} that the new {@link Entity} should be
+   * placed at.
+   * @return The newly created {@link Entity}.
+   */
   public Entity createEntity(String type, Coordinate location) {
     return createEntity(getEntityType(type), location);
   }
   
+  
+  /**
+   * Creates a new {@link Entity} with the given {@link EntityType} and located 
+   * at the given coordinate.
+   * 
+   * @param type The {@link EntityType} for the {@link Entity}.
+   * @param location The {@link Coordinate} that the new {@link Entity} should be
+   * placed at.
+   * @return The newly created {@link Entity}.
+   */
   public Entity createEntity(EntityType type, Coordinate location) {
     if(type == null) {
       log.log(Level.WARNING, NO_ENTITY_TYPE);

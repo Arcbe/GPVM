@@ -151,24 +151,6 @@ public abstract class NamedSystem extends ReusableObject {
       list.systemStopped(this);
   }
   
-  private void readObject(ObjectInputStream in) throws
-    ClassNotFoundException,
-    IOException {
-    in.defaultReadObject();
-    
-    listeners.addAll((Collection<SystemListener>) in.readObject());
-  }
-  
-  private void writeObject(ObjectOutputStream out) throws IOException {
-    out.defaultWriteObject();
-    
-    Collection<SystemListener> seriallist = new ArrayList<>();
-    for(SystemListener list : listeners)
-      if(list instanceof Serializable)
-        seriallist.add(list);
-    out.writeObject(seriallist);
-  }
-  
   private static final long serialVersionUID = 100L;
   
   private static final String STARTED = NamedSystem.class.getName().toLowerCase() + ".started";

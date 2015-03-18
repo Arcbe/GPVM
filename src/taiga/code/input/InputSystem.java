@@ -36,6 +36,7 @@ import taiga.code.util.Updateable;
  * @author russell
  */
 public class InputSystem extends HotkeyTable implements Updateable {
+  private static final long serialVersionUID = 1L;
 
   /**
    * Creates a new {@link InputSystem} with the given name.
@@ -45,9 +46,9 @@ public class InputSystem extends HotkeyTable implements Updateable {
   public InputSystem(String name) {
     super(name);
     
-    keylist = new HashSet<>();
-    mouselist = new HashSet<>();
-    mouseglist = new HashSet<>();
+    keylist = new HashSet<>(0);
+    mouselist = new HashSet<>(0);
+    mouseglist = new HashSet<>(0);
   }
   
   /**
@@ -58,36 +59,54 @@ public class InputSystem extends HotkeyTable implements Updateable {
    */
   public void setGrabMouse(boolean cap) {
     Mouse.setGrabbed(cap);
+    
+    if(cap)
+      log.log(Level.FINER, "Mouse grabbed.");
+    else
+      log.log(Level.FINER, "Mouse released.");
   }
   
   public void addMouseListener(MouseListener list) {
     mouselist.add(list);
+    
+    log.log(Level.FINER, "Mouse listener added: {0}", list);
   }
   
   public void removeMouseListener(MouseListener list) {
     mouselist.remove(list);
+    
+    log.log(Level.FINER, "Mouse listener removed: {0}", list);
   }
   
   public void addGrabbedMouseListener(MouseListener list) {
     mouseglist.add(list);
+    
+    log.log(Level.FINER, "Mouse grabbed listener added: {0}", list);
   }
   
   public void removeGrabbedMouseListener(MouseListener list) {
     mouseglist.remove(list);
+    
+    log.log(Level.FINER, "Mouse grabbed listener removed: {0}", list);
   }
 
   @Override
   public void update() {
-    handleKeyboard();
-    handleMouse();
+    try {
+      handleKeyboard();
+      handleMouse();
+    } catch (LWJGLException ex) {
+      throw new RuntimeException(ex);
+    }
   }
   
-  private void handleMouse() {
+  private void handleMouse() throws LWJGLException {
     //same for the mouse
     if(!Mouse.isCreated()) try {
       Mouse.create();
     } catch(LWJGLException ex) {
-      log.log(Level.SEVERE, MOUSE_EX, ex);
+      log.log(Level.SEVERE, "Exception while registering for mouse events.", ex);
+      throw ex;
     }
     
     while(Mouse.next()) {
@@ -102,24 +121,28 @@ public class InputSystem extends HotkeyTable implements Updateable {
         Mouse.getEventNanoseconds());
       
       if(Mouse.isGrabbed()) {
-        for(MouseListener list : mouseglist)
+        mouseglist.stream().forEach((list) -> {
           list.handleEvent(event);
+        });
       } else {
-        for(MouseListener list : mouselist)
+        mouselist.stream().forEach((list) -> {
           list.handleEvent(event);
+        });
       }
       
+      log.log(Level.FINER, "Mouse event occurred: {0}", event);
       handleEvent(event);
     }
   }
   
-  private void handleKeyboard() {
+  private void handleKeyboard() throws LWJGLException {
     //create the keyboard if needed.  This is done here to insure that the window
     //has been created already.
     if(!Keyboard.isCreated()) try {
       Keyboard.create();
     } catch (LWJGLException ex) {
-      log.log(Level.SEVERE, KEYBOARD_EX, ex);
+      log.log(Level.SEVERE, "Exception while registering for keyboard events.", ex);
+      throw ex;
     }
     
     while(Keyboard.next()) {
@@ -130,12 +153,14 @@ public class InputSystem extends HotkeyTable implements Updateable {
         Keyboard.getEventKeyState(), 
         Keyboard.isRepeatEvent());
       
-      for(KeyboardListener list : keylist)
+      keylist.stream().forEach((list) -> {
         list.handleEvent(event);
+      });
       
       //if the event is consumed then go on to the next one.
       if(event.consumed) continue;
       
+      log.log(Level.FINER, "Keyboard event occurred: {0}");
       handleEvent(event);
     }
   }
@@ -145,9 +170,6 @@ public class InputSystem extends HotkeyTable implements Updateable {
   private final Collection<MouseListener> mouseglist;
   
   private static final String locprefix = InputSystem.class.getName().toLowerCase();
-  
-  private static final String KEYBOARD_EX = locprefix + ".keyboard_ex";
-  private static final String MOUSE_EX = locprefix + ".mouse_ex";
   
   private static final Logger log = Logger.getLogger(locprefix, 
     System.getProperty("tagia.code.logging.text"));

@@ -20,9 +20,15 @@
 package taiga.code.input;
 
 /**
+ * A listener for events originating from the mouse buttons.
  * 
  * @author russell
  */
 public interface MouseListener {
+  /**
+   * Called when a button is either pressed or released.
+   * 
+   * @param event The description of the event.
+   */
   public void handleEvent(MouseButtonEvent event);
 }

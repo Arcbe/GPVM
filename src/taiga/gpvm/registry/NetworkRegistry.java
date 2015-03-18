@@ -20,11 +20,11 @@
 package taiga.gpvm.registry;
 
 import java.io.UnsupportedEncodingException;
+import java.net.DatagramPacket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.networking.NetworkManager;
 import taiga.code.networking.NetworkedObject;
-import taiga.code.networking.Packet;
 import taiga.code.util.ByteUtils;
 
 /**
@@ -68,9 +68,7 @@ public class NetworkRegistry<T extends RegistryEntry> extends Registry<T> {
       data[0] = SYNC_REQ;
       System.arraycopy(enbytes, 0, data, 1, enbytes.length);
       
-      Packet result = new Packet();
-      result.data = data;
-      sendMessage(result);
+      sendMessage(new DatagramPacket(data, data.length));
     }
 
     @Override
@@ -82,8 +80,8 @@ public class NetworkRegistry<T extends RegistryEntry> extends Registry<T> {
     }
 
     @Override
-    protected void messageRecieved(Packet pack) {
-      switch(pack.data[0]) {
+    protected void messageRecieved(DatagramPacket pack) {
+      switch(pack.getData()[0]) {
         case SYNC_REQ:
           receiveSyncRequest(pack);
           break;
@@ -101,17 +99,17 @@ public class NetworkRegistry<T extends RegistryEntry> extends Registry<T> {
       //TODO: implement this
     }
     
-    private void receiveSyncResponse(Packet pack) {
+    private void receiveSyncResponse(DatagramPacket pack) {
       String ename;
       try {
-        ename = new String(pack.data, 5, pack.data.length - 5, NetworkManager.NETWORK_CHARSET);
+        ename = new String(pack.getData(), 5, pack.getData().length - 5, NetworkManager.NETWORK_CHARSET);
       } catch (UnsupportedEncodingException ex) {
         log.log(Level.SEVERE, SYNC_REQ_EX, ex);
         
         return;
       }
       
-      int id = ByteUtils.toInteger(pack.data, 1);
+      int id = ByteUtils.toInteger(pack.getData(), 1);
       
       RegistryEntry entry = getEntry(ename);
       if(entry == null) {
@@ -123,10 +121,10 @@ public class NetworkRegistry<T extends RegistryEntry> extends Registry<T> {
       }
     }
     
-    private void receiveSyncRequest(Packet pack) {
+    private void receiveSyncRequest(DatagramPacket pack) {
       String ename;
       try {
-        ename = new String(pack.data, 1, pack.data.length - 1, NetworkManager.NETWORK_CHARSET);
+        ename = new String(pack.getData(), 1, pack.getData().length - 1, NetworkManager.NETWORK_CHARSET);
       } catch (UnsupportedEncodingException ex) {
         log.log(Level.SEVERE, SYNC_REQ_EX, ex);
         
@@ -141,15 +139,13 @@ public class NetworkRegistry<T extends RegistryEntry> extends Registry<T> {
       
       int eid = entry.getID();
       
-      byte[] data = new byte[pack.data.length + 4];
+      byte[] data = new byte[pack.getData().length + 4];
       
       data[0] = SYNC_RES;
       ByteUtils.toBytes(eid, 1, data);
-      System.arraycopy(pack.data, 1, data, 5, pack.data.length - 1);
+      System.arraycopy(pack.getData(), 1, data, 5, pack.getData().length - 1);
       
-      Packet result = new Packet();
-      result.data = data;
-      sendMessage(result, pack.source);
+      sendMessage(new DatagramPacket(data, data.length), pack.getAddress());
     }
     
     private static final byte SYNC_REQ = 0;

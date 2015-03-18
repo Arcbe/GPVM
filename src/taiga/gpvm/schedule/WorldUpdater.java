@@ -19,6 +19,7 @@
 
 package taiga.gpvm.schedule;
 
+import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,7 +31,6 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.networking.NetworkedObject;
-import taiga.code.networking.Packet;
 import taiga.code.registration.NamedSystem;
 import taiga.code.util.Updateable;
 import taiga.gpvm.util.geom.Coordinate;
@@ -290,7 +290,7 @@ public class WorldUpdater extends NamedSystem implements UniverseListener {
     }
 
     @Override
-    protected void messageRecieved(Packet pack) {
+    protected void messageRecieved(DatagramPacket pack) {
     }
 
     @Override
