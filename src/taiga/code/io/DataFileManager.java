@@ -19,16 +19,15 @@
 
 package taiga.code.io;
 
-import taiga.code.util.DataNode;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.MessageFormat;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.registration.NamedObject;
 import taiga.code.text.TextLocalizer;
+import taiga.code.util.DataNode;
 
 /**
  * A manager for reading in data files.  This manager can read any file that it
@@ -38,6 +37,8 @@ import taiga.code.text.TextLocalizer;
  * @author russell
  */
 public class DataFileManager extends NamedObject {
+  private static final long serialVersionUID = 1L;
+  
   /**
    * The name that {@link DataFileManager}s are registered with.
    */
@@ -56,6 +57,15 @@ public class DataFileManager extends NamedObject {
   }
   
   /**
+   * Creates a new {@link DataFileManager} with the given name.
+   * 
+   * @param name The name for this {@link DataFileManager}.
+   */
+  public DataFileManager(String name) {
+    super(name);
+  }
+  
+  /**
    * This method will try to find a {@link File} in using the current
    * context {@link ClassLoader} for the {@link Thread} before trying the 
    * current working directory if the {@link ClassLoader} did not have
@@ -66,6 +76,8 @@ public class DataFileManager extends NamedObject {
    * @throws IOException Thrown if there is a problem loading the file.
    */
   public DataNode readFile(String fname) throws IOException {
+    log.log(Level.FINEST, "readFile({0})", fname);
+    
     ClassLoader context = Thread.currentThread().getContextClassLoader();
     URL loc = context.getResource(fname);
     
@@ -86,6 +98,8 @@ public class DataFileManager extends NamedObject {
    * @throws IOException If there was an exception while reading from the file.
    */
   public DataNode readFile(URL file) throws IOException {
+    log.log(Level.FINEST, "readFile({0})", file);
+    
     for(NamedObject obj : this) {
       if(obj != null && obj instanceof DataFileReader) {
         DataFileReader reader = (DataFileReader)obj;
@@ -96,12 +110,10 @@ public class DataFileManager extends NamedObject {
       }
     }
     
-    throw new IOException(TextLocalizer.localize(NO_READER, file));
+    throw new IOException(MessageFormat.format("No data file reader available for the file {0}.", file));
   }
   
   private static final String locprefix = DataFileManager.class.getName().toLowerCase();
-  
-  private static final String NO_READER = locprefix+ ".no_reader";
   
   private static final Logger log = Logger.getLogger(locprefix,
     System.getProperty("taiga.code.logging.text"));

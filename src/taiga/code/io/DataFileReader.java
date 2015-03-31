@@ -19,10 +19,10 @@
 
 package taiga.code.io;
 
-import taiga.code.util.DataNode;
 import java.io.IOException;
 import java.net.URL;
 import taiga.code.registration.NamedObject;
+import taiga.code.util.DataNode;
 
 /**
  * Base class for reading data files.  This provides a simple interface for
@@ -30,6 +30,7 @@ import taiga.code.registration.NamedObject;
  * @author russell
  */
 public abstract class DataFileReader extends NamedObject {
+  private static final long serialVersionUID = 1L;
 
   /**
    * Creates a new {@link DataFileReader}.

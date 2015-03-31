@@ -19,13 +19,8 @@
 
 package taiga.code.io;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import java.util.logging.Level;
@@ -38,6 +33,7 @@ import taiga.code.util.DataNode;
  * @author russell
  */
 public class YAMLDataReader extends DataFileReader {
+  private static final long serialVersionUID = 1L;
   /**
    * Default name for a {@link YAMLDataReader}.
    */
@@ -58,25 +54,43 @@ public class YAMLDataReader extends DataFileReader {
     
     yaml = new Yaml();
   }
+  
+  /**
+   * Creates a new {@link YAMLDataReader} with the given name.
+   * 
+   * @param name The name for this {@link YAMLDataReader}.
+   */
+  public YAMLDataReader(String name) {
+    super(name);
+    
+    yaml = new Yaml();
+  }
 
   @Override
+  @SuppressWarnings("unchecked")
   public DataNode readFile(URL file) throws IOException {
+    log.log(Level.FINEST, "readFile({0})", file);
     Map<String, Object> raw;
     
     try (InputStream in = file.openStream()) {
-      raw = (Map<String, Object>) yaml.load(in);
+      Object temp = yaml.load(in);
+      if(temp instanceof Map) 
+        raw = (Map) temp;
+      else {
+        log.log(Level.WARNING, "Invalid or empty data file {0}.", file);
+        return null;
+      }
     }
     
-    if(raw == null) {
-      log.log(Level.WARNING, NO_DATA, file);
-      return null;
-    }
-    
-    return parseNode(raw, DataFileManager.DATANODE_ROOT_NAME);
+    DataNode output = parseNode(raw, DataFileManager.DATANODE_ROOT_NAME);
+    log.log(Level.FINER, "Data file {0} read.", file);
+    return output;
   }
 
   @Override
   public boolean canReadFile(URL file) {
+    log.log(Level.FINEST, "canReadFile({0})", file);
+    
     try (InputStream in = file.openStream()) {
       yaml.load(in);
     } catch(Exception ex) {
@@ -89,33 +103,38 @@ public class YAMLDataReader extends DataFileReader {
   private DataNode parseNode(Map<String, Object> data, String name) {
     DataNode result = new DataNode(name);
     
-    for(Map.Entry<String, Object> entry : data.entrySet()) {
-      //check to see if this needs to be converted to another datanode
+    data.entrySet().stream().forEach((entry) -> {
       if(entry.getValue() instanceof Map) {
+        
+        assert entry.getValue() instanceof Map;
+        @SuppressWarnings("unchecked")
         DataNode subnode = parseNode((Map<String, Object>) entry.getValue(), entry.getKey());
         
         //if this map is a set of attributes then set the data field of the parent.
         if(entry.getKey().equals(FIELD_NAME_ATTRIBUTES))
           result.data = subnode;
+        
         //otherwise create a child for the parent.
         else {
-          result.addChild(subnode);
+          synchronized(result) {
+            result.addChild(subnode);
+          }
         }
       } else {
         //otherwise just put the data into a node and add it
         DataNode subnode = new DataNode(entry.getKey());
         subnode.data = entry.getValue();
         
-        result.addChild(subnode);
+        synchronized(result) {
+          result.addChild(subnode);
+        }
       }
-    }
+    });
     
     return result;
   }
   
   private final Yaml yaml;
-  
-  private static final String NO_DATA = YAMLDataReader.class.getName().toLowerCase() + ".no_data";
   
   private static final Logger log = Logger.getLogger(YAMLDataReader.class.getName(),
     System.getProperty("taiga.code.logging.text"));

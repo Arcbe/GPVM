@@ -141,6 +141,30 @@ public abstract class NetworkManager extends NamedObject {
   public abstract boolean isConnected();
   
   /**
+   * Returns a hash value for the attached {@link NetworkedObject}s.  This will
+   * provide a value to check compatibility between {@link NetworkManager}s, if
+   * the hashes match then the two manager will probably be able to connect to
+   * each other, otherwise they will not be able to connect.
+   * 
+   * @return a hash value for the names of the attached {@link NetworkedObject}s
+   */
+  public long getObjectHash() {
+    long hash = 1;
+    
+    //hash all of the object names together to see if this manager can connect
+    //to a remote manager.
+    for(String obj : objects.keySet()) {
+      long h = obj.hashCode();
+      //try to reduce the number of factors in the hashes by making them all odd.
+      if(h % 2 == 0) h++;
+      
+      hash *= h;
+    }
+    
+    return hash;
+  }
+  
+  /**
    * Sends a packet to the given destination.
    * 
    * @param dest The destination for the packet.
@@ -317,7 +341,7 @@ public abstract class NetworkManager extends NamedObject {
       obj.connected();
   }
   
-  protected void fireClienConnected(Object clientkey) {
+  protected void fireClientConnected(Object clientkey) {
     
   }
   

@@ -22,9 +22,9 @@ package taiga.code.io;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import taiga.code.util.DataNode;
 import taiga.code.registration.NamedObject;
 import taiga.code.registration.ReusableObject;
+import taiga.code.util.DataNode;
 import taiga.code.util.Setting;
 
 /**
@@ -35,6 +35,8 @@ import taiga.code.util.Setting;
  * @author russell
  */
 public class SettingManager extends ReusableObject {
+  private static final long serialVersionUID = 1L;
+  
   /**
    * Default name for the {@link SettingManager} within the registration tree.
    */
@@ -53,9 +55,11 @@ public class SettingManager extends ReusableObject {
    * @param file The file to load {@link Setting}s from.
    */
   public void loadSettings(String file) {
+    log.log(Level.FINEST, "loadSettings({0})", file);
+    
     NamedObject obj = getObject(DataFileManager.DATAFILEMANAGER_NAME);
     if(obj == null || !(obj instanceof DataFileManager)) {
-      log.log(Level.WARNING, NO_DFMANAGER);
+      log.log(Level.WARNING, "Unable to load settings, no data file manager found.");
       return;
     }
     
@@ -63,7 +67,7 @@ public class SettingManager extends ReusableObject {
       DataNode node = ((DataFileManager)obj).readFile(file);
       
       if(node == null) {
-        log.log(Level.SEVERE, NO_DATA, file);
+        log.log(Level.SEVERE, "Unable to load settings, no valid data in file {0}.", file);
         
         return;
       }
@@ -74,8 +78,10 @@ public class SettingManager extends ReusableObject {
         addChild(addData((DataNode)cur));
       }
     } catch(IOException ex) {
-      log.log(Level.SEVERE, IO_EXCEPTION, ex);
+      log.log(Level.SEVERE, "Exception while loading settings.", ex);
     }
+    
+    log.log(Level.CONFIG, "Settings file {0} loaded.", file);
   }
   
   /**
@@ -112,10 +118,6 @@ public class SettingManager extends ReusableObject {
   }
   
   private static final String locprefix = SettingManager.class.getName().toLowerCase();
-  
-  private static final String NO_DFMANAGER = locprefix + ".no_dfmanager";
-  private static final String IO_EXCEPTION = locprefix + ".io_exception";
-  private static final String NO_DATA = locprefix + ".no_data";
   
   private static final Logger log = Logger.getLogger(SettingManager.class.getName(),
     System.getProperty("taiga.code.logging.text"));
