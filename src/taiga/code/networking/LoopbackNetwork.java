@@ -84,14 +84,10 @@ public class LoopbackNetwork extends NetworkManager {
   }
 
   @Override
-  protected void sendPacket(InetAddress dest, int sysid, final DatagramPacket msg) {
-    exe.execute(new Runnable() {
-
-      @Override
-      public void run() {
-        if(connection != null)
-          connection.packetRecieved(msg, sysid);
-      }
+  protected void sendPacket(Object dest, int sysid, final DatagramPacket msg) {
+    exe.execute(() -> {
+      if(connection != null)
+        connection.packetRecieved(msg, sysid);
     });
   }
   

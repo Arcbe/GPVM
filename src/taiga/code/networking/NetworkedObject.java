@@ -19,6 +19,7 @@
 
 package taiga.code.networking;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import taiga.code.registration.NamedObject;
@@ -52,8 +53,10 @@ public abstract class NetworkedObject extends NamedObject {
    * should be used instead.
    * 
    * @param pack The {@link DatagramPacket} to send.
+   * @throws java.io.IOException Thrown if the {@link DatagramPacket} cannot be
+   * sent for any reason.
    */
-  public void sendMessage(DatagramPacket pack) {
+  public void sendMessage(DatagramPacket pack) throws IOException {
     manager.sendPacket(null, getID(), pack);
   }
   
@@ -63,8 +66,10 @@ public abstract class NetworkedObject extends NamedObject {
    * 
    * @param pack The {@link DatagramPacket} to send.
    * @param dest The {@link InetAddress} of the destination.
+   * @throws java.io.IOException Thrown if the {@link DatagramPacket} cannot be
+   * sent for any reason.
    */
-  public void sendMessage(DatagramPacket pack, InetAddress dest) {
+  public void sendMessage(DatagramPacket pack, InetAddress dest) throws IOException {
     manager.sendPacket(dest, getID(), pack);
   }
   
@@ -117,6 +122,22 @@ public abstract class NetworkedObject extends NamedObject {
    * {@link NetworkedObject}.
    */
   protected abstract void managerAttached();
+  
+  /**
+   * Called when a client is connected to the {@link NetworkManager} managing this
+   * {@link NetworkedObject}.
+   * 
+   * @param clientkey An object that acts as an identifier for the new client.
+   */
+  protected void clientConnected(Object clientkey) {}
+  
+  /**
+   * Called when a client is disconnected from the {@link NetworkManager} managing
+   * this {@link NetworkedObject}.
+   * 
+   * @param clientkey An object that acts as an identifier for the disconnect client.
+   */
+  protected void clientDisconnected(Object clientkey) {}
   
   /**
    * The id for this object.  This should only be changed by the {@link NetworkManager}.

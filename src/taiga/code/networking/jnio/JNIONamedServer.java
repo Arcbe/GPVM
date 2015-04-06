@@ -24,6 +24,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.frozencode.jniolib.server.JNioBindingParameters;
 import net.frozencode.jniolib.server.JNioChannel;
@@ -40,6 +41,7 @@ import taiga.code.networking.NetworkManager;
  * @author russell
  */
 public class JNIONamedServer extends NetworkManager implements JNioEventListener {
+  private static final long serialVersionUID = 1L;
 
   /**
    * Creates a new {@link JNIORegisteredServer}  with the given name.
@@ -60,24 +62,12 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
   }
   
   public void openConnection(InetSocketAddress addr) throws IOException {
-    JNioBindingParameters params = new JNioBindingParameters(this);
+    log.log(Level.FINEST, "Opening connection on address {0}", addr);
     
-    server.bindSCTPListeningAddress(addr, params);
+    server.bindTCPListeningAddress(addr, this);
+    
+    log.log(Level.INFO, "Connection on address {0} opened.", addr);
   }
-  
-  private JNioServer server;
-  private ThreadLocal<ByteBuffer> buffers = new ThreadLocal<ByteBuffer>() {
-
-    @Override
-    protected ByteBuffer initialValue() {
-      return ByteBuffer.allocateDirect(JNioBindingParameters.DEFAULT_BUFFER_SIZE);
-    }
-  };
-  
-  private static final String locprefix = JNIONamedServer.class.getName().toLowerCase();
-  
-  private static final Logger log = Logger.getLogger(locprefix,
-    System.getProperty("taiga.code.logging.text"));
 
   @Override
   public boolean isServer() {
@@ -95,33 +85,83 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
   }
 
   @Override
-  protected void sendPacket(InetAddress dest, int sysid, DatagramPacket msg) {
+  protected void sendPacket(Object dest, int sysid, DatagramPacket msg) throws IOException {
+    if(!(dest instanceof JNioChannel) || !isConnected())
+      throw new IOException("No valid connection for client " + dest);
     
+    ByteBuffer buf = buffers.get();
+    buf.clear();
+    
+    buf.putInt(sysid);
+    buf.put(msg.getData());
+    
+    if(dest instanceof JNioDatagramChannel) {
+      
+      ((JNioDatagramChannel) dest).send(buf, null);
+    }
   }
 
   @Override
   public void onDataRecieved(JNioStreamChannel jnsc) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    ByteBuffer buf = buffers.get();
+    
+    try {
+      buf.clear();
+      jnsc.read(buf);
+    } catch (IOException ex) {
+      log.log(Level.WARNING, "Exception while receiving network message.", ex);
+    }
+    
+    buf.rewind();
+    int sysid = buf.getInt();
+    byte[] bytes = new byte[buf.remaining()];
+    
+    buf.get(bytes);
+    DatagramPacket pack = new DatagramPacket(bytes, bytes.length);
+    packetRecieved(pack, sysid);
   }
 
   @Override
   public void onMessageRecieved(JNioDatagramChannel jndc) {
+    ByteBuffer buf = buffers.get();
+    
+    try {
+      buf.clear();
+      jndc.receive(buf);
+    } catch (IOException ex) {
+      log.log(Level.WARNING, "Exception while receiving network message.", ex);
+    }
+    
+    buf.rewind();
+    int sysid = buf.getInt();
+    byte[] bytes = new byte[buf.remaining()];
+    
+    buf.get(bytes);
+    DatagramPacket pack = new DatagramPacket(bytes, bytes.length);
+    packetRecieved(pack, sysid);
   }
 
-  /**
-   *
-   * @param arg0
-   */
   @Override
   public void onClientConnected(JNioChannel arg0) {
+    fireClientConnected(arg0);
   }
-
-  /**
-   *
-   * @param arg0
-   * @param arg1
-   */
+  
   @Override
   public void onClientDisconnected(JNioChannel arg0, boolean arg1) {
+    fireClientDisconnect(arg0);
   }
+  
+  private final JNioServer server;
+  private static final ThreadLocal<ByteBuffer> buffers = new ThreadLocal<ByteBuffer>() {
+
+    @Override
+    protected ByteBuffer initialValue() {
+      return ByteBuffer.allocateDirect(JNioBindingParameters.DEFAULT_BUFFER_SIZE);
+    }
+  };
+  
+  private static final String locprefix = JNIONamedServer.class.getName().toLowerCase();
+  
+  private static final Logger log = Logger.getLogger(locprefix,
+    System.getProperty("taiga.code.logging.text"));
 }

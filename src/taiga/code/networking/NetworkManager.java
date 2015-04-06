@@ -19,6 +19,7 @@
 
 package taiga.code.networking;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -61,9 +62,8 @@ public abstract class NetworkManager extends NamedObject {
   public NetworkManager(String name) {
     super(name);
     
-    current = 0;
-    index = new HashMap<>();
-    objects = new HashMap<>();
+    index = new HashMap<>(0);
+    objects = new HashMap<>(0);
   }
   
   /**
@@ -76,7 +76,9 @@ public abstract class NetworkManager extends NamedObject {
    *  times out.
    */
   public void scanRegisteredObjects() throws TimeoutException {
-    ArrayList<NetworkedObject> rawobjs = new ArrayList<>();
+    log.log(Level.FINEST, "Scanning for networked objects.");
+    
+    ArrayList<NetworkedObject> rawobjs = new ArrayList<>(0);
     objects.clear();
     
     NamedObject root = this;
@@ -86,13 +88,14 @@ public abstract class NetworkManager extends NamedObject {
     scan(root, rawobjs);
     
     objects.clear();
-    
-    for(NetworkedObject obj : rawobjs) {
+    rawobjs.stream().map((obj) -> {
       objects.put(obj.getFullName(), obj);
+      return obj;
+    }).forEach((obj) -> {
       obj.attachManager(this);
-    }
+    });
     
-    log.log(Level.INFO, SCAN_COMPLETE, rawobjs.size());
+    log.log(Level.INFO, "Found {0} network objects.", rawobjs.size());
     
     //if this a server we need to assign ids for the objects regardless of whether
     //this is also a client.
@@ -167,12 +170,13 @@ public abstract class NetworkManager extends NamedObject {
   /**
    * Sends a packet to the given destination.
    * 
-   * @param dest The destination for the packet.
+   * @param dest The key object associated with the desire remote client.
    * @param sysid The ID number of the {@link NetworkedObject} that is sending the
    *  {@link DatagramPacket}.
    * @param msg The packet to send.
+   * @throws java.io.IOException Thrown if the message cannot be sent for any reason.
    */
-  protected abstract void sendPacket(InetAddress dest, int sysid, DatagramPacket msg);
+  protected abstract void sendPacket(Object dest, int sysid, DatagramPacket msg) throws IOException;
   
   /**
    * Called when a {@link Packet} is received from the network.
@@ -221,7 +225,8 @@ public abstract class NetworkManager extends NamedObject {
     index.clear();
 
     for(NetworkedObject obj : objects.values()) {
-      obj.id = curid++;
+      curid++;
+      obj.id = curid;
       index.put(obj.id, obj);
 
       log.log(Level.FINEST, ID_ASSIGNED, new Object[]{obj.getFullName(), obj.id});
@@ -234,11 +239,13 @@ public abstract class NetworkManager extends NamedObject {
     if(!isConnected() || !isClient() || objects.isEmpty()) return;
     
     index.clear();
-
-    for(NetworkedObject obj : objects.values()) {
-
-      sendSyncRequest(obj);
-    }
+    objects.values().stream().forEach((obj) -> {
+      try {
+        sendSyncRequest(obj);
+      } catch (IOException ex) {
+        log.log(Level.SEVERE, "Exception send request for object synchronization.", ex);
+      }
+    });
 
     long timeout = System.currentTimeMillis() + getTimeout();
     while(System.currentTimeMillis() <= timeout && !synced) {
@@ -269,7 +276,7 @@ public abstract class NetworkManager extends NamedObject {
       scan(obj, list);
   }
   
-  private void sendSyncRequest(NetworkedObject obj) {
+  private void sendSyncRequest(NetworkedObject obj) throws IOException {
     byte[] str;
     
     try {
@@ -333,23 +340,34 @@ public abstract class NetworkManager extends NamedObject {
     System.arraycopy(ByteUtils.toBytes(id), 0, data, 1, 2);
     System.arraycopy(pack.getData(), 1, data, 3, pack.getData().length - 1);
     
-    sendPacket(pack.getAddress(), NETWORK_MANAGER_ID, new DatagramPacket(data, data.length));
+    try {
+      sendPacket(pack.getAddress(), NETWORK_MANAGER_ID, new DatagramPacket(data, data.length));
+    } catch (IOException ex) {
+      Logger.getLogger(NetworkManager.class.getName()).log(Level.SEVERE, "Exception responding to object synchronization request.", ex);
+    }
   }
   
   private void fireConnected() {
-    for(NetworkedObject obj : objects.values())
+    objects.values().stream().forEach((obj) -> {
       obj.connected();
+    });
   }
   
   protected void fireClientConnected(Object clientkey) {
-    
+    objects.values().stream().forEach((NetworkedObject client) -> {
+      client.clientConnected(clientkey);
+    });
+  }
+  
+  protected void fireClientDisconnect(Object clientkey) {
+    objects.values().stream().forEach((NetworkedObject client) -> {
+      client.clientDisconnected(clientkey);
+    });
   }
   
   private final Map<String, NetworkedObject> objects;
   private final Map<Short, NetworkedObject> index;
   private boolean synced;
-  
-  private byte current;
   
   // id for a sync request, this packet has a single string encoded as bytes.
   private static final byte SYNC_REQ = 0;
@@ -360,7 +378,6 @@ public abstract class NetworkManager extends NamedObject {
   
   private static final String ENCODING_ERR = locprefix + ".encoding_err";
   private static final String FOUND_OBJECT = locprefix + ".found_network_object";
-  private static final String SCAN_COMPLETE = locprefix + ".scan_complete";
   private static final String ID_ASSIGNED = locprefix + ".id_assigned";
   private static final String IDS_SYNCHRONIZED = locprefix + ".ids_synchronized";
   private static final String SYNC_TIMEOUT_EX = locprefix + ".sync_timeout_ex";
