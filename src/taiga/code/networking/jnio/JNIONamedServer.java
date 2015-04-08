@@ -62,9 +62,9 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
   }
   
   public void openConnection(InetSocketAddress addr) throws IOException {
-    log.log(Level.FINEST, "Opening connection on address {0}", addr);
+    log.log(Level.FINEST, "openConnection({0})", addr);
     
-    server.bindTCPListeningAddress(addr, this);
+    server.bindUDPListeningAddress(addr, this);
     
     log.log(Level.INFO, "Connection on address {0} opened.", addr);
   }
