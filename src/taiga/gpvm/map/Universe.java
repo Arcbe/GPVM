@@ -19,7 +19,7 @@
 
 package taiga.gpvm.map;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Collection;
 import java.util.HashSet;
@@ -177,17 +177,20 @@ public final class Universe extends ReusableObject {
     
     @Override
     protected void connected() {
-      clearWorlds();
-      
-      DatagramPacket request = new DatagramPacket(new byte[]{NAME_REQ}, 1);
-      sendMessage(request);
+      try {
+        clearWorlds();
+        
+        sendMessage(new byte[]{NAME_REQ});
+      } catch (IOException ex) {
+        throw new UnsupportedOperationException();
+      }
     }
 
     @Override
-    protected void messageRecieved(DatagramPacket pack) {
-      switch(pack.getData()[0]) {
+    protected void messageRecieved(Object remote, byte[] pack) {
+      switch(pack[0]) {
         case NAME_REQ:
-          receiveNameRequest(pack);
+          receiveNameRequest(remote, pack);
           break;
         case NAME_RES:
           receiveNameResponse(pack);
@@ -205,38 +208,32 @@ public final class Universe extends ReusableObject {
     protected void managerAttached() {
     }
     
-    private void receiveNameRequest(DatagramPacket pack) {
+    private void receiveNameRequest(Object remote, byte[] pack) {
       for(World target : index.values()) {
         byte[] nameb;
-        try {
-          nameb = target.name.getBytes(NetworkManager.NETWORK_CHARSET);
-        } catch (UnsupportedEncodingException ex) {
-          log.log(Level.SEVERE, null, ex);
-          continue;
-        }
+        
+        nameb = target.name.getBytes(NetworkManager.NETWORK_CHARSET);
       
         //assemble the response packet.
         byte[] data = new byte[nameb.length + 3];
-        DatagramPacket res = new DatagramPacket(data, data.length);
 
         data[0] = NAME_RES;
         ByteUtils.toBytes(target.getWorldID(), 1, data);
         System.arraycopy(nameb, 0, data, 3, nameb.length);
-
-        sendMessage(res, pack.getAddress());
+        try {
+          sendMessage(data, remote);
+        } catch (IOException ex) {
+          throw new UnsupportedOperationException();
+        }
       }
     }
     
-    private void receiveNameResponse(DatagramPacket pack) {
+    private void receiveNameResponse(byte[] pack) {
       //decode the incoming packet
       String name;
-      short id = ByteUtils.toShort(pack.getData(), 1);
-      try {
-        name = new String(pack.getData(), 3, pack.getData().length - 3, NetworkManager.NETWORK_CHARSET);
-      } catch (UnsupportedEncodingException ex) {
-        log.log(Level.SEVERE, BAD_PACKET, new Object[] {pack.getAddress(), ex});
-        return;
-      }
+      short id = ByteUtils.toShort(pack, 1);
+      
+      name = new String(pack, 3, pack.length - 3, NetworkManager.NETWORK_CHARSET);
       
       World target = getObject(name);
       if(target == null) {
@@ -246,13 +243,13 @@ public final class Universe extends ReusableObject {
       setID(target, id);
     }
     
-    private void receiveRegionRequest(DatagramPacket pack) {
+    private void receiveRegionRequest(byte[] pack) {
       Coordinate coor = new Coordinate();
       
-      coor.x = ByteUtils.toInteger(pack.getData(), 1);
-      coor.y = ByteUtils.toInteger(pack.getData(), 5);
-      coor.z = ByteUtils.toInteger(pack.getData(), 9);
-      short wid = ByteUtils.toShort(pack.getData(), 13);
+      coor.x = ByteUtils.toInteger(pack, 1);
+      coor.y = ByteUtils.toInteger(pack, 5);
+      coor.z = ByteUtils.toInteger(pack, 9);
+      short wid = ByteUtils.toShort(pack, 13);
       
       Region reg = index.get(wid).getRegion(coor);
       
@@ -260,13 +257,16 @@ public final class Universe extends ReusableObject {
       byte[] data = new byte[regdata.length + 15];
       
       data[0] = REG_RES;
-      System.arraycopy(pack.getData(), 1, data, 1, 14);
+      System.arraycopy(pack, 1, data, 1, 14);
       System.arraycopy(regdata, 0, data, 15, regdata.length);
-      
-      sendMessage(new DatagramPacket(data, data.length));
+      try {
+        sendMessage(data);
+      } catch (IOException ex) {
+        throw new UnsupportedOperationException();
+      }
     }
     
-    private void receiveRegionResponse(DatagramPacket pack) {
+    private void receiveRegionResponse(byte[] pack) {
       
     }
     

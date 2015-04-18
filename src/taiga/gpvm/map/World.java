@@ -19,6 +19,7 @@
 
 package taiga.gpvm.map;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,7 +48,7 @@ public final class World extends ReusableObject {
   /**
    * Creates a new {@link World} with the given name.
    * 
-   * @param name The name of hte new {@link World}.
+   * @param name The name of the new {@link World}.
    */
   public World(String name) {
     super(name);
@@ -272,16 +273,21 @@ public final class World extends ReusableObject {
   }
 
   private void sendRegionRequest(Coordinate coor) {
-    byte[] data = new byte[15];
-    data[0] = Universe.Comms.REG_REQ;
-    
-    ByteUtils.toBytes(coor.x, 1, data);
-    ByteUtils.toBytes(coor.y, 5, data);
-    ByteUtils.toBytes(coor.z, 9, data);
-    ByteUtils.toBytes(getWorldID(), 13, data);
-    
-    Universe.Comms comms = getObject(HardcodedValues.NAME_COMMS);
-    comms.sendMessage(new DatagramPacket(data, data.length));
+    try {
+      byte[] data = new byte[15];
+      data[0] = Universe.Comms.REG_REQ;
+      
+      ByteUtils.toBytes(coor.x, 1, data);
+      ByteUtils.toBytes(coor.y, 5, data);
+      ByteUtils.toBytes(coor.z, 9, data);
+      ByteUtils.toBytes(getWorldID(), 13, data);
+      
+      Universe.Comms comms = getObject(HardcodedValues.NAME_COMMS);
+      comms.sendMessage(data);
+    } catch (IOException ex) {
+      //TODO: handle this better
+      Logger.getLogger(World.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   private boolean isServer() {

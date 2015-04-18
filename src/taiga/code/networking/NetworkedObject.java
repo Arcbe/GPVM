@@ -21,7 +21,8 @@ package taiga.code.networking;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import taiga.code.registration.NamedObject;
 
 /**
@@ -34,6 +35,7 @@ import taiga.code.registration.NamedObject;
  * @author russell
  */
 public abstract class NetworkedObject extends NamedObject {
+  private static final long serialVersionUID = 1L;
 
   /**
    * Creates a new {@link NetworkedObject} with th given name.
@@ -56,8 +58,8 @@ public abstract class NetworkedObject extends NamedObject {
    * @throws java.io.IOException Thrown if the {@link DatagramPacket} cannot be
    * sent for any reason.
    */
-  public void sendMessage(DatagramPacket pack) throws IOException {
-    manager.sendPacket(null, getID(), pack);
+  public final void sendMessage(byte[] pack) throws IOException {
+    sendMessage(pack, null);
   }
   
   /**
@@ -65,11 +67,16 @@ public abstract class NetworkedObject extends NamedObject {
    * then the destination is ignored as {@link DatagramPacket}s can only go to the server.
    * 
    * @param pack The {@link DatagramPacket} to send.
-   * @param dest The {@link InetAddress} of the destination.
+   * @param dest The object id key for the destination.
    * @throws java.io.IOException Thrown if the {@link DatagramPacket} cannot be
    * sent for any reason.
    */
-  public void sendMessage(DatagramPacket pack, InetAddress dest) throws IOException {
+  public final void sendMessage(byte[] pack, Object dest) throws IOException {
+    if(manager == null)
+      throw new IOException("Could not send message: No network manager avalaible.");
+    else if(pack == null)
+      throw new NullPointerException("Attempt to send a null packet.");
+    
     manager.sendPacket(dest, getID(), pack);
   }
   
@@ -101,21 +108,24 @@ public abstract class NetworkedObject extends NamedObject {
   protected final void attachManager(NetworkManager man) {
     manager = man;
     managerAttached();
+    
+    log.log(Level.FINE, "Network manager attached for {0}.", getName());
   }
   
   /**
    * Called when the {@link NetworkManager} for this {@link NetworkedObject} has
-   * successfully connected to a remote {@link NetworkManager} and been given an
-   * id for this {@link NetworkedObject}.
+   * connected to a remote server if it is a client manager and been given an id
+   * for the network, or if it is a server and ids have been generated.
    */
-  protected abstract void connected();
+  protected void connected() {}
   
   /**
    * Called when a {@link DatagramPacket} is received for this {@link NetworkedObject}.
    * 
-   * @param pack The received {@link DatagramPacket}.
+   * @param remote The key for the remote client that sent the packet.
+   * @param pack The received data.
    */
-  protected abstract void messageRecieved(DatagramPacket pack);
+  protected abstract void messageRecieved(Object remote, byte[] pack);
   
   /**
    * Called when a {@link NetworkManager} has discovered and attached to this
@@ -124,7 +134,7 @@ public abstract class NetworkedObject extends NamedObject {
   protected abstract void managerAttached();
   
   /**
-   * Called when a client is connected to the {@link NetworkManager} managing this
+   * Called when a client is fireConnected to the {@link NetworkManager} managing this
    * {@link NetworkedObject}.
    * 
    * @param clientkey An object that acts as an identifier for the new client.
@@ -132,7 +142,7 @@ public abstract class NetworkedObject extends NamedObject {
   protected void clientConnected(Object clientkey) {}
   
   /**
-   * Called when a client is disconnected from the {@link NetworkManager} managing
+   * Called when a client is disfireConnected from the {@link NetworkManager} managing
    * this {@link NetworkedObject}.
    * 
    * @param clientkey An object that acts as an identifier for the disconnect client.
@@ -144,4 +154,9 @@ public abstract class NetworkedObject extends NamedObject {
    */
   protected short id;
   private NetworkManager manager;
+  
+  private static final String locprefix = NetworkedObject.class.getName().toLowerCase();
+  
+  private static final Logger log = Logger.getLogger(locprefix,
+    System.getProperty("taiga.code.logging.text"));
 }

@@ -20,9 +20,8 @@
 package taiga.code.networking;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,9 +41,9 @@ import taiga.code.util.ByteUtils;
  */
 public abstract class NetworkManager extends NamedObject {
   /**
-   * The charset that will be used to encode {@link Strings} into bytes.
+   * The {@link Charset} that will be used to encode {@link Strings} into bytes.
    */
-  public static final String NETWORK_CHARSET = "UTF-16";
+  public static final Charset NETWORK_CHARSET = Charset.forName("UTF-16");
   /**
    * The id for all {@link NetworkManager}s when communicating between managers.
    */
@@ -53,6 +52,7 @@ public abstract class NetworkManager extends NamedObject {
    * The default timeout for network operation in milliseconds.
    */
   public static final int DEFAULT_TIMEOUT = 3000;
+  private static final long serialVersionUID = 1L;
 
   /**
    * Creates a new {@link NetworkManager} with the given name.
@@ -64,34 +64,30 @@ public abstract class NetworkManager extends NamedObject {
     
     index = new HashMap<>(0);
     objects = new HashMap<>(0);
+    curstate = State.initialized;
   }
   
   /**
    * Scans the registration tree that this {@link NetworkManager} is a part of
    * to find {@link NetworkedObject}s.  This method must be called in order for
    * any of the {@link NetworkedObject} to be attached to the {@link NetworkManager}.
-   * This method will also lock until all of the IDs are synced, or it times out.
+   * This method will also block until all of the IDs are synced, or it times out.
    * 
    * @throws java.util.concurrent.TimeoutException Thrown if the id synchronization
    *  times out.
    */
-  public void scanRegisteredObjects() throws TimeoutException {
-    log.log(Level.FINEST, "Scanning for networked objects.");
+  public void scanRegisteredObjects() throws TimeoutException, IOException {
+    log.log(Level.FINEST, "scanRegistereObjects()");
     
     ArrayList<NetworkedObject> rawobjs = new ArrayList<>(0);
     objects.clear();
     
-    NamedObject root = this;
-    while(root.getParent() != null)
-      root = root.getParent();
+    NamedObject root = getRoot();
     
     scan(root, rawobjs);
     
-    objects.clear();
-    rawobjs.stream().map((obj) -> {
+    rawobjs.stream().forEach((obj) -> {
       objects.put(obj.getFullName(), obj);
-      return obj;
-    }).forEach((obj) -> {
       obj.attachManager(this);
     });
     
@@ -103,7 +99,6 @@ public abstract class NetworkManager extends NamedObject {
       generateIDs();
     } else if(isConnected()) {
       syncIDs();
-      fireConnected();
     }
   }
   
@@ -115,33 +110,6 @@ public abstract class NetworkManager extends NamedObject {
   public int getTimeout() {
     return DEFAULT_TIMEOUT;
   }
-  
-  /**
-   * Returns whether this {@link NetworkManager} is acting as a server.  A
-   * {@link NetworkManager} may also act as a client regardless of whether its a
-   * server too.
-   * 
-   * @return Whether this {@link NetworkManager} is a server.
-   */
-  public abstract boolean isServer();
-  
-  /**
-   * Returns whether this {@link NetworkManager} is acting as a client.  A
-   * {@link NetworkManager} may also act as a server regardless of whether its a
-   * client too.
-   * 
-   * @return Whether this {@link NetworkManager} is a server.
-   */
-  public abstract boolean isClient();
-  
-  /**
-   * Checks whether this {@link NetworkManager} is connected to a network.  For
-   * a client this means that it is connected to a server, and for a server this
-   * mean that it is ready to accept clients.
-   * 
-   * @return Whether this {@link NetworkManager} is connected to a network.
-   */
-  public abstract boolean isConnected();
   
   /**
    * Returns a hash value for the attached {@link NetworkedObject}s.  This will
@@ -173,26 +141,42 @@ public abstract class NetworkManager extends NamedObject {
    * @param dest The key object associated with the desire remote client.
    * @param sysid The ID number of the {@link NetworkedObject} that is sending the
    *  {@link DatagramPacket}.
-   * @param msg The packet to send.
+   * @param msg The data packet to send.
    * @throws java.io.IOException Thrown if the message cannot be sent for any reason.
    */
-  protected abstract void sendPacket(Object dest, int sysid, DatagramPacket msg) throws IOException;
+  protected abstract void sendPacket(Object dest, int sysid, byte[] msg) throws IOException;
   
   /**
    * Called when a {@link Packet} is received from the network.
    * 
+   * @param remote The key for the remote client that sent the packet, or null if
+   *  this is a client manager.
    * @param pack The {@link DatagramPacket} that was received.
    * @param sysid The ID number of the system that the {@link DatagramPacket} is
    * for.
    */
-  protected void packetRecieved(DatagramPacket pack, int sysid) {
+  protected void packetRecieved(Object remote, byte[] pack, int sysid) {
     if(sysid == 0) {
-      switch(pack.getData()[0]) {
+      switch(pack[0]) {
         case SYNC_REQ:
-          receiveSyncRequest(pack);
+          receiveSyncRequest(remote, pack);
           return;
         case SYNC_RES:
           receiveSyncResponse(pack);
+          return;
+        case HASH_CHECK:
+          receiveHashCheck(remote, pack);
+          return;
+        case VALID_HASH:
+          curstate = State.validated;
+          synchronized (this) { this.notifyAll(); }
+          return;
+        case INVALID_RES:
+          curstate = State.initialized;
+          synchronized (this) { this.notifyAll(); }
+          return;
+        default:
+          log.log(Level.SEVERE, "Unknown packet type {0} received.", pack[0]);
           return;
       }
     }
@@ -204,65 +188,7 @@ public abstract class NetworkManager extends NamedObject {
       return;
     }
     
-    obj.messageRecieved(pack);
-  }
-  
-  /**
-   * This method should be called when this {@link NetworkManager} connects to a
-   * server.
-   * 
-   * @throws java.util.concurrent.TimeoutException Thrown if this operation times
-   * out. The time out duration is determined by the
-   */
-  protected void connected() throws TimeoutException {
-    syncIDs();
-    
-    fireConnected();
-  }
-  
-  private void generateIDs() {
-    short curid = 1;
-    index.clear();
-
-    for(NetworkedObject obj : objects.values()) {
-      curid++;
-      obj.id = curid;
-      index.put(obj.id, obj);
-
-      log.log(Level.FINEST, ID_ASSIGNED, new Object[]{obj.getFullName(), obj.id});
-    }
-
-    synced = true;
-  }
-  
-  private void syncIDs() throws TimeoutException {
-    if(!isConnected() || !isClient() || objects.isEmpty()) return;
-    
-    index.clear();
-    objects.values().stream().forEach((obj) -> {
-      try {
-        sendSyncRequest(obj);
-      } catch (IOException ex) {
-        log.log(Level.SEVERE, "Exception send request for object synchronization.", ex);
-      }
-    });
-
-    long timeout = System.currentTimeMillis() + getTimeout();
-    while(System.currentTimeMillis() <= timeout && !synced) {
-      
-      try {
-        synchronized(this) {
-          this.wait(getTimeout());
-        }
-      } catch(InterruptedException ex) {
-        if(synced) return;
-      }
-    }
-    
-    if(!synced)
-      throw new TimeoutException(TextLocalizer.localize(SYNC_TIMEOUT_EX));
-    
-    log.log(Level.INFO, IDS_SYNCHRONIZED);
+    obj.messageRecieved(remote, pack);
   }
   
   private void scan(NamedObject root, List<NetworkedObject> list) {
@@ -276,16 +202,85 @@ public abstract class NetworkManager extends NamedObject {
       scan(obj, list);
   }
   
+  private void generateIDs() {
+    log.log(Level.FINEST, "generateIDs()");
+    curstate = State.validated;
+    
+    short curid = 1;
+    index.clear();
+
+    for(NetworkedObject obj : objects.values()) {
+      curid++;
+      obj.id = curid;
+      index.put(obj.id, obj);
+
+      log.log(Level.FINE, "Network object {0} assigned id {1}.", new Object[]{obj.getFullName(), obj.id});
+    }
+
+    //ids are correct since they are created locally, and no further action is
+    //required.
+    curstate = State.connected;
+  }
+  
+  private synchronized void syncIDs() throws TimeoutException, IOException {
+    if(!isConnected() || !isClient() || objects.isEmpty()) return;
+    
+    log.log(Level.INFO, "Synchronizing with remote server.");
+    
+    checkCompatibility();
+    
+    index.clear();
+    objects.values().stream().forEach((obj) -> {
+      try {
+        sendSyncRequest(obj);
+      } catch (IOException ex) {
+        log.log(Level.SEVERE, "Exception sending request for object synchronization.", ex);
+      }
+    });
+
+    long timeout = System.currentTimeMillis() + getTimeout();
+    while(System.currentTimeMillis() <= timeout) {
+      
+      try {
+        this.wait(getTimeout());
+      } catch(InterruptedException ex) {
+        if(curstate == State.connected) break;
+      }
+    }
+    
+    if(curstate != State.connected)
+      throw new TimeoutException(TextLocalizer.localize(SYNC_TIMEOUT_EX));
+    
+    log.log(Level.INFO, "Network ids synchronized with remote server.");
+  }
+  
+  private synchronized void checkCompatibility() throws TimeoutException, IOException {
+    long hash = getObjectHash();
+    log.log(Level.FINEST, "checkCompatibility() : {0}", Long.toHexString(hash).toUpperCase());
+    curstate = State.bound;
+    
+    //send the hash check packet
+    byte[] pack = ByteUtils.toBytes(hash, 1, new byte[9]);
+    pack[0] = HASH_CHECK;
+    sendPacket(null, NETWORK_MANAGER_ID, pack);
+    
+    //wait for the response.
+    long timeout = System.currentTimeMillis() + getTimeout();
+    while(System.currentTimeMillis() < timeout) {
+      try {
+        this.wait(timeout - System.currentTimeMillis());
+      } catch(InterruptedException ex) {
+        if(curstate == State.validated) return;
+      }
+    }
+    
+    throw new TimeoutException("Timed out waiting for hash check with server.");
+  }
+  
   private void sendSyncRequest(NetworkedObject obj) throws IOException {
     byte[] str;
     
-    try {
-      str = obj.getFullName().getBytes(NETWORK_CHARSET);
-    } catch (UnsupportedEncodingException ex) {
-      log.log(Level.SEVERE, ENCODING_ERR, ex);
-      
-      throw new RuntimeException(ex);
-    }
+    str = obj.getFullName().getBytes(NETWORK_CHARSET);
     
     byte[] data = new byte[str.length + 1];
     data[0] = SYNC_REQ;
@@ -294,60 +289,72 @@ public abstract class NetworkManager extends NamedObject {
     System.arraycopy(str, 0, data, 1, str.length);
     DatagramPacket p;
     
-    sendPacket(null, NETWORK_MANAGER_ID, new DatagramPacket(data, data.length));
+    sendPacket(null, NETWORK_MANAGER_ID, data);
   }
   
-  private void receiveSyncResponse(DatagramPacket pack) {
+  private void receiveHashCheck(Object remote, byte[] data) {
+    long hash = ByteUtils.toLong(data, 1);
+    
+    try {
+      boolean valid = hash == getObjectHash();
+      sendPacket(remote, NETWORK_MANAGER_ID, new byte[]{(valid ? VALID_HASH : INVALID_RES)});
+      
+      if(valid) log.log(Level.INFO, "Valid client hash received from {0}.", remote);
+      else log.log(Level.WARNING, "Invalid hash {0} received from client {1}.  Expected hash {2}", new Object[]{
+        hash,
+        remote,
+        getObjectHash()});
+    } catch (IOException ex) {
+      Logger.getLogger(NetworkManager.class.getName()).log(Level.SEVERE, "Exception while responding to hash check.", ex);
+    }
+  }
+  
+  private void receiveSyncResponse(byte[] pack) {
     NetworkedObject obj;
     String oname;
-    try {
-      oname = new String(pack.getData(), 3, pack.getData().length - 3, NETWORK_CHARSET);
-      obj = objects.get(oname);
-    } catch (UnsupportedEncodingException ex) { 
-      log.log(Level.SEVERE, ENCODING_ERR, ex);
-      
-      return;
-    }
     
-    short id = ByteUtils.toShort(pack.getData(), 1);
+    oname = new String(pack, 3, pack.length - 3, NETWORK_CHARSET);
+    obj = objects.get(oname);
+    
+    short id = ByteUtils.toShort(pack, 1);
     
     index.put(id, obj);
     obj.id = id;
     
     log.log(Level.FINE, ID_ASSIGNED, new Object[] {obj.getFullName(), id});
     
-    synced = index.size() == objects.size();
-    if(synced) synchronized(this) {this.notifyAll();}
+    //check if this is the last sync response.
+    if(index.size() == objects.size()) {
+      fireConnected();
+      synchronized(this) { this.notifyAll(); }
+    }
   }
   
-  private void receiveSyncRequest(DatagramPacket pack) {
+  private void receiveSyncRequest(Object remote, byte[] pack) {
     String oname;
-    try {
-      oname = new String(pack.getData(), 1, pack.getData().length - 1, NETWORK_CHARSET);
-    } catch (UnsupportedEncodingException ex) {
-      log.log(Level.SEVERE, ENCODING_ERR, ex);
-      
-      return;
-    }
+    
+    oname = new String(pack, 1, pack.length - 1, NETWORK_CHARSET);
     
     short id = objects.get(oname).id;
     
     //syncresponse is the id followed by the encoded string.
     //there are two more bytes needed for the objects id.
-    byte[] data = new byte[pack.getData().length + 2];
+    byte[] data = new byte[pack.length + 2];
     data[0] = SYNC_RES;
     
     System.arraycopy(ByteUtils.toBytes(id), 0, data, 1, 2);
-    System.arraycopy(pack.getData(), 1, data, 3, pack.getData().length - 1);
+    System.arraycopy(pack, 1, data, 3, pack.length - 1);
     
     try {
-      sendPacket(pack.getAddress(), NETWORK_MANAGER_ID, new DatagramPacket(data, data.length));
+      sendPacket(remote, NETWORK_MANAGER_ID, data);
     } catch (IOException ex) {
       Logger.getLogger(NetworkManager.class.getName()).log(Level.SEVERE, "Exception responding to object synchronization request.", ex);
     }
   }
   
   private void fireConnected() {
+    curstate = State.connected;
+    
     objects.values().stream().forEach((obj) -> {
       obj.connected();
     });
@@ -365,14 +372,69 @@ public abstract class NetworkManager extends NamedObject {
     });
   }
   
+  /**
+   * This method should be called when this {@link NetworkManager} connects to a
+   * server and is ready to begin synchronizing ids.
+   * 
+   * @throws java.util.concurrent.TimeoutException Thrown if this operation times
+   * out. The time out duration is determined by the
+   * @throws IOException If there is an exception while trying to send a datagram
+   * to the server.
+   */
+  protected void connect() throws TimeoutException, IOException {
+    syncIDs();
+    
+    fireConnected();
+  }
+  
   private final Map<String, NetworkedObject> objects;
   private final Map<Short, NetworkedObject> index;
-  private boolean synced;
+  private State curstate;
+  
+  private enum State {
+    initialized,
+    bound,
+    validated,
+    connected
+  }
+  
+  /**
+   * Returns whether this {@link NetworkManager} is acting as a server.  A
+   * {@link NetworkManager} may also act as a client regardless of whether its a
+   * server too.
+   * 
+   * @return Whether this {@link NetworkManager} is a server.
+   */
+  public abstract boolean isServer();
+  
+  /**
+   * Returns whether this {@link NetworkManager} is acting as a client.  A
+   * {@link NetworkManager} may also act as a server regardless of whether its a
+   * client too.
+   * 
+   * @return Whether this {@link NetworkManager} is a server.
+   */
+  public abstract boolean isClient();
+  
+  /**
+   * Checks whether this {@link NetworkManager} is connected to a network.  For
+ a client this means that it is connected to a server, and for a server this
+ mean that it is ready to accept clients.
+   * 
+   * @return Whether this {@link NetworkManager} is connected to a network.
+   */
+  public abstract boolean isConnected();
   
   // id for a sync request, this packet has a single string encoded as bytes.
   private static final byte SYNC_REQ = 0;
   //id for a sync response, this has an short id followed by a single string.
   private static final byte SYNC_RES = 1;
+  //id for a check of the hash values between the server and client.
+  private static final byte HASH_CHECK = 2;
+  //id for a signal that the client and server are not compatible.
+  private static final byte INVALID_RES = 3;
+  //id for a signal that the hash values match.
+  private static final byte VALID_HASH = 4;
   
   private static final String locprefix = NetworkManager.class.getName().toLowerCase();
   

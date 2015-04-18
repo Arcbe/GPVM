@@ -19,7 +19,7 @@
 
 package taiga.gpvm.registry;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,6 +35,7 @@ import taiga.code.util.ByteUtils;
  * @param <T> The type of object that this {@link NetworkRegistry} will use.
  */
 public class NetworkRegistry<T extends RegistryEntry> extends Registry<T> {
+  private static final long serialVersionUID = 1L;
 
   /**
    * Creates a new {@link NetworkRegistry} with the given name.
@@ -54,36 +55,35 @@ public class NetworkRegistry<T extends RegistryEntry> extends Registry<T> {
       super(NAME);
     }
     
-    public void syncEntry(String ename) {
+    public void syncEntry(String ename) throws IOException {
       byte[] enbytes;
-      try {
-        enbytes = ename.getBytes(NetworkManager.NETWORK_CHARSET);
-      } catch (UnsupportedEncodingException ex) {
-        log.log(Level.SEVERE, SYNC_REQ_EX, ex);
-        
-        return;
-      }
+      
+      enbytes = ename.getBytes(NetworkManager.NETWORK_CHARSET);
       
       byte[] data = new byte[enbytes.length + 1];
       data[0] = SYNC_REQ;
       System.arraycopy(enbytes, 0, data, 1, enbytes.length);
       
-      sendMessage(new DatagramPacket(data, data.length));
+      sendMessage(data);
     }
 
     @Override
     protected void connected() {
-      for(RegistryEntry ent : getEntries())
-        syncEntry(ent.name);
-      
-      waitForSync();
+      try {
+        for(RegistryEntry ent : getEntries())
+          syncEntry(ent.name);
+        
+        waitForSync();
+      } catch (IOException ex) {
+        throw new UnsupportedOperationException();
+      }
     }
 
     @Override
-    protected void messageRecieved(DatagramPacket pack) {
-      switch(pack.getData()[0]) {
+    protected void messageRecieved(Object remote, byte[] pack) {
+      switch(pack[0]) {
         case SYNC_REQ:
-          receiveSyncRequest(pack);
+          receiveSyncRequest(remote, pack);
           break;
         case SYNC_RES:
           receiveSyncResponse(pack);
@@ -99,17 +99,12 @@ public class NetworkRegistry<T extends RegistryEntry> extends Registry<T> {
       //TODO: implement this
     }
     
-    private void receiveSyncResponse(DatagramPacket pack) {
+    private void receiveSyncResponse(byte[] pack) {
       String ename;
-      try {
-        ename = new String(pack.getData(), 5, pack.getData().length - 5, NetworkManager.NETWORK_CHARSET);
-      } catch (UnsupportedEncodingException ex) {
-        log.log(Level.SEVERE, SYNC_REQ_EX, ex);
-        
-        return;
-      }
       
-      int id = ByteUtils.toInteger(pack.getData(), 1);
+      ename = new String(pack, 5, pack.length - 5, NetworkManager.NETWORK_CHARSET);
+      
+      int id = ByteUtils.toInteger(pack, 1);
       
       RegistryEntry entry = getEntry(ename);
       if(entry == null) {
@@ -121,15 +116,10 @@ public class NetworkRegistry<T extends RegistryEntry> extends Registry<T> {
       }
     }
     
-    private void receiveSyncRequest(DatagramPacket pack) {
+    private void receiveSyncRequest(Object remote, byte[] pack) {
       String ename;
-      try {
-        ename = new String(pack.getData(), 1, pack.getData().length - 1, NetworkManager.NETWORK_CHARSET);
-      } catch (UnsupportedEncodingException ex) {
-        log.log(Level.SEVERE, SYNC_REQ_EX, ex);
-        
-        return;
-      }
+      
+      ename = new String(pack, 1, pack.length - 1, NetworkManager.NETWORK_CHARSET);
       
       RegistryEntry entry = getEntry(ename);
       if(entry == null) {
@@ -139,13 +129,17 @@ public class NetworkRegistry<T extends RegistryEntry> extends Registry<T> {
       
       int eid = entry.getID();
       
-      byte[] data = new byte[pack.getData().length + 4];
+      byte[] data = new byte[pack.length + 4];
       
       data[0] = SYNC_RES;
       ByteUtils.toBytes(eid, 1, data);
-      System.arraycopy(pack.getData(), 1, data, 5, pack.getData().length - 1);
+      System.arraycopy(pack, 1, data, 5, pack.length - 1);
       
-      sendMessage(new DatagramPacket(data, data.length), pack.getAddress());
+      try {
+        sendMessage(data, remote);
+      } catch (IOException ex) {
+        throw new UnsupportedOperationException();
+      }
     }
     
     private static final byte SYNC_REQ = 0;

@@ -19,8 +19,8 @@
 
 package taiga.code.networking;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,8 +54,9 @@ public class LoopbackNetwork extends NetworkManager {
    * 
    * @param other The other {@link LoopbackNetwork} to connect to.
    * @throws TimeoutException Thrown if the connection takes to long to establish somehow.
+   * @throws java.io.IOException
    */
-  public void connect(LoopbackNetwork other) throws TimeoutException {
+  public void connect(LoopbackNetwork other) throws TimeoutException, IOException {
     connection = other;
     other.connection = this;
     
@@ -63,9 +64,9 @@ public class LoopbackNetwork extends NetworkManager {
     other.exe = Executors.newSingleThreadExecutor();
     
     if(client)
-      connected();
+      connect();
     else if(other.client)
-      other.connected();
+      other.connect();
   }
 
   @Override
@@ -84,10 +85,10 @@ public class LoopbackNetwork extends NetworkManager {
   }
 
   @Override
-  protected void sendPacket(Object dest, int sysid, final DatagramPacket msg) {
+  protected void sendPacket(Object dest, int sysid, final byte[] msg) {
     exe.execute(() -> {
       if(connection != null)
-        connection.packetRecieved(msg, sysid);
+        connection.packetRecieved(dest, msg, sysid);
     });
   }
   

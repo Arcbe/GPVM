@@ -21,9 +21,10 @@ package taiga.code.networking.jnio;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import taiga.code.networking.NetworkManager;
@@ -37,19 +38,23 @@ public class JNIONamedClient extends NetworkManager {
     super(name);
   }
   
-  public void connect(InetSocketAddress addr) throws IOException {
+  public void connect(SocketAddress addr) throws IOException, TimeoutException {
     log.log(Level.FINEST, "connect({0})", addr);
     
+    //Open a channel to the remote address
     channel = DatagramChannel.open();
     channel.connect(addr);
     
+    //create a thread to listen for inbound datagrams
     listener = new Thread(() -> {
+      log.log(Level.FINEST, "Starting datagram listener thread.");
       ByteBuffer buffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
       
       while(channel.isConnected()) {
         buffer.clear();
         
         try {
+          //get the message from the channel.
           channel.receive(buffer);
           receiveMessage(buffer);
         } catch(IOException ex) {
@@ -59,9 +64,14 @@ public class JNIONamedClient extends NetworkManager {
           fireClientDisconnect(this);
         }
       }
+      
+      log.log(Level.FINEST, "Datagram listener thread finished.");
     }, "UDP listener");
+    listener.start();
     
+    //and finally notify the super class that we are connected.
     log.log(Level.INFO, "Opened connection to {0}.", addr);
+    connect();
   }
 
   @Override
@@ -80,18 +90,35 @@ public class JNIONamedClient extends NetworkManager {
   }
 
   @Override
-  protected void sendPacket(Object dest, int sysid, DatagramPacket msg) throws IOException {
-    if(channel == null || !channel.isConnected()) return;
+  protected void sendPacket(Object dest, int sysid, byte[] msg) throws IOException {
+    if(!isConnected()) return;
     
+    ByteBuffer buffer = buffers.get();
+    buffer.clear();
     
+    buffer.putInt(sysid);
+    buffer.put(msg);
+    
+    buffer.flip();
+    channel.write(buffer);
   }
   
   private void receiveMessage(ByteBuffer buffer) {
+    int sysid = buffer.getInt();
+    byte[] data = new byte[buffer.remaining()];
+    buffer.get(data);
     
+    packetRecieved(null, data, sysid);
   }
   
   private DatagramChannel channel;
   private Thread listener;
+  private static final ThreadLocal<ByteBuffer> buffers = new ThreadLocal<ByteBuffer>() {
+    @Override
+    protected ByteBuffer initialValue() {
+      return ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
+    }
+  };
 
   private static final Logger log = Logger.getLogger(JNIONamedClient.class.getName().toLowerCase());
 }

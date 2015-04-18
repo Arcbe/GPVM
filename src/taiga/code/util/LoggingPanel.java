@@ -44,9 +44,10 @@ import taiga.code.text.TextLocalizer;
  */
 @SuppressWarnings("ClassWithMultipleLoggers")
 public class LoggingPanel extends JPanel {
+  private static final long serialVersionUID = 1L;
   
   public LoggingPanel() {
-    records = new ArrayList<>();
+    records = new ArrayList<>(10);
     maxrecords = -1;
     handler = new MessageHandler();
     source = Logger.getLogger("");
@@ -74,7 +75,7 @@ public class LoggingPanel extends JPanel {
    * @param msgs The maximum amount of {@link LogRecord}s to keep.
    */
   public LoggingPanel(Logger log, int msgs) {
-    records = new ArrayList<>();
+    records = new ArrayList<>(10);
     maxrecords = msgs;
     handler = new MessageHandler();
     source = log;
@@ -114,6 +115,8 @@ public class LoggingPanel extends JPanel {
     @Override
     public void publish(LogRecord record) {
       records.add(record);
+      if(records.isEmpty()) return;
+      
       thandler.fireTableRowsInserted(records.size() - 1, records.size() - 1);
     }
 
@@ -126,6 +129,7 @@ public class LoggingPanel extends JPanel {
   }
   
   private final class TableHandler extends AbstractTableModel {
+    private static final long serialVersionUID = 1L;
 
     @Override
     public int getRowCount() {

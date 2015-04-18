@@ -33,13 +33,13 @@ import java.util.logging.Logger;
 import taiga.code.networking.NetworkedObject;
 import taiga.code.registration.NamedSystem;
 import taiga.code.util.Updateable;
-import taiga.gpvm.util.geom.Coordinate;
 import taiga.gpvm.HardcodedValues;
 import taiga.gpvm.map.MutatorPresentException;
 import taiga.gpvm.map.Universe;
 import taiga.gpvm.map.UniverseListener;
 import taiga.gpvm.map.World;
 import taiga.gpvm.map.WorldMutator;
+import taiga.gpvm.util.geom.Coordinate;
 
 /**
  * A class that receives all update requests for the {@link Universe}
@@ -57,9 +57,9 @@ public class WorldUpdater extends NamedSystem implements UniverseListener {
     addChild(new WorldComms());
     
     changes = new PriorityQueue<>();
-    ups = new ArrayList<>();
-    mutators = new HashMap<>();
-    listeners = new ArrayList<>();
+    ups = new ArrayList<>(0);
+    mutators = new HashMap<>(0);
+    listeners = new ArrayList<>(0);
   }
 
   @Override
@@ -290,7 +290,7 @@ public class WorldUpdater extends NamedSystem implements UniverseListener {
     }
 
     @Override
-    protected void messageRecieved(DatagramPacket pack) {
+    protected void messageRecieved(Object remote, byte[] pack) {
     }
 
     @Override

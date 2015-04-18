@@ -168,6 +168,21 @@ public class NamedObject implements Iterable<NamedObject>, Serializable, Compara
   }
   
   /**
+   * Returns the root element of the naming tree that this {@link NamedObject}
+   * is a part of.
+   * 
+   * @return The root element of the naming tree.
+   */
+  public final NamedObject getRoot() {
+    NamedObject root = this;
+    
+    while(root.getParent() != null)
+      root = root.getParent();
+    
+    return root;
+  }
+  
+  /**
    * Retrieves the child of this {@link NamedObject} with the given
    * name if there is one, otherwise this returns null.
    * 

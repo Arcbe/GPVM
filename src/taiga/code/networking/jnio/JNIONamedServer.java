@@ -85,7 +85,7 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
   }
 
   @Override
-  protected void sendPacket(Object dest, int sysid, DatagramPacket msg) throws IOException {
+  protected void sendPacket(Object dest, int sysid, byte[] msg) throws IOException {
     if(!(dest instanceof JNioChannel) || !isConnected())
       throw new IOException("No valid connection for client " + dest);
     
@@ -93,7 +93,7 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
     buf.clear();
     
     buf.putInt(sysid);
-    buf.put(msg.getData());
+    buf.put(msg);
     
     if(dest instanceof JNioDatagramChannel) {
       
@@ -117,8 +117,7 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
     byte[] bytes = new byte[buf.remaining()];
     
     buf.get(bytes);
-    DatagramPacket pack = new DatagramPacket(bytes, bytes.length);
-    packetRecieved(pack, sysid);
+    packetRecieved(jnsc, bytes, sysid);
   }
 
   @Override
@@ -137,8 +136,7 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
     byte[] bytes = new byte[buf.remaining()];
     
     buf.get(bytes);
-    DatagramPacket pack = new DatagramPacket(bytes, bytes.length);
-    packetRecieved(pack, sysid);
+    packetRecieved(jndc, bytes, sysid);
   }
 
   @Override
