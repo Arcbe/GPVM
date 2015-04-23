@@ -20,10 +20,11 @@
 package taiga.code.networking.jnio;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
+import java.nio.channels.SocketChannel;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,20 +43,21 @@ public class JNIONamedClient extends NetworkManager {
     log.log(Level.FINEST, "connect({0})", addr);
     
     //Open a channel to the remote address
-    channel = DatagramChannel.open();
-    channel.connect(addr);
+    channel = SocketChannel.open(addr);
     
     //create a thread to listen for inbound datagrams
     listener = new Thread(() -> {
       log.log(Level.FINEST, "Starting datagram listener thread.");
       ByteBuffer buffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
       
-      while(channel.isConnected()) {
+      while(isConnected()) {
         buffer.clear();
         
         try {
           //get the message from the channel.
-          channel.receive(buffer);
+          buffer.limit(
+            channel.read(buffer));
+          buffer.rewind();
           receiveMessage(buffer);
         } catch(IOException ex) {
           log.log(Level.SEVERE, "Exception occur while waiting for network data.", ex);
@@ -90,13 +92,14 @@ public class JNIONamedClient extends NetworkManager {
   }
 
   @Override
-  protected void sendPacket(Object dest, int sysid, byte[] msg) throws IOException {
+  protected void sendPacket(Object dest, short sysid, byte[] msg) throws IOException {
     if(!isConnected()) return;
     
     ByteBuffer buffer = buffers.get();
     buffer.clear();
     
-    buffer.putInt(sysid);
+    buffer.putShort((short) msg.length);
+    buffer.putShort(sysid);
     buffer.put(msg);
     
     buffer.flip();
@@ -104,14 +107,14 @@ public class JNIONamedClient extends NetworkManager {
   }
   
   private void receiveMessage(ByteBuffer buffer) {
-    int sysid = buffer.getInt();
+    short sysid = buffer.getShort();
     byte[] data = new byte[buffer.remaining()];
     buffer.get(data);
     
     packetRecieved(null, data, sysid);
   }
   
-  private DatagramChannel channel;
+  private SocketChannel channel;
   private Thread listener;
   private static final ThreadLocal<ByteBuffer> buffers = new ThreadLocal<ByteBuffer>() {
     @Override

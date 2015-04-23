@@ -114,6 +114,8 @@ public class LoggingPanel extends JPanel {
 
     @Override
     public void publish(LogRecord record) {
+      if(record == null) return;
+      
       records.add(record);
       if(records.isEmpty()) return;
       

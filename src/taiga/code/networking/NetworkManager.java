@@ -144,7 +144,7 @@ public abstract class NetworkManager extends NamedObject {
    * @param msg The data packet to send.
    * @throws java.io.IOException Thrown if the message cannot be sent for any reason.
    */
-  protected abstract void sendPacket(Object dest, int sysid, byte[] msg) throws IOException;
+  protected abstract void sendPacket(Object dest, short sysid, byte[] msg) throws IOException;
   
   /**
    * Called when a {@link Packet} is received from the network.
@@ -155,7 +155,7 @@ public abstract class NetworkManager extends NamedObject {
    * @param sysid The ID number of the system that the {@link DatagramPacket} is
    * for.
    */
-  protected void packetRecieved(Object remote, byte[] pack, int sysid) {
+  protected void packetRecieved(Object remote, byte[] pack, short sysid) {
     if(sysid == 0) {
       switch(pack[0]) {
         case SYNC_REQ:
@@ -301,9 +301,9 @@ public abstract class NetworkManager extends NamedObject {
       
       if(valid) log.log(Level.INFO, "Valid client hash received from {0}.", remote);
       else log.log(Level.WARNING, "Invalid hash {0} received from client {1}.  Expected hash {2}", new Object[]{
-        hash,
+        Long.toHexString(hash).toUpperCase(),
         remote,
-        getObjectHash()});
+        Long.toHexString(getObjectHash()).toUpperCase()});
     } catch (IOException ex) {
       Logger.getLogger(NetworkManager.class.getName()).log(Level.SEVERE, "Exception while responding to hash check.", ex);
     }

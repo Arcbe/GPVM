@@ -20,10 +20,11 @@
 package taiga.code.networking.jnio;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.frozencode.jniolib.server.JNioBindingParameters;
@@ -64,7 +65,7 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
   public void openConnection(InetSocketAddress addr) throws IOException {
     log.log(Level.FINEST, "openConnection({0})", addr);
     
-    server.bindUDPListeningAddress(addr, this);
+    server.bindTCPListeningAddress(addr, this);
     
     log.log(Level.INFO, "Connection on address {0} opened.", addr);
   }
@@ -85,39 +86,35 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
   }
 
   @Override
-  protected void sendPacket(Object dest, int sysid, byte[] msg) throws IOException {
+  protected void sendPacket(Object dest, short sysid, byte[] msg) throws IOException {
     if(!(dest instanceof JNioChannel) || !isConnected())
       throw new IOException("No valid connection for client " + dest);
     
     ByteBuffer buf = buffers.get();
     buf.clear();
     
+    buf.putShort((short) (msg.length + 1));
     buf.putInt(sysid);
     buf.put(msg);
     
-    if(dest instanceof JNioDatagramChannel) {
+    if(dest instanceof WritableByteChannel) {
       
-      ((JNioDatagramChannel) dest).send(buf, null);
+      ((WritableByteChannel) dest).write(buf);
     }
   }
 
   @Override
   public void onDataRecieved(JNioStreamChannel jnsc) {
-    ByteBuffer buf = buffers.get();
-    
     try {
-      buf.clear();
-      jnsc.read(buf);
+      Message msg = readMessage(jnsc);
+      while(msg != null) {
+        packetRecieved(jnsc, msg.msg, msg.sysid);
+        
+        msg = readMessage(jnsc);
+      }
     } catch (IOException ex) {
       log.log(Level.WARNING, "Exception while receiving network message.", ex);
     }
-    
-    buf.rewind();
-    int sysid = buf.getInt();
-    byte[] bytes = new byte[buf.remaining()];
-    
-    buf.get(bytes);
-    packetRecieved(jnsc, bytes, sysid);
   }
 
   @Override
@@ -132,7 +129,7 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
     }
     
     buf.rewind();
-    int sysid = buf.getInt();
+    short sysid = buf.getShort();
     byte[] bytes = new byte[buf.remaining()];
     
     buf.get(bytes);
@@ -149,6 +146,37 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
     fireClientDisconnect(arg0);
   }
   
+  private Message readMessage(ReadableByteChannel chan) throws IOException {
+    ByteBuffer buf = buffers.get();
+    Message msg = new Message();
+    int read = 0;
+    
+    //get the header for the message.
+    buf.clear();
+    buf.limit(4);
+    read = chan.read(buf);
+    buf.rewind();
+    
+    //if nothing was read then we are at the end of the channel for now.
+    if(read == 0) return null;
+    if(read != 4) throw new IOException("Could not read header of network packet.");
+    
+    short size = buf.getShort();
+    msg.sysid = buf.getShort();
+    msg.msg = new byte[size];
+    
+    //read in the message.
+    buf.rewind();
+    buf.limit(size);
+    read = chan.read(buf);
+    buf.rewind();
+    
+    if(read != size) throw new IOException("Could not read entire network packet.");
+    buf.get(msg.msg);
+    
+    return msg;
+  }
+  
   private final JNioServer server;
   private static final ThreadLocal<ByteBuffer> buffers = new ThreadLocal<ByteBuffer>() {
 
@@ -157,6 +185,11 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
       return ByteBuffer.allocateDirect(JNioBindingParameters.DEFAULT_BUFFER_SIZE);
     }
   };
+  
+  private static class Message {
+    short sysid;
+    byte[] msg;
+  }
   
   private static final String locprefix = JNIONamedServer.class.getName().toLowerCase();
   

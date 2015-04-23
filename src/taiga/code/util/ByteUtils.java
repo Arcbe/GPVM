@@ -19,6 +19,9 @@
 
 package taiga.code.util;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 /**
  * Various conveniences methods for dealing with bytes including encoding
  * primitives into byte arrays.
@@ -75,15 +78,9 @@ public class ByteUtils {
    * @return A reference to the given byte array.
    */
   public static byte[] toBytes(long l, int offset, byte[] out) {
-    
-    out[offset + 7] = (byte) (l >> 56);
-    out[offset + 6] = (byte) (l >> 48);
-    out[offset + 5] = (byte) (l >> 40);
-    out[offset + 4] = (byte) (l >> 32);
-    out[offset + 3] = (byte) (l >> 24);
-    out[offset + 2] = (byte) (l >> 16);
-    out[offset + 1] = (byte) (l >> 8);
-    out[offset] = (byte) (l);
+    ByteBuffer.wrap(out, offset, 8)
+      .order(ByteOrder.BIG_ENDIAN)
+      .putLong(l);
     
     return out;
   }
@@ -192,18 +189,11 @@ public class ByteUtils {
    * @param offset The offset into the array for the bytes to convert.
    * @return The long value of the bytes.
    */
-  public final static int toLong(final byte[] b, final int offset) {
-    int result;
+  public final static long toLong(final byte[] b, final int offset) {
+    ByteBuffer buf = ByteBuffer.wrap(b, offset, b.length - offset);
     
-    result = b[offset];
-    result |= (long)(b[offset + 1]) << 8;
-    result |= (long)(b[offset + 2]) << 16;
-    result |= (long)(b[offset + 3]) << 24;
-    result |= (long)(b[offset + 4]) << 32;
-    result |= (long)(b[offset + 5]) << 40;
-    result |= (long)(b[offset + 6]) << 48;
-    result |= (long)(b[offset + 7]) << 56;
+    buf.order(ByteOrder.BIG_ENDIAN);
     
-    return result;
+    return buf.getLong();
   }
 }

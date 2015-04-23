@@ -20,7 +20,6 @@
 package taiga.code.networking;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -85,7 +84,7 @@ public class LoopbackNetwork extends NetworkManager {
   }
 
   @Override
-  protected void sendPacket(Object dest, int sysid, final byte[] msg) {
+  protected void sendPacket(Object dest, short sysid, final byte[] msg) {
     exe.execute(() -> {
       if(connection != null)
         connection.packetRecieved(dest, msg, sysid);
