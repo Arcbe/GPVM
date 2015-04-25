@@ -51,7 +51,7 @@ public abstract class NetworkManager extends NamedObject {
   /**
    * The default timeout for network operation in milliseconds.
    */
-  public static final int DEFAULT_TIMEOUT = 3000;
+  public static final int DEFAULT_TIMEOUT = 5000;
   private static final long serialVersionUID = 1L;
 
   /**
@@ -169,10 +169,12 @@ public abstract class NetworkManager extends NamedObject {
           return;
         case VALID_HASH:
           curstate = State.validated;
+          log.log(Level.FINE, "Network object hash validated.");
           synchronized (this) { this.notifyAll(); }
           return;
         case INVALID_RES:
           curstate = State.initialized;
+          log.log(Level.WARNING, "Network manager is not compatible with remote manager.");
           synchronized (this) { this.notifyAll(); }
           return;
         default:
@@ -242,7 +244,7 @@ public abstract class NetworkManager extends NamedObject {
     while(System.currentTimeMillis() <= timeout) {
       
       try {
-        this.wait(getTimeout());
+        this.wait(timeout);
       } catch(InterruptedException ex) {
         if(curstate == State.connected) break;
       }
@@ -274,7 +276,8 @@ public abstract class NetworkManager extends NamedObject {
       }
     }
     
-    throw new TimeoutException("Timed out waiting for hash check with server.");
+    if(curstate != State.validated)
+      throw new TimeoutException("Timed out waiting for hash check with server.");
   }
   
   private void sendSyncRequest(NetworkedObject obj) throws IOException {

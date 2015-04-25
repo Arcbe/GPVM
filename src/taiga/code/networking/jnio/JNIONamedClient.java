@@ -58,7 +58,8 @@ public class JNIONamedClient extends NetworkManager {
           buffer.limit(
             channel.read(buffer));
           buffer.rewind();
-          receiveMessage(buffer);
+          while(buffer.remaining() != 0)
+            receiveMessage(buffer);
         } catch(IOException ex) {
           log.log(Level.SEVERE, "Exception occur while waiting for network data.", ex);
         } finally {
@@ -106,12 +107,15 @@ public class JNIONamedClient extends NetworkManager {
     channel.write(buffer);
   }
   
-  private void receiveMessage(ByteBuffer buffer) {
+  private boolean receiveMessage(ByteBuffer buffer) {
+    short len = buffer.getShort();
     short sysid = buffer.getShort();
-    byte[] data = new byte[buffer.remaining()];
+    byte[] data = new byte[len];
     buffer.get(data);
     
     packetRecieved(null, data, sysid);
+    
+    return true;
   }
   
   private SocketChannel channel;

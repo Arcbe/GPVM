@@ -22,6 +22,7 @@ package taiga.code.util;
 import java.awt.BorderLayout;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Handler;
@@ -75,7 +76,7 @@ public class LoggingPanel extends JPanel {
    * @param msgs The maximum amount of {@link LogRecord}s to keep.
    */
   public LoggingPanel(Logger log, int msgs) {
-    records = new ArrayList<>(10);
+    records = Collections.synchronizedList(new ArrayList<>(10));
     maxrecords = msgs;
     handler = new MessageHandler();
     source = log;
@@ -113,7 +114,7 @@ public class LoggingPanel extends JPanel {
   private final class MessageHandler extends Handler {
 
     @Override
-    public void publish(LogRecord record) {
+    public synchronized void publish(LogRecord record) {
       if(record == null) return;
       
       records.add(record);

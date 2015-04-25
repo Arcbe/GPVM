@@ -93,10 +93,11 @@ public class JNIONamedServer extends NetworkManager implements JNioEventListener
     ByteBuffer buf = buffers.get();
     buf.clear();
     
-    buf.putShort((short) (msg.length + 1));
-    buf.putInt(sysid);
+    buf.putShort((short) msg.length);
+    buf.putShort(sysid);
     buf.put(msg);
     
+    buf.flip();
     if(dest instanceof WritableByteChannel) {
       
       ((WritableByteChannel) dest).write(buf);
